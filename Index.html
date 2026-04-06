@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f0f0f">
+<title>Calçado · Abril 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f0f;
+  --surface: #1a1a1a;
+  --surface2: #222222;
+  --surface3: #2a2a2a;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0ede8;
+  --muted: #8a8580;
+  --faint: #555250;
+  --accent: #3b82f6;
+  --accent-bg: rgba(59,130,246,0.12);
+  --accent-border: rgba(59,130,246,0.3);
+  --green: #10b981;
+  --green-bg: rgba(16,185,129,0.1);
+  --green-border: rgba(16,185,129,0.25);
+  --amber: #f59e0b;
+  --amber-bg: rgba(245,158,11,0.1);
+  --amber-border: rgba(245,158,11,0.25);
+  --red: #ef4444;
+  --r: 10px;
+  --r-lg: 14px;
+}
+
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  width: 100%;
+  min-height: 100%;
+}
+
+/* ── APP SHELL ─────────────────────────────────────── */
+.app { 
+  display: flex; 
+  flex-direction: column; 
+  width: 100%;
+  min-height: 100dvh;
+}
+
+/* desktop retém scroll interno controlado */
+@media (min-width: 700px) {
+  html, body { height: 100%; overflow: hidden; }
+  .app { height: 100dvh; overflow: hidden; }
+}
+
+/* ── LOGIN / PROFILE SELECT ────────────────────────── */
+#profile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#profile-overlay.hidden {
+  display: none;
+}
+
+.profile-header {
+  flex-shrink: 0;
+  background: var(--bg);
+  padding: 24px 20px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-header h2 { 
+  font-size: 24px; 
+  font-weight: 700; 
+  margin-bottom: 8px; 
+  color: var(--text);
+}
+
+.profile-header p { 
+  color: var(--muted); 
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.profile-grid-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+@media (min-width: 500px) { 
+  .profile-grid { 
+    grid-template-columns: repeat(3, 1fr); 
+  } 
+}
+
+.profile-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-user-select: none;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-btn:active { 
+  transform: scale(0.95); 
+  background: var(--surface2); 
+}
+
+.profile-btn .av-lg {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.profile-btn.is-manager .av-lg { 
+  background: var(--accent); 
+  color: #fff; 
+}
+
+.profile-btn .p-name { 
+  font-size: 12px; 
+  font-weight: 600; 
+  color: var(--text);
+  word-break: break-word;
+}
+
+/* ── HEADER ─────────────────────────────────────────── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px 12px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.brand-text h1 { 
+  font-size: 15px; 
+  font-weight: 700; 
+  letter-spacing: -.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-text p { 
+  font-size: 11px; 
+  color: var(--muted); 
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 10px 4px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.user-av {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+
+.user-av.av-me {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── MAIN CONTENT ───────────────────────────────────── */
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media (min-width: 700px) {
+  .content {
+    flex: 1;
+    flex-direction: row;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .left-col {
+    flex: 0 0 340px;
+    width: 340px;
+    padding: 24px;
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+
+  .right-col {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 24px;
+  }
+}
+
+.left-col {
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 16px;
+}
+
+.right-col {
+  flex: 1;
+  padding: 16px;
+  width: 100%;
+}
+
+/* ── CALENDAR ───────────────────────────────────────── */
+.cal-section { 
+  margin-bottom: 16px; 
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.dow {
+  text-align: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--faint);
+  padding: 4px 0;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.cal-day {
+  border-radius: 8px;
+  padding: 5px 3px 4px;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1.5px solid transparent;
+  min-height: 64px;
+  text-align: center;
+  transition: border-color .12s, background .12s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.cal-day:active { 
+  transform: scale(.95); 
+}
+
+.cal-day.selected { 
+  border-color: var(--accent); 
+  background: var(--accent-bg); 
+}
+
+.cal-day .d-num { 
+  font-size: 9px; 
+  font-weight: 600; 
+  color: var(--faint); 
+  margin-bottom: 2px; 
+}
+
+.cal-day .d-count { 
+  font-size: 17px; 
+  font-weight: 700; 
+  color: var(--text); 
+  line-height: 1.1; 
+}
+
+.cal-day .d-lbl { 
+  font-size: 7.5px; 
+  color: var(--faint); 
+  margin-bottom: 3px; 
+}
+
+.cal-day .d-badge {
+  display: inline-block;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: 'DM Mono', monospace;
+  font-size: 7.5px;
+  font-weight: 500;
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.cal-day .d-badge.off { 
+  background: var(--surface2); 
+  color: var(--faint); 
+}
+
+.cal-day .d-badge.vac { 
+  background: var(--green-bg); 
+  color: var(--green); 
+}
+
+/* ── STATS ─────────────────────────────────────── */
+.stats-row { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 8px; 
+  margin-bottom: 16px; 
+}
+
+.stats-row.hidden {
+  display: none;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px;
+}
+
+.stat .sv { 
+  font-size: 22px; 
+  font-weight: 700; 
+  color: var(--text); 
+}
+
+.stat .sl { 
+  font-size: 10px; 
+  color: var(--muted); 
+  margin-top: 2px; 
+  font-weight: 500; 
+}
+
+/* ── DAY DETAIL ─────────────────────────────────────── */
+.detail-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--faint);
+  font-size: 14px;
+}
+
+.empty-state .ei { 
+  font-size: 36px; 
+  margin-bottom: 10px; 
+}
+
+/* Day header */
+.day-header {
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.day-header h2 { 
+  font-size: 20px; 
+  font-weight: 700; 
+  letter-spacing: -.3px; 
+}
+
+.day-header .meta { 
+  font-size: 12px; 
+  color: var(--muted); 
+  margin-top: 3px; 
+}
+
+.day-num-badge {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 6px 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.day-num-badge .dbn { 
+  font-size: 22px; 
+  font-weight: 700; 
+}
+
+.day-num-badge .dbl { 
+  font-size: 9px; 
+  color: var(--muted); 
+  font-weight: 600; 
+  text-transform: uppercase; 
+  letter-spacing: .05em; 
+}
+
+/* Sections inside panel */
+.panel-section { 
+  padding: 14px 16px; 
+  border-bottom: 1px solid var(--border); 
+}
+
+.panel-section:last-child { 
+  border-bottom: none; 
+}
+
+.panel-section.hidden {
+  display: none;
+}
+
+.sec-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 10px;
+}
+
+/* Workers */
+.workers-grid { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 5px; 
+}
+
+@media (min-width: 500px) { 
+  .workers-grid { 
+    grid-template-columns: repeat(3, 1fr); 
+  } 
+}
+
+.wcard {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--surface2);
+}
+
+.wcard.me-w { 
+  background: var(--accent-bg); 
+  border: 1px solid var(--accent-border); 
+}
+
+.wcard.off-w { 
+  opacity: .3; 
+}
+
+.wcard.vac-w { 
+  background: var(--green-bg); 
+  opacity: .6; 
+}
+
+.av {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--surface3);
+  color: var(--muted);
+}
+
+.av.av-me { 
+  background: var(--accent); 
+  color: #fff; 
+}
+
+.w-name { 
+  font-size: 11px; 
+  font-weight: 600; 
+  color: var(--text); 
+  line-height: 1.2; 
+}
+
+.w-code { 
+  font-family: 'DM Mono', monospace; 
+  font-size: 9.5px; 
+  color: var(--muted); 
+}
+
+/* Chart */
+.store-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--green-bg);
+  border: 1px solid var(--green-border);
+  border-radius: 7px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green);
+  margin-bottom: 12px;
+}
+
+.chart-legend { 
+  display: flex; 
+  gap: 10px; 
+  flex-wrap: wrap; 
+  margin-bottom: 10px; 
+}
+
+.leg { 
+  display: flex; 
+  align-items: center; 
+  gap: 4px; 
+  font-size: 10px; 
+  color: var(--muted); 
+}
+
+.leg-dot { 
+  width: 8px; 
+  height: 8px; 
+  border-radius: 2px; 
+  flex-shrink: 0; 
+}
+
+.h-row { 
+  display: flex; 
+  align-items: center; 
+  gap: 7px; 
+  margin-bottom: 3px; 
+}
+
+.h-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  width: 26px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.h-lbl.open { 
+  color: var(--text); 
+  font-weight: 500; 
+}
+
+.h-lbl.closed { 
+  color: var(--faint); 
+}
+
+.bar-wrap {
+  flex: 1;
+  border-radius: 4px;
+  height: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bar-wrap.open-h { 
+  background: rgba(255,255,255,0.04); 
+}
+
+.bar-wrap.closed-h { 
+  background: var(--surface3); 
+  opacity: .45; 
+}
+
+.bar-fill { 
+  height: 100%; 
+  border-radius: 4px; 
+  transition: width .4s cubic-bezier(.4,0,.2,1); 
+}
+
+.bar-count {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.bar-count.open { 
+  color: var(--text); 
+}
+
+.bar-count.closed { 
+  color: var(--faint); 
+}
+
+.bar-tag {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 5px 0;
+}
+
+.div-line { 
+  flex: 1; 
+  border-top: 1px dashed var(--border2); 
+}
+
+.div-lbl { 
+  font-size: 9px; 
+  font-weight: 600; 
+  color: var(--faint); 
+  white-space: nowrap; 
+}
+
+.hour-names {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.3;
+}
+
+/* Manager / Break advice */
+.manager-card {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r);
+  padding: 14px;
+}
+
+.manager-card h3 { 
+  font-size: 13px; 
+  font-weight: 700; 
+  color: var(--accent); 
+  margin-bottom: 8px; 
+}
+
+.break-card {
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-border);
+  border-radius: var(--r);
+  padding: 14px;
+}
+
+.break-card h3 { 
+  font-size: 13px; 
+  font-weight: 700; 
+  color: var(--amber); 
+  margin-bottom: 8px; 
+}
+
+.break-time {
+  font-family: 'DM Mono', monospace;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: -1px;
+  margin: 6px 0;
+}
+
+.break-check { 
+  font-size: 12px; 
+  color: var(--amber); 
+  margin: 4px 0; 
+  display: flex; 
+  align-items: flex-start; 
+  gap: 5px; 
+  line-height: 1.4; 
+}
+
+.cov-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--amber-border);
+  font-size: 12px;
+  color: var(--amber);
+}
+
+.cov-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--surface);
+  color: var(--amber);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.ok-card {
+  background: var(--green-bg);
+  border: 1px solid var(--green-border);
+  border-radius: var(--r);
+  padding: 14px;
+}
+
+.ok-card h3 { 
+  font-size: 13px; 
+  font-weight: 700; 
+  color: var(--green); 
+  margin-bottom: 5px; 
+}
+
+.ok-card p { 
+  font-size: 12px; 
+  color: var(--green); 
+  opacity: .8; 
+}
+
+.off-card {
+  background: var(--surface2);
+  border-radius: var(--r);
+  padding: 14px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hidden { 
+  display: none !important; 
+}
+
+/* ── PASSWORD MODAL ────────────────────────────────── */
+#password-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#password-overlay.hidden {
+  display: none !important;
+}
+
+.password-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  max-width: 300px;
+  width: 100%;
+  text-align: center;
+}
+
+.password-modal h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.password-modal p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+#password-input {
+  width: 100%;
+  padding: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-size: 16px;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+#password-input::placeholder {
+  color: var(--faint);
+}
+
+#password-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface3);
+}
+
+.password-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.password-buttons button {
+  padding: 12px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.password-buttons button:active {
+  transform: scale(0.95);
+}
+
+#password-submit {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.password-error {
+  font-size: 12px;
+  color: var(--red);
+  margin-top: 8px;
+}
+
+/* ── GLOBAL AUTH ────────────────────────────────────── */
+#global-auth {
+  position: fixed; top:0; left:0; right:0; bottom:0;
+  background: var(--bg); z-index: 2000;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+#global-auth.hidden { display: none; }
+.auth-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 36px 24px;
+  text-align: center; width: 100%; max-width: 340px;
+}
+.auth-icon { font-size: 44px; margin-bottom: 12px; }
+.auth-box h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.auth-box .auth-sub { font-size: 12px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+.auth-input {
+  width: 100%; padding: 13px 14px; margin-bottom: 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 16px;
+  text-align: center; letter-spacing: 3px;
+  -webkit-appearance: none; appearance: none;
+}
+.auth-input:focus { outline: none; border-color: var(--accent); }
+.auth-submit {
+  width: 100%; padding: 13px;
+  background: var(--accent); border: none; border-radius: var(--r);
+  color: #fff; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.auth-submit:active { opacity: .85; transform: scale(.98); }
+
+/* ── AREA SELECT ────────────────────────────────────── */
+#area-select {
+  position: fixed; top:0; left:0; right:0; bottom:0;
+  background: var(--bg); z-index: 1500;
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+#area-select.hidden { display: none; }
+.area-header {
+  flex-shrink: 0; padding: 24px 20px 16px;
+  text-align: center; border-bottom: 1px solid var(--border);
+}
+.area-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.area-header p { font-size: 12px; color: var(--muted); }
+.area-grid-wrap { flex: 1; padding: 16px; overflow-y: auto; }
+.area-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 10px; max-width: 400px; margin: 0 auto;
+}
+@media (min-width: 500px) { .area-grid { grid-template-columns: repeat(3, 1fr); } }
+.area-btn {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r-lg); padding: 20px 12px;
+  text-align: center; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  transition: border-color .15s;
+}
+.area-btn:active { transform: scale(.95); }
+.area-btn .a-icon { font-size: 28px; }
+.area-btn .a-label { font-size: 13px; font-weight: 700; }
+
+/* ── CHANGED DAY HIGHLIGHT ─────────────────────────── */
+.cal-day.changed { border-color: rgba(239,68,68,0.45) !important; }
+.change-dot {
+  display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+  background: #ef4444; margin-left: 3px; vertical-align: middle;
+  flex-shrink: 0;
+}
+.change-banner {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.22);
+  border-radius: var(--r); padding: 9px 12px; margin-bottom: 10px;
+  font-size: 12px; font-weight: 600; color: #ef4444;
+}
+
+/* ── PROFILE HEADER BACK BTN ───────────────────────── */
+.profile-header { position: relative; }
+.back-btn {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 10px;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+}
+.back-btn:active { opacity: .7; }
+</style>
+</head>
+<body>
+
+<div id="global-auth">
+  <div class="auth-box">
+    <div class="auth-icon">👟</div>
+    <h2>SPZ Leiria</h2>
+    <p class="auth-sub">Horários da equipa · Abril 2026<br>Introduz a senha para aceder</p>
+    <input class="auth-input" type="password" id="global-pwd" placeholder="••••••••"
+           onkeypress="if(event.key==='Enter')checkGlobalPassword()">
+    <button class="auth-submit" onclick="checkGlobalPassword()">Entrar</button>
+    <div id="global-error" class="password-error hidden" style="margin-top:10px">Senha incorreta</div>
+  </div>
+</div>
+
+<div id="area-select" class="hidden">
+  <div class="area-header">
+    <h2>Seleciona a tua área</h2>
+    <p>SPZ Leiria · SDSR Sports Division</p>
+  </div>
+  <div class="area-grid-wrap">
+    <div class="area-grid" id="area-grid"></div>
+  </div>
+</div>
+
+<div id="profile-overlay" class="hidden">
+  <div class="profile-header">
+    <button class="back-btn" onclick="showAreaSelect()">← Áreas</button>
+    <h2 id="profile-title">Quem és?</h2>
+    <p>Seleciona o teu perfil</p>
+  </div>
+  <div class="profile-grid-container">
+    <div class="profile-grid" id="profile-list"></div>
+  </div>
+</div>
+
+<div id="password-overlay" class="hidden">
+  <div class="password-modal">
+    <h2>Acesso Restrito</h2>
+    <p>Este perfil requer autenticação</p>
+    <input type="password" id="password-input" placeholder="Introduz a senha" autocomplete="off">
+    <div class="password-buttons">
+      <button id="password-submit" onclick="checkPassword()">Confirmar</button>
+      <button id="password-cancel" onclick="cancelPassword()">Cancelar</button>
+    </div>
+    <div id="password-error" class="password-error hidden">Senha incorreta</div>
+  </div>
+</div>
+
+<div class="app hidden" id="main-app">
+  <header>
+    <div class="header-inner">
+      <div class="brand" onclick="logout()">
+        <div class="brand-icon">👟</div>
+        <div class="brand-text">
+          <h1>Calçado · Abril 2026</h1>
+          <p>SPZ Leiria · SDSR Sports Division</p>
+        </div>
+      </div>
+      <div class="user-pill" id="current-user-pill">
+        <div class="user-av" id="user-av"></div>
+        <span id="user-name"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="left-col">
+      <div class="cal-section">
+        <div class="section-label">Calendário</div>
+        <div class="cal-grid" id="cal"></div>
+      </div>
+      <div class="stats-row" id="stats"></div>
+    </div>
+
+    <div class="right-col">
+      <div class="section-label" id="detail-label">Detalhe do dia</div>
+      <div class="detail-panel" id="detail">
+        <div class="empty-state">
+          <div class="ei">📅</div>
+          Toca num dia para ver detalhes
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SH = {
+  '070':{s:7,e:11,bs:null,be:null},
+  '070NA':{s:7,e:16,bs:12,be:13},
+  '070MA':{s:7,e:16,bs:11,be:12},
+  '074ND':{s:7.75,e:16.75,bs:12.75,be:13.75},
+  '080':{s:8,e:12,bs:null,be:null},
+  '080NA':{s:8,e:17,bs:12,be:13},
+  '080MA':{s:8,e:17,bs:11,be:12},
+  '090':{s:9,e:13,bs:null,be:null},
+  '090PA':{s:9,e:18,bs:13,be:14},
+  '090PA8h':{s:9,e:18,bs:13,be:14},
+  '100':{s:10,e:14,bs:null,be:null},
+  '100PA':{s:10,e:19,bs:13,be:14},
+  '100QA':{s:10,e:19,bs:14,be:15},
+  '100QB':{s:10,e:19,bs:14,be:15},
+  '110':{s:11,e:15,bs:null,be:null},
+  '110QA':{s:11,e:20,bs:14,be:15},
+  '110RA':{s:11,e:20,bs:15,be:16},
+  '120':{s:12,e:16,bs:null,be:null},
+  '120SA':{s:12,e:21,bs:16,be:17},
+  '130':{s:13,e:17,bs:null,be:null},
+  '130TA':{s:13,e:22,bs:17,be:18},
+  '133':{s:13.5,e:17.5,bs:null,be:null},
+  '140':{s:14,e:18,bs:null,be:null},
+  '150':{s:15,e:19,bs:null,be:null},
+  '150VA':{s:15,e:24,bs:19,be:20},
+  '160':{s:16,e:20,bs:null,be:null},
+  '170':{s:17,e:21,bs:null,be:null},
+  '173':{s:17.5,e:21.5,bs:null,be:null},
+  '180':{s:18,e:22,bs:null,be:null},
+  '180YA':{s:18,e:27,bs:22,be:23},
+  '190':{s:19,e:23,bs:null,be:null},
+  '200':{s:20,e:24,bs:null,be:null},
+};
+
+const OFF = ['FC','FO','V','Fe','Bx','IT','AutDe','AB'];
+const OFF_LABEL = {FC:'Folga Complementar',FO:'Folga Obrigatória',V:'Dia Off',Fe:'Férias',Bx:'Baixa',IT:'Incapacidade'};
+const DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const APR1_DOW = 3;
+const STORE_OPEN = 10, STORE_CLOSE = 23;
+
+const TEAM = [
+// changedDays: [{day:N, changedAt:'ISO_DATE'}]  — visível 48h após a alteração
+const TEAM = [
+  // ── CALÇADO ─────────────────────────────────────────────────────────────────
+  {id:'2595', name:'João Cabete', area:'calcado', changedDays:[],
+   sch:['100','V','V','150','FO','100QA','150','150','V','140','FC','FO','120SA','150','150','V','150','FC','FO','110RA','150','150','V','150','FC','FO','100QA','150','150','V','150']},
+  {id:'9457', name:'Catarina Carreira', area:'calcado', changedDays:[],
+   sch:['090PA','090','FO','110RA','090PA','120SA','130TA','FC','FO','090PA','090PA','090PA','090PA','FC','090PA','090PA','090PA','090PA','090PA','FO','Fe','Fe','Fe','Fe','Fe','FC','FO','090','110','090','FC']},
+  {id:'9704', name:'Francisco Barrela', area:'calcado', changedDays:[],
+   sch:['V','200','FC','FO','150VA','120SA','V','V','130','FC','FO','150VA','130TA','V','130','V','FC','FO','150VA','120SA','V','130','V','FC','FO','150VA','120SA','V','V','130','FC']},
+  {id:'11449',name:'Maria Morais', area:'calcado', changedDays:[],
+   sch:['FC','FO','090','090','200','200','FC','090','090','180','130','200','FO','130','160','180','160','140','FC','FO','090','090','090','FC','FO','200','170','190','FC','FO','090']},
+  {id:'11550',name:'Maria Lopes', area:'calcado', changedDays:[],
+   sch:['FC','FO','200','200','170','160','FC','200','150','140','170','200','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','200','190','200','FC','FO','160','190','200','FC','FO','200']},
+  {id:'11821',name:'Leandro Guedes', area:'calcado', changedDays:[],
+   sch:['FC','100','100','160','100','FO','200','190','200','200','200','FC','FO','200','200','200','FC','FO','170','140','200','FC','FO','180','170','200','130','FC','180','200','200']},
+  {id:'12238',name:'Diogo Rebelo', area:'calcado', changedDays:[],
+   sch:['110RA','160','170','200','130','FO','110RA','130TA','100QA','110RA','100QA','FC','FO','090PA','100QA','100QA','FC','FO','130TA','150VA','120SA','FC','FO','090PA','090PA','090PA','090PA','FC','090PA','110RA','110RA']},
+  {id:'12339',name:'Pedro Silva', area:'calcado', isManager:true, password:'123',
+   changedDays:[{day:7, changedAt:'2026-04-05T08:00:00'}],
+   sch:['150VA','150VA','150VA','150VA','FC','FO','070MA','100QA','120SA','FC','FO','110RA','110RA','100QA','FC','120SA','FO','120SA','150VA','150VA','FC','100QA','100QA','100QA','100QA','100QA','FO','100QA','100QA','120SA','120SA']},
+  {id:'13777',name:'José Pereira', area:'calcado', changedDays:[],
+   sch:['V','FC','FO','170','150VA','150VA','V','V','FC','FO','200','130TA','150VA','V','V','180','FC','FO','100QA','100QA','FC','V','200','FO','200','120SA','150VA','V','V','FC','FO']},
+  {id:'13778',name:'Tiago Bento', area:'calcado', changedDays:[],
+   sch:['200','FO','130','100','130','110','FC','100','200','160','160','160','FO','100','110','100','100','100','FC','FO','160','170','190','FC','200','160','FO','130','FC','FO','130']},
+  {id:'13779',name:'Tomás Pacífico', area:'calcado', changedDays:[],
+   sch:['180','130','100','100','FC','FO','100','170','170','FC','FO','100','100','180','FC','FO','100','100','100','100','FC','200','160','190','170','190','FO','190','200','180','170']},
+  {id:'13782',name:'Bernardo Rocha', area:'calcado', changedDays:[],
+   sch:['120','110','FC','FO','110','100','180','FC','FO','100','100','140','140','FC','140','200','140','180','140','FO','100','130','100','100','100','FC','FO','150','200','200','FC']},
+  {id:'13783',name:'Cláudia Morcela', area:'calcado', changedDays:[],
+   sch:['140','150','140','130','FC','FO','160','140','100','FC','FO','100','100','140','FC','FO','170','170','200','190','FC','100','140','140','130','100','FO','100','120','100','100']},
+  {id:'13784',name:'Micael Domingues', area:'calcado', changedDays:[],
+   sch:['FO','V','200','V','100QA','090PA','FC','FO','200','V','V','150VA','150VA','FC','FO','V','190','V','100QA','100QA','FC','FO','V','200','V','110RA','150VA','FC','FO','V','140']},
+  {id:'13808',name:'Diogo Costa', area:'calcado', changedDays:[],
+   sch:['160','V','FC','FO','150VA','150VA','V','FC','V','FO','200','150VA','150VA','V','FC','V','FO','200','150VA','150VA','130','V','V','FC','FO','100QA','100QA','V','160','V','FC']},
+  {id:'13818',name:'Francisco Santos', area:'calcado', changedDays:[],
+   sch:['180','190','FC','200','170','FO','200','200','FC','200','FO','170','180','200','200','FC','200','FO','140','140','200','200','FC','200','FO','200','200','200','200','FC','200']},
+
+  // ── CAIXA ────────────────────────────────────────────────────────────────────
+  {id:'2623', name:'Wendy Matias', area:'caixa', isManager:true, password:'123', changedDays:[],
+   sch:['180YA','150VA','FC','FO','070MA','070MA','090PA','FC','FO','150VA','150VA','150VA','150VA','FC','120SA','090PA','120SA','120SA','120SA','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','120SA','090PA','090PA','FC']},
+  {id:'112',  name:'Lidia Clérigo', area:'caixa', changedDays:[],
+   sch:['100QB','100PA','100PA','100PA','100PA','FO','100PA','100PA','100PA','100PA','100PA','FC','FO','100PA','100PA','100PA','FC','FO','100PA','100PA','100PA','FC','FO','100PA','100PA','100PA','100PA','FC','100PA','100PA','100PA']},
+  {id:'315',  name:'Paula Santos', area:'caixa', changedDays:[],
+   sch:['110RA','110RA','V','V','V','FC','FO','110RA','110RA','V','V','V','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','FC','V','V','V','V']},
+  {id:'3142', name:'Alexandra Lemos', area:'caixa', changedDays:[],
+   sch:['V','200','FO','120SA','100QA','100QA','V','V','200','FC','FO','100QA','100QA','V','V','FC','200','FO','120SA','110RA','V','V','200','FC','FO','120SA','120SA','200','V','V','FC']},
+  {id:'11454',name:'Daniela Augusto', area:'caixa', changedDays:[],
+   sch:['V','FC','FC','FO','150VA','150VA','200','200','FC','FO','V','150VA','150VA','V','V','FC','FO','200','150VA','150VA','V','180','FC','FO','V','150VA','150VA','V','V','FC','FO']},
+  {id:'12032',name:'Vera Gomes', area:'caixa', changedDays:[],
+   sch:['130TA','FC','FO','150VA','150VA','120SA','150VA','FC','FO','150VA','150VA','150VA','150VA','FC','150VA','150VA','150VA','150VA','150VA','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','100PA','150VA','150VA','FC']},
+  {id:'13781',name:'Carolina Soares', area:'caixa', changedDays:[],
+   sch:['110','150','110','100','FC','FO','110','120','110','FC','FO','140','140','160','FC','FO','100','100','200','190','FC','100','100','110','110','200','FO','120','110','110','160']},
+  {id:'13793',name:'Diana Batista', area:'caixa', changedDays:[],
+   sch:['FC','FO','160','160','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
+  {id:'13807',name:'David Andrade', area:'caixa', changedDays:[],
+   sch:['200','190','FO','200','180','180','FC','FC','FO','110','110','100','100','FC','180','180','133','133','150','FO','200','200','180','160','200','FC','FO','160','200','200','FC']},
+  {id:'13811',name:'Cristina Rodrigues', area:'caixa', changedDays:[],
+   sch:['160','110','200','200','200','FO','180','170','170','170','180','FC','FO','200','120','110','FC','FO','110','120','110','FC','FO','200','160','110','110','FC','180','180','200']},
+
+  // ── TÊXTIL ───────────────────────────────────────────────────────────────────
+  {id:'3678', name:'Marco Lopes', area:'textil', isManager:true, password:'123', changedDays:[],
+   sch:['FC','FO','150VA','150VA','150VA','150VA','FC','090PA','090PA','090PA','090PA','120SA','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','090PA','090PA','090PA','FC','FO','150VA','150VA','Fe','Fe','Fe','Fe']},
+  {id:'6030', name:'Isabela Pena', area:'textil', changedDays:[],
+   sch:['Bx','Bx','Bx','Bx','Bx','Bx','160','160','160','100','100','FC','FO','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','100','FC','FO','100','100','100','100']},
+  {id:'8575', name:'Maria Rodrigues', area:'textil', changedDays:[],
+   sch:['V','FC','FO','100QA','100QA','150VA','V','V','150VA','150VA','V','FC','FO','V','V','100QA','FC','200','FO','150VA','V','V','FC','FO','200','150VA','150VA','V','V','FC','FO']},
+  {id:'10930',name:'Catarina Costa', area:'textil', changedDays:[],
+   sch:['110QA','200','FC','FO','200','120','200','FC','FO','110','180','200','200','FC','100','160','100','100','200','FO','200','140','100','100','120','FC','FO','200','140','140','FC']},
+  {id:'10942',name:'Bruna Francisco', area:'textil', changedDays:[],
+   sch:['FC','FO','200','200','200','200','FC','200','200','200','200','200','FO','200','200','200','200','200','FC','FO','200','200','200','FC','FO','140','110','200','FC','FO','200']},
+  {id:'11555',name:'Beatriz Vale', area:'textil', changedDays:[],
+   sch:['140','160','FC','FO','110RA','130TA','110RA','FC','FO','120SA','110RA','110RA','110RA','FC','140','200','170','170','200','FO','120','200','200','200','200','FC','FO','160','200','200','FC']},
+  {id:'12363',name:'Beatriz Teodoro', area:'textil', changedDays:[],
+   sch:['FO','100QA','150VA','150VA','150VA','FC','200','200','200','200','200','FO','180','180','200','200','200','FC','FO','100','200','180','FC','FO','200','200','120','FC','FO','V','V']},
+  {id:'12682',name:'Catarina Pereira', area:'textil', changedDays:[],
+   sch:['200','FC','150VA','160','FO','100QA','200','150VA','V','FC','200','FO','150VA','200','200','V','200','FC','FO','100QA','200','160','V','200','FC','FO','150VA','200','200','V','160']},
+  {id:'13798',name:'Alice Belga', area:'textil', changedDays:[],
+   sch:['200','200','200','200','FC','FO','100','100','100','FC','FO','100','100','100','FC','FO','133','133','100','160','FC','100','140','140','150','100','FO','200','200','200','200']},
+  {id:'13806',name:'Emily Ribeiro', area:'textil', changedDays:[],
+   sch:['160','120','160','200','FC','FO','140','140','140','FC','FO','200','200','200','FC','FO','200','200','200','200','FC','200','200','200','200','200','FO','160','160','160','160']},
+  {id:'13817',name:'Francisca Teodósio', area:'textil', changedDays:[],
+   sch:['200','200','200','120','200','FO','200','200','200','200','140','FC','FO','140','200','200','FC','FO','160','200','160','FC','FO','160','160','200','200','FC','160','200','200']},
+
+  // ── TÉCNICO ──────────────────────────────────────────────────────────────────
+  {id:'7109t',name:'Rodrigo Francisco', area:'tecnico', isManager:true, password:'123', changedDays:[],
+   sch:['090PA','080NA','080NA','080NA','FC','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','150VA','150VA','150VA','FC','FO','150VA','150VA','150VA','FC','FO','090PA','090PA','070MA','070MA','FC','150VA','150VA','150VA']},
+  {id:'12365',name:'Jan Bata', area:'tecnico', changedDays:[],
+   sch:['120SA','150','150VA','150VA','150VA','FO','120SA','120SA','120SA','120SA','120SA','FC','FO','090PA','090PA','090PA','FC','FO','090','090','090','FC','FO','150','150','200','200','FC','150','150','200']},
+  {id:'13803',name:'Tiago Fernandes', area:'tecnico', changedDays:[],
+   sch:['090','090','090','090','FC','FO','090','090','090','FC','FO','200','200','200','FC','FO','090','090','150','200','FC','090','090','090','090','090','FO','090','090','090','090']},
+  {id:'13816',name:'Cristiano Santos', area:'tecnico', changedDays:[],
+   sch:['200','200','FC','FO','090','200','200','FC','FO','090','090','110','110','FC','200','200','200','200','200','FO','200','150','150','200','200','FC','FO','200','200','200','FC']},
+
+  // ── LOGÍSTICA ────────────────────────────────────────────────────────────────
+  {id:'3351', name:'Daniela Pereira', area:'logistica', changedDays:[],
+   sch:['AutDe','AutDe','AutDe','070MA','FC','FO','070MA','070MA','FC','070MA','070MA','070MA','FO','070','070','070','070','070','FC','FO','070','070','FO','070','070','070','070','070','FC','070','070']},
+  {id:'4930', name:'Helena Cotovio', area:'logistica', changedDays:[],
+   sch:['080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','FO','080NA','080NA','080NA','080NA','080NA','FC','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA']},
+  {id:'4927', name:'Nuno Vieira', area:'logistica', changedDays:[],
+   sch:['080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA']},
+  {id:'7109', name:'Rodrigo Francisco', area:'logistica', changedDays:[],
+   sch:['090PA','080NA','080NA','080NA','FC','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','150VA','150VA','150VA','FC','FO','150VA','150VA','150VA','FC','FO','090PA','090PA','070MA','070MA','FC','150VA','150VA','150VA']},
+  {id:'9102', name:'Andreia Vieira', area:'logistica', changedDays:[],
+   sch:['110RA','110RA','110RA','110RA','FC','FO','110RA','110RA','110RA','110RA','100QA','FO','070MA','110RA','FC','110RA','110RA','110RA','FC','FO','150','150','150','150','150','FC','FO','150','150','150','150']},
+  {id:'13780',name:'João Cardoso', area:'logistica', changedDays:[],
+   sch:['140','140','140','130','FC','FO','140','130','140','140','130','FC','FO','140','130','140','140','130','FC','FO','140','130','140','140','130','FO','150','140','130','FC','FC']},
+  {id:'13795',name:'Kessy Gomes', area:'logistica', changedDays:[],
+   sch:['090','090','090','FC','080','FO','090','090','090','090','090','FC','FO','090','090','090','090','090','FC','FO','090','090','FO','090','090','120','120','090','FC','090','090']},
+  {id:'13801',name:'Ruben Santana', area:'logistica', changedDays:[],
+   sch:['110','110','110','110','FC','FO','110','110','110','110','110','FC','FO','110','110','110','110','110','FC','FO','110','110','110','110','110','FC','FO','110','110','110','110']},
+];
+
+const AREAS = [
+  {id:'calcado',  label:'Calçado',  icon:'👟'},
+  {id:'caixa',    label:'Caixa',    icon:'🛒'},
+  {id:'textil',   label:'Têxtil',   icon:'👕'},
+  {id:'tecnico',  label:'Técnico',  icon:'⚙️'},
+  {id:'logistica',label:'Logística',icon:'📦'},
+];
+
+const MANAGER_PWD = '123';
+const GLOBAL_PWD  = 'desporto';
+
+let currentUser = null;
+let selectedDay  = 1;
+let selectedArea = null;
+let pendingUser  = null;
+let initialized  = false;
+
+const isOff = c => OFF.includes(c);
+const getS  = c => SH[c] || null;
+const ini   = n => n.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const countW = idx => TEAM.filter(m => m.area === (currentUser && currentUser.area) && !isOff(m.sch[idx])).length;
+
+function isRecentlyChanged(member, day) {
+  if (!member.changedDays || !member.changedDays.length) return false;
+  const TWO_DAYS = 48 * 60 * 60 * 1000;
+  return member.changedDays.some(c => c.day === day && (Date.now() - new Date(c.changedAt).getTime()) <= TWO_DAYS);
+}
+
+function working(c, h) {
+  const s = getS(c);
+  if (!s) return false;
+  if (h < s.s || h >= s.e) return false;
+  if (s.bs !== null && h >= s.bs && h < s.be) return false;
+  return true;
+}
+
+function getUserDayInfo(user, idx) {
+  const c = user.sch[idx];
+  if (isOff(c)) return { code: c, off: true };
+  const s = getS(c);
+  if (!s) return { code: c, off: true };
+  return { code: c, off: false, s, hasBreak: s.bs !== null, bs: s.bs, be: s.be };
+}
+
+function init() {
+  if (initialized) return;
+  initialized = true;
+  // Start at global auth — everything else hidden
+  document.getElementById('global-auth').classList.remove('hidden');
+}
+
+function checkGlobalPassword() {
+  const pwd = document.getElementById('global-pwd').value;
+  if (pwd === GLOBAL_PWD) {
+    document.getElementById('global-auth').classList.add('hidden');
+    showAreaSelect();
+  } else {
+    document.getElementById('global-error').classList.remove('hidden');
+    document.getElementById('global-pwd').value = '';
+    document.getElementById('global-pwd').focus();
+  }
+}
+
+function showAreaSelect() {
+  selectedArea = null;
+  currentUser  = null;
+  document.getElementById('area-select').classList.remove('hidden');
+  document.getElementById('profile-overlay').classList.add('hidden');
+  document.getElementById('main-app').classList.add('hidden');
+
+  const grid = document.getElementById('area-grid');
+  grid.innerHTML = AREAS.map(a =>
+    `<div class="area-btn" onclick="selectArea('${a.id}')">
+      <div class="a-icon">${a.icon}</div>
+      <div class="a-label">${a.label}</div>
+    </div>`
+  ).join('');
+}
+
+function selectArea(areaId) {
+  selectedArea = areaId;
+  document.getElementById('area-select').classList.add('hidden');
+
+  const area = AREAS.find(a => a.id === areaId);
+  document.getElementById('profile-title').textContent = area ? area.label : 'Quem és?';
+
+  buildProfileList(areaId);
+  document.getElementById('profile-overlay').classList.remove('hidden');
+}
+
+function buildProfileList(areaId) {
+  const list = document.getElementById('profile-list');
+  list.innerHTML = '';
+  const areaTeam = TEAM.filter(m => m.area === areaId)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  areaTeam.forEach(u => {
+    const btn = document.createElement('div');
+    btn.className = `profile-btn ${u.isManager ? 'is-manager' : ''}`;
+    const sameName = TEAM.filter(x => x.name.split(' ')[0] === u.name.split(' ')[0]).length > 1;
+    const displayName = sameName ? u.name : u.name.split(' ')[0];
+    btn.innerHTML = `<div class="av-lg">${ini(u.name)}</div><div class="p-name">${displayName}</div>`;
+    btn.onclick = () => selectProfile(u);
+    list.appendChild(btn);
+  });
+}
+
+function selectProfile(user) {
+  if (user.isManager) {
+    pendingUser = user;
+    document.getElementById('password-overlay').classList.remove('hidden');
+    document.getElementById('password-input').value = '';
+    document.getElementById('password-error').classList.add('hidden');
+    document.getElementById('password-input').focus();
+    return;
+  }
+  authenticateUser(user);
+}
+
+function checkPassword() {
+  const password = document.getElementById('password-input').value;
+  if (password === MANAGER_PWD) {
+    document.getElementById('password-overlay').classList.add('hidden');
+    authenticateUser(pendingUser);
+  } else {
+    document.getElementById('password-error').classList.remove('hidden');
+    document.getElementById('password-input').value = '';
+    document.getElementById('password-input').focus();
+  }
+}
+
+function cancelPassword() {
+  document.getElementById('password-overlay').classList.add('hidden');
+  pendingUser = null;
+}
+
+function authenticateUser(user) {
+  currentUser = user;
+  document.getElementById('profile-overlay').classList.add('hidden');
+  document.getElementById('main-app').classList.remove('hidden');
+  const displayName = TEAM.filter(x => x.name.split(' ')[0] === user.name.split(' ')[0]).length > 1 
+    ? user.name 
+    : user.name.split(' ')[0];
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('user-av').textContent = ini(user.name);
+  if (user.isManager) document.getElementById('user-av').classList.add('av-me');
+
+  // Atualizar título do header com área atual
+  const area = AREAS.find(a => a.id === user.area);
+  if (area) {
+    document.querySelector('.brand-text h1').textContent = `${area.icon} ${area.label} · Abril 2026`;
+  }
+  
+  renderCal();
+  pick(1);
+}
+
+function logout() {
+  currentUser  = null;
+  pendingUser  = null;
+  selectedArea = null;
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('password-overlay').classList.add('hidden');
+  showAreaSelect();
+}
+
+function renderCal() {
+  let h = '';
+  DOW.forEach(d => { h += `<div class="dow">${d}</div>`; });
+  for (let i = 0; i < APR1_DOW; i++) h += '<div></div>';
+  for (let d = 1; d <= 30; d++) {
+    const c = currentUser.sch[d];
+    const off = isOff(c), vac = c === 'Fe';
+    const cnt = countW(d);
+    let bc = off ? (vac ? 'vac' : 'off') : '';
+
+    const changed = isRecentlyChanged(currentUser, d);
+    const cellInner = currentUser.isManager
+      ? `<div class="d-count">${cnt}</div>
+         <div class="d-lbl">eq</div>
+         <span class="d-badge ${bc}">${c}${changed?'<span class="change-dot"></span>':''}</span>`
+      : `<div class="d-count" style="font-size:13px;margin-top:4px">${off ? '—' : c}${changed?'<span class="change-dot"></span>':''}</div>
+         <div class="d-lbl">${off ? (OFF_LABEL[c] || c).split(' ')[0] : 'turno'}</div>`;
+
+    h += `<div class="cal-day${selectedDay===d?' selected':''}${changed?' changed':''}" onclick="pick(${d})">
+      <div class="d-num">${d}</div>
+      ${cellInner}
+    </div>`;
+  }
+  document.getElementById('cal').innerHTML = h;
+
+  const statsRow = document.getElementById('stats');
+  if (currentUser.isManager) {
+    statsRow.classList.add('hidden');
+  } else {
+    statsRow.classList.remove('hidden');
+    let wd = 0;
+    for (let d = 1; d <= 30; d++) { if (!getUserDayInfo(currentUser, d).off) wd++; }
+    statsRow.innerHTML = `
+      <div class="stat"><div class="sv">${wd}</div><div class="sl">Dias de trabalho</div></div>
+      <div class="stat"><div class="sv">${wd * 8}h</div><div class="sl">Total de horas</div></div>`;
+  }
+}
+
+function pick(day) {
+  selectedDay = day;
+  renderCal();
+
+  const p = getUserDayInfo(currentUser, day);
+  const dow = DOW[(APR1_DOW + day - 1) % 7];
+  const cnt = countW(day);
+  const firstName = currentUser.name.split(' ')[0];
+
+  // ── cobertura (sempre calculada, usada pelo manager e pela lógica de pausa) ──
+  const HOURS = [];
+  for (let h = 9; h <= 23; h++) HOURS.push(h);
+  const cov = {};
+  HOURS.forEach(h => { cov[h] = { t: 0, me: false, brk: false, workers: [] }; });
+  areaTeam.forEach(m => {
+    const c = m.sch[day];
+    HOURS.forEach(h => {
+      if (working(c, h)) {
+        cov[h].t++;
+        if (m.id === currentUser.id) cov[h].me = true;
+        const dn = TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
+          ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1][0] + '.'
+          : m.name.split(' ')[0];
+        cov[h].workers.push(dn);
+      }
+    });
+  });
+  if (!p.off && p.hasBreak) {
+    for (let h = p.bs; h < p.be; h++) { if (cov[h]) cov[h].brk = true; }
+  }
+
+  // ── melhor janela de pausa (só usada pelo manager) ──
+  function buildBreakHTML() {
+    if (p.off) {
+      return `<div class="off-card">${firstName} não trabalha hoje — ${OFF_LABEL[p.code] || p.code}</div>`;
+    }
+    if (!p.hasBreak) {
+      return `<div class="ok-card">
+        <h3>Turno curto — sem pausa obrigatória</h3>
+        <p>Apenas 4h consecutivas, abaixo do limite legal de 5h.</p>
+      </div>`;
+    }
+    // escolher hora com MAIS cobertura que respeite ≤5h consecutivas
+    let bestBreak = { bs: p.s.s, be: p.s.s + 1, coverage: -1 };
+    for (let h = p.s.s; h < p.s.e - 1; h++) {
+      if ((h - p.s.s) > 5 || (p.s.e - (h + 1)) > 5) continue;
+      const coverage = cov[h] ? cov[h].t - 1 : 0; // excluir o próprio gestor
+      if (coverage > bestBreak.coverage) {
+        bestBreak = { bs: h, be: h + 1, coverage };
+      }
+    }
+    const bs = bestBreak.bs, be = bestBreak.be;
+    const before = bs - p.s.s, after = p.s.e - be;
+    const covWorkers = areaTeam.filter(m => m.id !== currentUser.id && working(m.sch[day], bs));
+    const covNames = covWorkers.map(m => {
+      return TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
+        ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1][0] + '.'
+        : m.name.split(' ')[0];
+    }).join(', ');
+    const inStore = bs >= STORE_OPEN && bs < STORE_CLOSE;
+    return `<div class="break-card">
+      <h3>Melhor janela de pausa — ${firstName}</h3>
+      <div style="font-size:11px;color:var(--amber);font-family:'DM Mono',monospace;margin-bottom:4px">${p.code}</div>
+      <div class="break-time">${bs}:00 → ${be}:00</div>
+      <div style="margin:8px 0">
+        <div class="break-check"><span>OK</span>${before}h seguidas antes — dentro do limite de 5h</div>
+        <div class="break-check"><span>OK</span>${after}h seguidas depois — dentro do limite de 5h</div>
+        <div class="break-check"><span>${inStore ? 'AVISO' : 'OK'}</span>Pausa ${inStore ? 'dentro' : 'fora'} do horário de loja (10h–23h)</div>
+      </div>
+      <div class="cov-row">
+        <div class="cov-num">${covWorkers.length}</div>
+        <div>colega${covWorkers.length !== 1 ? 's' : ''} presentes${covWorkers.length > 0 ? ': ' + covNames : ''}</div>
+      </div>
+    </div>`;
+  }
+
+  // ════════════════════════════════════════════════════
+  // COLABORADOR — vista simplificada (só o próprio turno)
+  // ════════════════════════════════════════════════════
+  if (!currentUser.isManager) {
+    const changed = isRecentlyChanged(currentUser, day);
+    const changeBanner = changed
+      ? `<div class="change-banner">⚠ Horário alterado recentemente</div>` : '';
+
+    let shiftHTML = '';
+    if (p.off) {
+      shiftHTML = `<div class="off-card" style="margin:0">${firstName} não trabalha hoje — ${OFF_LABEL[p.code] || p.code}</div>`;
+    } else {
+      const s = p.s;
+      const breakLine = p.hasBreak
+        ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)">
+             Pausa: <span style="font-family:'DM Mono',monospace;color:var(--text)">${s.bs}:00 – ${s.be}:00</span>
+           </div>`
+        : `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)">Sem pausa obrigatória</div>`;
+      shiftHTML = `<div style="background:var(--surface2);border-radius:var(--r);padding:14px;${changed?'border:1px solid rgba(239,68,68,0.3)':''}">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px">${p.code}</div>
+        <div style="font-size:22px;font-weight:700;letter-spacing:-0.5px">${Math.floor(s.s)}:${s.s%1?'30':'00'} → ${s.e === 24 ? '00:00' : Math.floor(s.e)+':'+(s.e%1?'30':'00')}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">${s.e - s.s - (p.hasBreak ? 1 : 0)}h de trabalho efetivo</div>
+        ${breakLine}
+      </div>`;
+    }
+
+    document.getElementById('detail-label').textContent = `${dow}, ${day} de Abril 2026`;
+    document.getElementById('detail').innerHTML = `
+      <div class="day-header">
+        <div>
+          <h2>${dow}, ${day} de Abril</h2>
+          <div class="meta">O teu turno</div>
+        </div>
+      </div>
+      <div class="panel-section">
+        ${changeBanner}
+        ${shiftHTML}
+      </div>`;
+    return;
+  }
+
+  // ════════════════════════════════════════════════════
+  // MANAGER — vista completa
+  // ════════════════════════════════════════════════════
+  const areaTeam = TEAM.filter(m => m.area === currentUser.area);
+  const sorted = [...areaTeam].sort((a, b) => {
+    if (a.id === currentUser.id) return -1; if (b.id === currentUser.id) return 1;
+    const ao = isOff(a.sch[day]), bo = isOff(b.sch[day]);
+    return ao === bo ? 0 : ao ? 1 : -1;
+  });
+  const workers = sorted.map(m => {
+    const c = m.sch[day];
+    const off = isOff(c), vac = c === 'Fe';
+    let cl = off ? (vac ? 'vac-w' : 'off-w') : '';
+    const isMe = m.id === currentUser.id;
+    if (isMe) cl = 'me-w';
+    const dn = TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
+      ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1]
+      : m.name.split(' ')[0];
+    return `<div class="wcard ${cl}">
+      <div class="av ${isMe ? 'av-me' : ''}">${ini(m.name)}</div>
+      <div>
+        <div class="w-name">${isMe ? '★ ' : ''}${dn}</div>
+        <div class="w-code">${c}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const openHours = HOURS.filter(h => h >= STORE_OPEN && h < STORE_CLOSE);
+  const maxC = Math.max(...openHours.map(h => cov[h].t), 1);
+  let chartRows = '';
+  HOURS.forEach(h => {
+    const isOpen = h >= STORE_OPEN && h < STORE_CLOSE;
+    const v = cov[h];
+    if (h === STORE_OPEN) {
+      chartRows += `<div class="divider"><div class="div-line"></div><div class="div-lbl">Loja abre 10h</div><div class="div-line"></div></div>`;
+    }
+    const pct = isOpen ? Math.round(v.t / maxC * 100) : Math.round(v.t / maxC * 55);
+    let col = 'rgba(255,255,255,0.08)', tag = '';
+    if (isOpen) {
+      if (v.brk) { col = '#f59e0b'; tag = `<span class="bar-tag" style="color:#f59e0b">PAUSA</span>`; }
+      else if (v.me) { col = '#3b82f6'; tag = `<span class="bar-tag" style="color:#3b82f6">TU</span>`; }
+      else { col = '#10b981'; }
+    }
+    const namesHtml = v.workers.length > 0
+      ? `<div class="hour-names">${v.workers.join(', ')}</div>` : '';
+    chartRows += `<div class="h-row">
+      <div class="h-lbl ${isOpen ? 'open' : 'closed'}">${h}h</div>
+      <div class="bar-wrap ${isOpen ? 'open-h' : 'closed-h'}">
+        <div class="bar-fill" style="width:${pct}%;background:${col}"></div>
+        <span class="bar-count ${isOpen ? 'open' : 'closed'}">${v.t}</span>
+        ${tag}
+      </div>
+      ${namesHtml}
+    </div>`;
+    if (h === STORE_CLOSE - 1) {
+      chartRows += `<div class="divider"><div class="div-line"></div><div class="div-lbl">Loja fecha 23h</div><div class="div-line"></div></div>`;
+    }
+  });
+
+  const workingNow = areaTeam.filter(m => !isOff(m.sch[day])).length;
+  const offNow = areaTeam.length - workingNow;
+
+  document.getElementById('detail-label').textContent = `${dow}, ${day} de Abril 2026`;
+  document.getElementById('detail').innerHTML = `
+    <div class="day-header">
+      <div>
+        <h2>${dow}, ${day} de Abril</h2>
+        <div class="meta">${cnt} elemento${cnt !== 1 ? 's' : ''} da equipa de calçado a trabalhar</div>
+      </div>
+      <div class="day-num-badge">
+        <div class="dbn">${cnt}</div>
+        <div class="dbl">calçado</div>
+      </div>
+    </div>
+    <div class="panel-section">
+      <div class="sec-title">Painel de Gestor</div>
+      <div class="manager-card">
+        <h3>Resumo da Equipa</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+          <div style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;">
+            <div style="font-size:18px;font-weight:700;">${workingNow}</div>
+            <div style="font-size:10px;color:var(--muted);">A trabalhar</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;">
+            <div style="font-size:18px;font-weight:700;">${offNow}</div>
+            <div style="font-size:10px;color:var(--muted);">De folga/férias</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-section">
+      <div class="sec-title">Equipa de Calçado</div>
+      <div class="workers-grid">${workers}</div>
+    </div>
+    <div class="panel-section">
+      <div class="sec-title">Cobertura por hora</div>
+      <div class="store-banner">Loja aberta das 10h às 23h</div>
+      <div class="chart-legend">
+        <div class="leg"><div class="leg-dot" style="background:#3b82f6"></div>Tu</div>
+        <div class="leg"><div class="leg-dot" style="background:#10b981"></div>Equipa (loja aberta)</div>
+        <div class="leg"><div class="leg-dot" style="background:#f59e0b"></div>Tua Pausa</div>
+        <div class="leg"><div class="leg-dot" style="background:rgba(255,255,255,0.08)"></div>Fora de loja</div>
+      </div>
+      ${chartRows}
+    </div>
+    <div class="panel-section">
+      <div class="sec-title">Conselho de pausa</div>
+      ${buildBreakHTML()}
+    </div>`;
+
+  if (window.innerWidth < 700) {
+    document.getElementById('detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    init();
+    const passwordInput = document.getElementById('password-input');
+    if (passwordInput) {
+      passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') checkPassword();
+      });
+    }
+  });
+} else {
+  init();
+  const passwordInput = document.getElementById('password-input');
+  if (passwordInput) {
+    passwordInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') checkPassword();
+    });
+  }
+}
+</script>
+</body>
+</html>
