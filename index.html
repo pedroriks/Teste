@@ -836,6 +836,58 @@ header {
   display: none !important; 
 }
 
+/* ── CHANGE HIGHLIGHT ──────────────────────────────── */
+.d-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.change-dot {
+  font-size: 8px;
+  color: #f59e0b;
+  line-height: 1;
+}
+
+.task-dot {
+  font-size: 7px;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.changed-w {
+  border: 1px solid rgba(245,158,11,0.35) !important;
+  background: rgba(245,158,11,0.07) !important;
+}
+
+.change-badge {
+  display: inline-block;
+  font-size: 9px;
+  color: #f59e0b;
+  font-weight: 600;
+  background: rgba(245,158,11,0.12);
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin-left: 2px;
+}
+
+/* ── CHECKLIST ──────────────────────────────────────── */
+#cl-text:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface3);
+}
+
+.cl-task {
+  transition: opacity 0.2s;
+}
+
+.cl-done {
+  opacity: 0.55;
+}
+
 /* ── PASSWORD MODAL ────────────────────────────────── */
 #password-overlay {
   position: fixed;
@@ -938,124 +990,14 @@ header {
   color: var(--red);
   margin-top: 8px;
 }
-
-/* ── GLOBAL AUTH ────────────────────────────────────── */
-#global-auth {
-  position: fixed; top:0; left:0; right:0; bottom:0;
-  background: var(--bg); z-index: 2000;
-  display: flex; align-items: center; justify-content: center; padding: 20px;
-}
-#global-auth.hidden { display: none; }
-.auth-box {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 36px 24px;
-  text-align: center; width: 100%; max-width: 340px;
-}
-.auth-icon { font-size: 44px; margin-bottom: 12px; }
-.auth-box h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-.auth-box .auth-sub { font-size: 12px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
-.auth-input {
-  width: 100%; padding: 13px 14px; margin-bottom: 12px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--r); color: var(--text);
-  font-family: 'DM Sans', sans-serif; font-size: 16px;
-  text-align: center; letter-spacing: 3px;
-  -webkit-appearance: none; appearance: none;
-}
-.auth-input:focus { outline: none; border-color: var(--accent); }
-.auth-submit {
-  width: 100%; padding: 13px;
-  background: var(--accent); border: none; border-radius: var(--r);
-  color: #fff; font-family: 'DM Sans', sans-serif;
-  font-size: 14px; font-weight: 700; cursor: pointer;
-}
-.auth-submit:active { opacity: .85; transform: scale(.98); }
-
-/* ── AREA SELECT ────────────────────────────────────── */
-#area-select {
-  position: fixed; top:0; left:0; right:0; bottom:0;
-  background: var(--bg); z-index: 1500;
-  display: flex; flex-direction: column; overflow-y: auto;
-}
-#area-select.hidden { display: none; }
-.area-header {
-  flex-shrink: 0; padding: 24px 20px 16px;
-  text-align: center; border-bottom: 1px solid var(--border);
-}
-.area-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.area-header p { font-size: 12px; color: var(--muted); }
-.area-grid-wrap { flex: 1; padding: 16px; overflow-y: auto; }
-.area-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: 10px; max-width: 400px; margin: 0 auto;
-}
-@media (min-width: 500px) { .area-grid { grid-template-columns: repeat(3, 1fr); } }
-.area-btn {
-  background: var(--surface); border: 1.5px solid var(--border);
-  border-radius: var(--r-lg); padding: 20px 12px;
-  text-align: center; cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  transition: border-color .15s;
-}
-.area-btn:active { transform: scale(.95); }
-.area-btn .a-icon { font-size: 28px; }
-.area-btn .a-label { font-size: 13px; font-weight: 700; }
-
-/* ── CHANGED DAY HIGHLIGHT ─────────────────────────── */
-.cal-day.changed { border-color: rgba(239,68,68,0.45) !important; }
-.change-dot {
-  display: inline-block; width: 5px; height: 5px; border-radius: 50%;
-  background: #ef4444; margin-left: 3px; vertical-align: middle;
-  flex-shrink: 0;
-}
-.change-banner {
-  display: flex; align-items: center; gap: 7px;
-  background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.22);
-  border-radius: var(--r); padding: 9px 12px; margin-bottom: 10px;
-  font-size: 12px; font-weight: 600; color: #ef4444;
-}
-
-/* ── PROFILE HEADER BACK BTN ───────────────────────── */
-.profile-header { position: relative; }
-.back-btn {
-  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 10px;
-  font-size: 12px; font-weight: 600; color: var(--muted);
-  cursor: pointer; white-space: nowrap;
-}
-.back-btn:active { opacity: .7; }
 </style>
 </head>
 <body>
 
-<div id="global-auth">
-  <div class="auth-box">
-    <div class="auth-icon">👟</div>
-    <h2>SPZ Leiria</h2>
-    <p class="auth-sub">Horários da equipa · Abril 2026<br>Introduz a senha para aceder</p>
-    <input class="auth-input" type="password" id="global-pwd" placeholder="••••••••"
-           onkeypress="if(event.key==='Enter')checkGlobalPassword()">
-    <button class="auth-submit" onclick="checkGlobalPassword()">Entrar</button>
-    <div id="global-error" class="password-error hidden" style="margin-top:10px">Senha incorreta</div>
-  </div>
-</div>
-
-<div id="area-select" class="hidden">
-  <div class="area-header">
-    <h2>Seleciona a tua área</h2>
-    <p>SPZ Leiria · SDSR Sports Division</p>
-  </div>
-  <div class="area-grid-wrap">
-    <div class="area-grid" id="area-grid"></div>
-  </div>
-</div>
-
-<div id="profile-overlay" class="hidden">
+<div id="profile-overlay">
   <div class="profile-header">
-    <button class="back-btn" onclick="showAreaSelect()">← Áreas</button>
-    <h2 id="profile-title">Quem és?</h2>
-    <p>Seleciona o teu perfil</p>
+    <h2>Quem és?</h2>
+    <p>Seleciona o teu perfil para veres o teu horário</p>
   </div>
   <div class="profile-grid-container">
     <div class="profile-grid" id="profile-list"></div>
@@ -1124,11 +1066,11 @@ const SH = {
   '080MA':{s:8,e:17,bs:11,be:12},
   '090':{s:9,e:13,bs:null,be:null},
   '090PA':{s:9,e:18,bs:13,be:14},
-  '090PA8h':{s:9,e:18,bs:13,be:14},
   '100':{s:10,e:14,bs:null,be:null},
   '100PA':{s:10,e:19,bs:13,be:14},
   '100QA':{s:10,e:19,bs:14,be:15},
-  '100QB':{s:10,e:19,bs:14,be:15},
+  '100QB':{s:10,e:19,bs:14.25,be:15.25},
+  '100PC':{s:10,e:19,bs:13.5,be:14.5},
   '110':{s:11,e:15,bs:null,be:null},
   '110QA':{s:11,e:20,bs:14,be:15},
   '110RA':{s:11,e:20,bs:15,be:16},
@@ -1138,6 +1080,7 @@ const SH = {
   '130TA':{s:13,e:22,bs:17,be:18},
   '133':{s:13.5,e:17.5,bs:null,be:null},
   '140':{s:14,e:18,bs:null,be:null},
+  '140UA':{s:14,e:23,bs:18,be:19},
   '150':{s:15,e:19,bs:null,be:null},
   '150VA':{s:15,e:24,bs:19,be:20},
   '160':{s:16,e:20,bs:null,be:null},
@@ -1146,155 +1089,106 @@ const SH = {
   '180':{s:18,e:22,bs:null,be:null},
   '180YA':{s:18,e:27,bs:22,be:23},
   '190':{s:19,e:23,bs:null,be:null},
+  '194':{s:19.75,e:23.75,bs:null,be:null},
   '200':{s:20,e:24,bs:null,be:null},
 };
 
-const OFF = ['FC','FO','V','Fe','Bx','IT','AutDe','AB'];
-const OFF_LABEL = {FC:'Folga Complementar',FO:'Folga Obrigatória',V:'Dia Off',Fe:'Férias',Bx:'Baixa',IT:'Incapacidade'};
+const OFF = ['FC','FO','V','Fe','Bx','IT','AutDe'];
+const OFF_LABEL = {FC:'Folga Complementar',FO:'Folga Obrigatória',V:'Dia Off',Fe:'Férias',Bx:'Baixa Médica',IT:'Intermédio',AutDe:'Auto Declaração'};
 const DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const APR1_DOW = 3;
 const STORE_OPEN = 10, STORE_CLOSE = 23;
 
+// ── ALTERAÇÕES v12 → v13 (dias com mudanças por colaborador) ──
+// Formato: id → Set de índices de dias alterados (0=Mar31, 1=1Abr...)
+const CHANGES = {
+  '9457':  new Set([0,11]),           // Catarina: Mar31 080PA→090PA corrigido; dia 11 080NA adicionado
+  '11821': new Set([18,19]),          // Leandro: dias 19-20 corrigidos (170→200, 140 mantido)
+  '13778': new Set([15]),             // Tiago: dia 15 100→100QA
+  '13782': new Set([14]),             // Bernardo: dia 14 140→170
+  '13783': new Set([13,17,18]),       // Cláudia: dias 13,17,18 corrigidos
+  '13784': new Set([15,16]),          // Micael: dias 15,16 corrigidos
+};
+
+// ── CHECKLIST (localStorage) ──
+function clKey(dateStr) { return 'checklist_' + dateStr; }
+function clLoad(dateStr) {
+  try { return JSON.parse(localStorage.getItem(clKey(dateStr)) || '[]'); } catch { return []; }
+}
+function clSave(dateStr, tasks) {
+  try { localStorage.setItem(clKey(dateStr), JSON.stringify(tasks)); } catch {}
+}
+const URGENCY_ORDER = { alta: 0, media: 1, baixa: 2 };
+const IMPORTANCE_ORDER = { alta: 0, media: 1, baixa: 2 };
+function sortTasks(tasks) {
+  return [...tasks].sort((a, b) => {
+    const ud = URGENCY_ORDER[a.urgency] - URGENCY_ORDER[b.urgency];
+    if (ud !== 0) return ud;
+    return IMPORTANCE_ORDER[a.importance] - IMPORTANCE_ORDER[b.importance];
+  });
+}
+
 const TEAM = [
-// changedDays: [{day:N, changedAt:'ISO_DATE'}]  — visível 48h após a alteração
-const TEAM = [
-  // ── CALÇADO ─────────────────────────────────────────────────────────────────
-  {id:'2595', name:'João Cabete', area:'calcado', changedDays:[],
+  // idx: 0=Mar31  1=1Abr  2=2  3=3  4=4  5=5  6=6  7=7  8=8  9=9  10=10 11=11 12=12 13=13 14=14 15=15 16=16 17=17 18=18 19=19 20=20 21=21 22=22 23=23 24=24 25=25 26=26 27=27 28=28 29=29 30=30
+  // PDF: 2595 JOAO CABETE
+  {id:'2595', name:'João Cabete', isManager:false,
    sch:['100','V','V','150','FO','100QA','150','150','V','140','FC','FO','120SA','150','150','V','150','FC','FO','110RA','150','150','V','150','FC','FO','100QA','150','150','V','150']},
-  {id:'9457', name:'Catarina Carreira', area:'calcado', changedDays:[],
-   sch:['090PA','090','FO','110RA','090PA','120SA','130TA','FC','FO','090PA','090PA','090PA','090PA','FC','090PA','090PA','090PA','090PA','090PA','FO','Fe','Fe','Fe','Fe','Fe','FC','FO','090','110','090','FC']},
-  {id:'9704', name:'Francisco Barrela', area:'calcado', changedDays:[],
+  // PDF: 9457 CATARINA CARREIRA
+  {id:'9457', name:'Catarina Carreira', isManager:false,
+   sch:['080PA','090','FO','110RA','090PA','120SA','130TA','FC','FO','090PA','090PA','080NA','090PA','FC','090PA','090PA','090PA','090PA','090PA','FO','Fe','Fe','Fe','Fe','Fe','FC','FO','090','110','090','FC']},
+  // PDF: 9704 FRANCISCO BARRELA
+  {id:'9704', name:'Francisco Barrela', isManager:false,
    sch:['V','200','FC','FO','150VA','120SA','V','V','130','FC','FO','150VA','130TA','V','130','V','FC','FO','150VA','120SA','V','130','V','FC','FO','150VA','120SA','V','V','130','FC']},
-  {id:'11449',name:'Maria Morais', area:'calcado', changedDays:[],
+  // PDF: 11449 MARIA MORAIS
+  {id:'11449',name:'Maria Morais', isManager:false,
    sch:['FC','FO','090','090','200','200','FC','090','090','180','130','200','FO','130','160','180','160','140','FC','FO','090','090','090','FC','FO','200','170','190','FC','FO','090']},
-  {id:'11550',name:'Maria Lopes', area:'calcado', changedDays:[],
+  // PDF: 11550 MARIA LOPES
+  {id:'11550',name:'Maria Lopes', isManager:false,
    sch:['FC','FO','200','200','170','160','FC','200','150','140','170','200','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','200','190','200','FC','FO','160','190','200','FC','FO','200']},
-  {id:'11821',name:'Leandro Guedes', area:'calcado', changedDays:[],
-   sch:['FC','100','100','160','100','FO','200','190','200','200','200','FC','FO','200','200','200','FC','FO','170','140','200','FC','FO','180','170','200','130','FC','180','200','200']},
-  {id:'12238',name:'Diogo Rebelo', area:'calcado', changedDays:[],
+  // PDF: 11821 LEANDRO GUEDES
+  {id:'11821',name:'Leandro Guedes', isManager:false,
+   sch:['FC','100','100','160','100','FO','200','190','200','200','200','FC','FO','200','200','200','FC','FO','200','140','200','FC','FO','180','170','200','130','FC','180','200','200']},
+  // PDF: 12238 DIOGO REBELO
+  {id:'12238',name:'Diogo Rebelo', isManager:false,
    sch:['110RA','160','170','200','130','FO','110RA','130TA','100QA','110RA','100QA','FC','FO','090PA','100QA','100QA','FC','FO','130TA','150VA','120SA','FC','FO','090PA','090PA','090PA','090PA','FC','090PA','110RA','110RA']},
-  {id:'12339',name:'Pedro Silva', area:'calcado', isManager:true, password:'123',
-   changedDays:[{day:7, changedAt:'2026-04-05T08:00:00'}],
+  // PDF: 12339 PEDRO SILVA (manager)
+  {id:'12339',name:'Pedro Silva', isManager:true, password:'123',
    sch:['150VA','150VA','150VA','150VA','FC','FO','070MA','100QA','120SA','FC','FO','110RA','110RA','100QA','FC','120SA','FO','120SA','150VA','150VA','FC','100QA','100QA','100QA','100QA','100QA','FO','100QA','100QA','120SA','120SA']},
-  {id:'13777',name:'José Pereira', area:'calcado', changedDays:[],
+  // PDF: 13777 JOSE PEREIRA
+  {id:'13777',name:'José Pereira', isManager:false,
    sch:['V','FC','FO','170','150VA','150VA','V','V','FC','FO','200','130TA','150VA','V','V','180','FC','FO','100QA','100QA','FC','V','200','FO','200','120SA','150VA','V','V','FC','FO']},
-  {id:'13778',name:'Tiago Bento', area:'calcado', changedDays:[],
-   sch:['200','FO','130','100','130','110','FC','100','200','160','160','160','FO','100','110','100','100','100','FC','FO','160','170','190','FC','200','160','FO','130','FC','FO','130']},
-  {id:'13779',name:'Tomás Pacífico', area:'calcado', changedDays:[],
+  // PDF: 13778 TIAGO BENTO
+  {id:'13778',name:'Tiago Bento', isManager:false,
+   sch:['200','FO','130','100','130','110','FC','100','200','160','160','160','FO','100','110','100QA','100','100','FC','FO','160','170','190','FC','200','160','FO','130','FC','FO','130']},
+  // PDF: 13779 TOMAS PACIFICO
+  {id:'13779',name:'Tomás Pacífico', isManager:false,
    sch:['180','130','100','100','FC','FO','100','170','170','FC','FO','100','100','180','FC','FO','100','100','100','100','FC','200','160','190','170','190','FO','190','200','180','170']},
-  {id:'13782',name:'Bernardo Rocha', area:'calcado', changedDays:[],
-   sch:['120','110','FC','FO','110','100','180','FC','FO','100','100','140','140','FC','140','200','140','180','140','FO','100','130','100','100','100','FC','FO','150','200','200','FC']},
-  {id:'13783',name:'Cláudia Morcela', area:'calcado', changedDays:[],
-   sch:['140','150','140','130','FC','FO','160','140','100','FC','FO','100','100','140','FC','FO','170','170','200','190','FC','100','140','140','130','100','FO','100','120','100','100']},
-  {id:'13784',name:'Micael Domingues', area:'calcado', changedDays:[],
-   sch:['FO','V','200','V','100QA','090PA','FC','FO','200','V','V','150VA','150VA','FC','FO','V','190','V','100QA','100QA','FC','FO','V','200','V','110RA','150VA','FC','FO','V','140']},
-  {id:'13808',name:'Diogo Costa', area:'calcado', changedDays:[],
+  // PDF: 13782 BERNARDO ROCHA
+  {id:'13782',name:'Bernardo Rocha', isManager:false,
+   sch:['120','110','FC','FO','110','100','180','FC','FO','100','100','140','140','FC','170','200','140','180','140','FO','100','130','100','100','100','FC','FO','150','200','200','FC']},
+  // PDF: 13783 CLAUDIA MORCELA
+  {id:'13783',name:'Cláudia Morcela', isManager:false,
+   sch:['140','150','140','130','FC','FO','160','140','100','FC','FO','100','100','150VA','FC','130TA','150VA','150VA','FO','150VA','FC','100','140','140','130','100','FO','100','120','100','100']},
+  // PDF: 13784 MICAEL DOMINGUES
+  {id:'13784',name:'Micael Domingues', isManager:false,
+   sch:['FO','V','200','V','100QA','090PA','FC','FO','200','V','V','150VA','150VA','V','FC','120SA','190','FO','120SA','100QA','FC','FO','V','200','V','110RA','150VA','FC','FO','V','140']},
+  // PDF: 13808 DIOGO COSTA
+  {id:'13808',name:'Diogo Costa', isManager:false,
    sch:['160','V','FC','FO','150VA','150VA','V','FC','V','FO','200','150VA','150VA','V','FC','V','FO','200','150VA','150VA','130','V','V','FC','FO','100QA','100QA','V','160','V','FC']},
-  {id:'13818',name:'Francisco Santos', area:'calcado', changedDays:[],
+  // PDF: 13818 FRANCISCO SANTOS
+  {id:'13818',name:'Francisco Santos', isManager:false,
    sch:['180','190','FC','200','170','FO','200','200','FC','200','FO','170','180','200','200','FC','200','FO','140','140','200','200','FC','200','FO','200','200','200','200','FC','200']},
-
-  // ── CAIXA ────────────────────────────────────────────────────────────────────
-  {id:'2623', name:'Wendy Matias', area:'caixa', isManager:true, password:'123', changedDays:[],
-   sch:['180YA','150VA','FC','FO','070MA','070MA','090PA','FC','FO','150VA','150VA','150VA','150VA','FC','120SA','090PA','120SA','120SA','120SA','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','120SA','090PA','090PA','FC']},
-  {id:'112',  name:'Lidia Clérigo', area:'caixa', changedDays:[],
-   sch:['100QB','100PA','100PA','100PA','100PA','FO','100PA','100PA','100PA','100PA','100PA','FC','FO','100PA','100PA','100PA','FC','FO','100PA','100PA','100PA','FC','FO','100PA','100PA','100PA','100PA','FC','100PA','100PA','100PA']},
-  {id:'315',  name:'Paula Santos', area:'caixa', changedDays:[],
-   sch:['110RA','110RA','V','V','V','FC','FO','110RA','110RA','V','V','V','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','FC','V','V','V','V']},
-  {id:'3142', name:'Alexandra Lemos', area:'caixa', changedDays:[],
-   sch:['V','200','FO','120SA','100QA','100QA','V','V','200','FC','FO','100QA','100QA','V','V','FC','200','FO','120SA','110RA','V','V','200','FC','FO','120SA','120SA','200','V','V','FC']},
-  {id:'11454',name:'Daniela Augusto', area:'caixa', changedDays:[],
-   sch:['V','FC','FC','FO','150VA','150VA','200','200','FC','FO','V','150VA','150VA','V','V','FC','FO','200','150VA','150VA','V','180','FC','FO','V','150VA','150VA','V','V','FC','FO']},
-  {id:'12032',name:'Vera Gomes', area:'caixa', changedDays:[],
-   sch:['130TA','FC','FO','150VA','150VA','120SA','150VA','FC','FO','150VA','150VA','150VA','150VA','FC','150VA','150VA','150VA','150VA','150VA','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','100PA','150VA','150VA','FC']},
-  {id:'13781',name:'Carolina Soares', area:'caixa', changedDays:[],
-   sch:['110','150','110','100','FC','FO','110','120','110','FC','FO','140','140','160','FC','FO','100','100','200','190','FC','100','100','110','110','200','FO','120','110','110','160']},
-  {id:'13793',name:'Diana Batista', area:'caixa', changedDays:[],
-   sch:['FC','FO','160','160','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
-  {id:'13807',name:'David Andrade', area:'caixa', changedDays:[],
-   sch:['200','190','FO','200','180','180','FC','FC','FO','110','110','100','100','FC','180','180','133','133','150','FO','200','200','180','160','200','FC','FO','160','200','200','FC']},
-  {id:'13811',name:'Cristina Rodrigues', area:'caixa', changedDays:[],
-   sch:['160','110','200','200','200','FO','180','170','170','170','180','FC','FO','200','120','110','FC','FO','110','120','110','FC','FO','200','160','110','110','FC','180','180','200']},
-
-  // ── TÊXTIL ───────────────────────────────────────────────────────────────────
-  {id:'3678', name:'Marco Lopes', area:'textil', isManager:true, password:'123', changedDays:[],
-   sch:['FC','FO','150VA','150VA','150VA','150VA','FC','090PA','090PA','090PA','090PA','120SA','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','090PA','090PA','090PA','FC','FO','150VA','150VA','Fe','Fe','Fe','Fe']},
-  {id:'6030', name:'Isabela Pena', area:'textil', changedDays:[],
-   sch:['Bx','Bx','Bx','Bx','Bx','Bx','160','160','160','100','100','FC','FO','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','100','FC','FO','100','100','100','100']},
-  {id:'8575', name:'Maria Rodrigues', area:'textil', changedDays:[],
-   sch:['V','FC','FO','100QA','100QA','150VA','V','V','150VA','150VA','V','FC','FO','V','V','100QA','FC','200','FO','150VA','V','V','FC','FO','200','150VA','150VA','V','V','FC','FO']},
-  {id:'10930',name:'Catarina Costa', area:'textil', changedDays:[],
-   sch:['110QA','200','FC','FO','200','120','200','FC','FO','110','180','200','200','FC','100','160','100','100','200','FO','200','140','100','100','120','FC','FO','200','140','140','FC']},
-  {id:'10942',name:'Bruna Francisco', area:'textil', changedDays:[],
-   sch:['FC','FO','200','200','200','200','FC','200','200','200','200','200','FO','200','200','200','200','200','FC','FO','200','200','200','FC','FO','140','110','200','FC','FO','200']},
-  {id:'11555',name:'Beatriz Vale', area:'textil', changedDays:[],
-   sch:['140','160','FC','FO','110RA','130TA','110RA','FC','FO','120SA','110RA','110RA','110RA','FC','140','200','170','170','200','FO','120','200','200','200','200','FC','FO','160','200','200','FC']},
-  {id:'12363',name:'Beatriz Teodoro', area:'textil', changedDays:[],
-   sch:['FO','100QA','150VA','150VA','150VA','FC','200','200','200','200','200','FO','180','180','200','200','200','FC','FO','100','200','180','FC','FO','200','200','120','FC','FO','V','V']},
-  {id:'12682',name:'Catarina Pereira', area:'textil', changedDays:[],
-   sch:['200','FC','150VA','160','FO','100QA','200','150VA','V','FC','200','FO','150VA','200','200','V','200','FC','FO','100QA','200','160','V','200','FC','FO','150VA','200','200','V','160']},
-  {id:'13798',name:'Alice Belga', area:'textil', changedDays:[],
-   sch:['200','200','200','200','FC','FO','100','100','100','FC','FO','100','100','100','FC','FO','133','133','100','160','FC','100','140','140','150','100','FO','200','200','200','200']},
-  {id:'13806',name:'Emily Ribeiro', area:'textil', changedDays:[],
-   sch:['160','120','160','200','FC','FO','140','140','140','FC','FO','200','200','200','FC','FO','200','200','200','200','FC','200','200','200','200','200','FO','160','160','160','160']},
-  {id:'13817',name:'Francisca Teodósio', area:'textil', changedDays:[],
-   sch:['200','200','200','120','200','FO','200','200','200','200','140','FC','FO','140','200','200','FC','FO','160','200','160','FC','FO','160','160','200','200','FC','160','200','200']},
-
-  // ── TÉCNICO ──────────────────────────────────────────────────────────────────
-  {id:'7109t',name:'Rodrigo Francisco', area:'tecnico', isManager:true, password:'123', changedDays:[],
-   sch:['090PA','080NA','080NA','080NA','FC','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','150VA','150VA','150VA','FC','FO','150VA','150VA','150VA','FC','FO','090PA','090PA','070MA','070MA','FC','150VA','150VA','150VA']},
-  {id:'12365',name:'Jan Bata', area:'tecnico', changedDays:[],
-   sch:['120SA','150','150VA','150VA','150VA','FO','120SA','120SA','120SA','120SA','120SA','FC','FO','090PA','090PA','090PA','FC','FO','090','090','090','FC','FO','150','150','200','200','FC','150','150','200']},
-  {id:'13803',name:'Tiago Fernandes', area:'tecnico', changedDays:[],
-   sch:['090','090','090','090','FC','FO','090','090','090','FC','FO','200','200','200','FC','FO','090','090','150','200','FC','090','090','090','090','090','FO','090','090','090','090']},
-  {id:'13816',name:'Cristiano Santos', area:'tecnico', changedDays:[],
-   sch:['200','200','FC','FO','090','200','200','FC','FO','090','090','110','110','FC','200','200','200','200','200','FO','200','150','150','200','200','FC','FO','200','200','200','FC']},
-
-  // ── LOGÍSTICA ────────────────────────────────────────────────────────────────
-  {id:'3351', name:'Daniela Pereira', area:'logistica', changedDays:[],
-   sch:['AutDe','AutDe','AutDe','070MA','FC','FO','070MA','070MA','FC','070MA','070MA','070MA','FO','070','070','070','070','070','FC','FO','070','070','FO','070','070','070','070','070','FC','070','070']},
-  {id:'4930', name:'Helena Cotovio', area:'logistica', changedDays:[],
-   sch:['080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','FO','080NA','080NA','080NA','080NA','080NA','FC','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA']},
-  {id:'4927', name:'Nuno Vieira', area:'logistica', changedDays:[],
-   sch:['080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA']},
-  {id:'7109', name:'Rodrigo Francisco', area:'logistica', changedDays:[],
-   sch:['090PA','080NA','080NA','080NA','FC','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','150VA','150VA','150VA','FC','FO','150VA','150VA','150VA','FC','FO','090PA','090PA','070MA','070MA','FC','150VA','150VA','150VA']},
-  {id:'9102', name:'Andreia Vieira', area:'logistica', changedDays:[],
-   sch:['110RA','110RA','110RA','110RA','FC','FO','110RA','110RA','110RA','110RA','100QA','FO','070MA','110RA','FC','110RA','110RA','110RA','FC','FO','150','150','150','150','150','FC','FO','150','150','150','150']},
-  {id:'13780',name:'João Cardoso', area:'logistica', changedDays:[],
-   sch:['140','140','140','130','FC','FO','140','130','140','140','130','FC','FO','140','130','140','140','130','FC','FO','140','130','140','140','130','FO','150','140','130','FC','FC']},
-  {id:'13795',name:'Kessy Gomes', area:'logistica', changedDays:[],
-   sch:['090','090','090','FC','080','FO','090','090','090','090','090','FC','FO','090','090','090','090','090','FC','FO','090','090','FO','090','090','120','120','090','FC','090','090']},
-  {id:'13801',name:'Ruben Santana', area:'logistica', changedDays:[],
-   sch:['110','110','110','110','FC','FO','110','110','110','110','110','FC','FO','110','110','110','110','110','FC','FO','110','110','110','110','110','FC','FO','110','110','110','110']},
 ];
-
-const AREAS = [
-  {id:'calcado',  label:'Calçado',  icon:'👟'},
-  {id:'caixa',    label:'Caixa',    icon:'🛒'},
-  {id:'textil',   label:'Têxtil',   icon:'👕'},
-  {id:'tecnico',  label:'Técnico',  icon:'⚙️'},
-  {id:'logistica',label:'Logística',icon:'📦'},
-];
-
-const MANAGER_PWD = '123';
-const GLOBAL_PWD  = 'desporto';
 
 let currentUser = null;
-let selectedDay  = 1;
-let selectedArea = null;
-let pendingUser  = null;
-let initialized  = false;
+let selectedDay = 1;
+let pendingUser = null;
+let initialized = false;
 
 const isOff = c => OFF.includes(c);
-const getS  = c => SH[c] || null;
-const ini   = n => n.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-const countW = idx => TEAM.filter(m => m.area === (currentUser && currentUser.area) && !isOff(m.sch[idx])).length;
-
-function isRecentlyChanged(member, day) {
-  if (!member.changedDays || !member.changedDays.length) return false;
-  const TWO_DAYS = 48 * 60 * 60 * 1000;
-  return member.changedDays.some(c => c.day === day && (Date.now() - new Date(c.changedAt).getTime()) <= TWO_DAYS);
-}
+const getS = c => SH[c] || null;
+const ini = n => n.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const countW = idx => TEAM.filter(m => !isOff(m.sch[idx])).length;
 
 function working(c, h) {
   const s = getS(c);
@@ -1315,60 +1209,18 @@ function getUserDayInfo(user, idx) {
 function init() {
   if (initialized) return;
   initialized = true;
-  // Start at global auth — everything else hidden
-  document.getElementById('global-auth').classList.remove('hidden');
-}
-
-function checkGlobalPassword() {
-  const pwd = document.getElementById('global-pwd').value;
-  if (pwd === GLOBAL_PWD) {
-    document.getElementById('global-auth').classList.add('hidden');
-    showAreaSelect();
-  } else {
-    document.getElementById('global-error').classList.remove('hidden');
-    document.getElementById('global-pwd').value = '';
-    document.getElementById('global-pwd').focus();
-  }
-}
-
-function showAreaSelect() {
-  selectedArea = null;
-  currentUser  = null;
-  document.getElementById('area-select').classList.remove('hidden');
-  document.getElementById('profile-overlay').classList.add('hidden');
-  document.getElementById('main-app').classList.add('hidden');
-
-  const grid = document.getElementById('area-grid');
-  grid.innerHTML = AREAS.map(a =>
-    `<div class="area-btn" onclick="selectArea('${a.id}')">
-      <div class="a-icon">${a.icon}</div>
-      <div class="a-label">${a.label}</div>
-    </div>`
-  ).join('');
-}
-
-function selectArea(areaId) {
-  selectedArea = areaId;
-  document.getElementById('area-select').classList.add('hidden');
-
-  const area = AREAS.find(a => a.id === areaId);
-  document.getElementById('profile-title').textContent = area ? area.label : 'Quem és?';
-
-  buildProfileList(areaId);
-  document.getElementById('profile-overlay').classList.remove('hidden');
-}
-
-function buildProfileList(areaId) {
+  
   const list = document.getElementById('profile-list');
+  if (!list) return;
+  
   list.innerHTML = '';
-  const areaTeam = TEAM.filter(m => m.area === areaId)
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  areaTeam.forEach(u => {
+  
+  TEAM.sort((a,b) => a.name.localeCompare(b.name)).forEach(u => {
     const btn = document.createElement('div');
     btn.className = `profile-btn ${u.isManager ? 'is-manager' : ''}`;
-    const sameName = TEAM.filter(x => x.name.split(' ')[0] === u.name.split(' ')[0]).length > 1;
-    const displayName = sameName ? u.name : u.name.split(' ')[0];
+    const displayName = TEAM.filter(x => x.name.split(' ')[0] === u.name.split(' ')[0]).length > 1 
+      ? u.name 
+      : u.name.split(' ')[0];
     btn.innerHTML = `<div class="av-lg">${ini(u.name)}</div><div class="p-name">${displayName}</div>`;
     btn.onclick = () => selectProfile(u);
     list.appendChild(btn);
@@ -1384,12 +1236,13 @@ function selectProfile(user) {
     document.getElementById('password-input').focus();
     return;
   }
+  
   authenticateUser(user);
 }
 
 function checkPassword() {
   const password = document.getElementById('password-input').value;
-  if (password === MANAGER_PWD) {
+  if (password === '123') {
     document.getElementById('password-overlay').classList.add('hidden');
     authenticateUser(pendingUser);
   } else {
@@ -1414,24 +1267,20 @@ function authenticateUser(user) {
   document.getElementById('user-name').textContent = displayName;
   document.getElementById('user-av').textContent = ini(user.name);
   if (user.isManager) document.getElementById('user-av').classList.add('av-me');
-
-  // Atualizar título do header com área atual
-  const area = AREAS.find(a => a.id === user.area);
-  if (area) {
-    document.querySelector('.brand-text h1').textContent = `${area.icon} ${area.label} · Abril 2026`;
-  }
   
   renderCal();
-  pick(1);
+  // auto-select today if it's April 2026, else day 1
+  const now = new Date();
+  const todayDay = (now.getFullYear() === 2026 && now.getMonth() === 3) ? now.getDate() : 1;
+  pick(Math.min(Math.max(todayDay, 1), 30));
 }
 
 function logout() {
-  currentUser  = null;
-  pendingUser  = null;
-  selectedArea = null;
+  currentUser = null;
+  pendingUser = null;
+  document.getElementById('profile-overlay').classList.remove('hidden');
   document.getElementById('main-app').classList.add('hidden');
   document.getElementById('password-overlay').classList.add('hidden');
-  showAreaSelect();
 }
 
 function renderCal() {
@@ -1444,16 +1293,29 @@ function renderCal() {
     const cnt = countW(d);
     let bc = off ? (vac ? 'vac' : 'off') : '';
 
-    const changed = isRecentlyChanged(currentUser, d);
+    // check if any member has a change on this day
+    const dayHasChange = Object.values(CHANGES).some(s => s.has(d));
+    // check if current user has a change
+    const myChange = CHANGES[currentUser.id] && CHANGES[currentUser.id].has(d);
+    const changeBadge = (currentUser.isManager && dayHasChange)
+      ? `<div class="change-dot" title="Alteração neste dia">⚡</div>`
+      : myChange ? `<div class="change-dot" title="Alteração neste dia">⚡</div>` : '';
+
+    // check if tasks exist for this day
+    const dateStr = `2026-04-${String(d).padStart(2,'0')}`;
+    const tasks = clLoad(dateStr);
+    const taskBadge = tasks.length > 0
+      ? `<div class="task-dot">${tasks.filter(t=>!t.done).length > 0 ? '●' : '✓'}</div>` : '';
+
     const cellInner = currentUser.isManager
       ? `<div class="d-count">${cnt}</div>
          <div class="d-lbl">eq</div>
-         <span class="d-badge ${bc}">${c}${changed?'<span class="change-dot"></span>':''}</span>`
-      : `<div class="d-count" style="font-size:13px;margin-top:4px">${off ? '—' : c}${changed?'<span class="change-dot"></span>':''}</div>
+         <span class="d-badge ${bc}">${c}</span>`
+      : `<div class="d-count" style="font-size:13px;margin-top:4px">${off ? '—' : c}</div>
          <div class="d-lbl">${off ? (OFF_LABEL[c] || c).split(' ')[0] : 'turno'}</div>`;
 
-    h += `<div class="cal-day${selectedDay===d?' selected':''}${changed?' changed':''}" onclick="pick(${d})">
-      <div class="d-num">${d}</div>
+    h += `<div class="cal-day${selectedDay===d?' selected':''}" onclick="pick(${d})">
+      <div class="d-num">${d}${changeBadge}${taskBadge}</div>
       ${cellInner}
     </div>`;
   }
@@ -1485,8 +1347,8 @@ function pick(day) {
   const HOURS = [];
   for (let h = 9; h <= 23; h++) HOURS.push(h);
   const cov = {};
-  HOURS.forEach(h => { cov[h] = { t: 0, me: false, brk: false, workers: [] }; });
-  areaTeam.forEach(m => {
+  HOURS.forEach(h => { cov[h] = { t: 0, me: false, workers: [] }; });
+  TEAM.forEach(m => {
     const c = m.sch[day];
     HOURS.forEach(h => {
       if (working(c, h)) {
@@ -1499,63 +1361,11 @@ function pick(day) {
       }
     });
   });
-  if (!p.off && p.hasBreak) {
-    for (let h = p.bs; h < p.be; h++) { if (cov[h]) cov[h].brk = true; }
-  }
-
-  // ── melhor janela de pausa (só usada pelo manager) ──
-  function buildBreakHTML() {
-    if (p.off) {
-      return `<div class="off-card">${firstName} não trabalha hoje — ${OFF_LABEL[p.code] || p.code}</div>`;
-    }
-    if (!p.hasBreak) {
-      return `<div class="ok-card">
-        <h3>Turno curto — sem pausa obrigatória</h3>
-        <p>Apenas 4h consecutivas, abaixo do limite legal de 5h.</p>
-      </div>`;
-    }
-    // escolher hora com MAIS cobertura que respeite ≤5h consecutivas
-    let bestBreak = { bs: p.s.s, be: p.s.s + 1, coverage: -1 };
-    for (let h = p.s.s; h < p.s.e - 1; h++) {
-      if ((h - p.s.s) > 5 || (p.s.e - (h + 1)) > 5) continue;
-      const coverage = cov[h] ? cov[h].t - 1 : 0; // excluir o próprio gestor
-      if (coverage > bestBreak.coverage) {
-        bestBreak = { bs: h, be: h + 1, coverage };
-      }
-    }
-    const bs = bestBreak.bs, be = bestBreak.be;
-    const before = bs - p.s.s, after = p.s.e - be;
-    const covWorkers = areaTeam.filter(m => m.id !== currentUser.id && working(m.sch[day], bs));
-    const covNames = covWorkers.map(m => {
-      return TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
-        ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1][0] + '.'
-        : m.name.split(' ')[0];
-    }).join(', ');
-    const inStore = bs >= STORE_OPEN && bs < STORE_CLOSE;
-    return `<div class="break-card">
-      <h3>Melhor janela de pausa — ${firstName}</h3>
-      <div style="font-size:11px;color:var(--amber);font-family:'DM Mono',monospace;margin-bottom:4px">${p.code}</div>
-      <div class="break-time">${bs}:00 → ${be}:00</div>
-      <div style="margin:8px 0">
-        <div class="break-check"><span>OK</span>${before}h seguidas antes — dentro do limite de 5h</div>
-        <div class="break-check"><span>OK</span>${after}h seguidas depois — dentro do limite de 5h</div>
-        <div class="break-check"><span>${inStore ? 'AVISO' : 'OK'}</span>Pausa ${inStore ? 'dentro' : 'fora'} do horário de loja (10h–23h)</div>
-      </div>
-      <div class="cov-row">
-        <div class="cov-num">${covWorkers.length}</div>
-        <div>colega${covWorkers.length !== 1 ? 's' : ''} presentes${covWorkers.length > 0 ? ': ' + covNames : ''}</div>
-      </div>
-    </div>`;
-  }
 
   // ════════════════════════════════════════════════════
   // COLABORADOR — vista simplificada (só o próprio turno)
   // ════════════════════════════════════════════════════
   if (!currentUser.isManager) {
-    const changed = isRecentlyChanged(currentUser, day);
-    const changeBanner = changed
-      ? `<div class="change-banner">⚠ Horário alterado recentemente</div>` : '';
-
     let shiftHTML = '';
     if (p.off) {
       shiftHTML = `<div class="off-card" style="margin:0">${firstName} não trabalha hoje — ${OFF_LABEL[p.code] || p.code}</div>`;
@@ -1566,9 +1376,9 @@ function pick(day) {
              Pausa: <span style="font-family:'DM Mono',monospace;color:var(--text)">${s.bs}:00 – ${s.be}:00</span>
            </div>`
         : `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)">Sem pausa obrigatória</div>`;
-      shiftHTML = `<div style="background:var(--surface2);border-radius:var(--r);padding:14px;${changed?'border:1px solid rgba(239,68,68,0.3)':''}">
+      shiftHTML = `<div style="background:var(--surface2);border-radius:var(--r);padding:14px">
         <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px">${p.code}</div>
-        <div style="font-size:22px;font-weight:700;letter-spacing:-0.5px">${Math.floor(s.s)}:${s.s%1?'30':'00'} → ${s.e === 24 ? '00:00' : Math.floor(s.e)+':'+(s.e%1?'30':'00')}</div>
+        <div style="font-size:22px;font-weight:700;letter-spacing:-0.5px">${s.s}:00 → ${s.e === 24 ? '00:00' : s.e + ':00'}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:4px">${s.e - s.s - (p.hasBreak ? 1 : 0)}h de trabalho efetivo</div>
         ${breakLine}
       </div>`;
@@ -1583,7 +1393,6 @@ function pick(day) {
         </div>
       </div>
       <div class="panel-section">
-        ${changeBanner}
         ${shiftHTML}
       </div>`;
     return;
@@ -1592,8 +1401,7 @@ function pick(day) {
   // ════════════════════════════════════════════════════
   // MANAGER — vista completa
   // ════════════════════════════════════════════════════
-  const areaTeam = TEAM.filter(m => m.area === currentUser.area);
-  const sorted = [...areaTeam].sort((a, b) => {
+  const sorted = [...TEAM].sort((a, b) => {
     if (a.id === currentUser.id) return -1; if (b.id === currentUser.id) return 1;
     const ao = isOff(a.sch[day]), bo = isOff(b.sch[day]);
     return ao === bo ? 0 : ao ? 1 : -1;
@@ -1604,13 +1412,14 @@ function pick(day) {
     let cl = off ? (vac ? 'vac-w' : 'off-w') : '';
     const isMe = m.id === currentUser.id;
     if (isMe) cl = 'me-w';
+    const hasChange = CHANGES[m.id] && CHANGES[m.id].has(day);
     const dn = TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
       ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1]
       : m.name.split(' ')[0];
-    return `<div class="wcard ${cl}">
+    return `<div class="wcard ${cl}${hasChange?' changed-w':''}">
       <div class="av ${isMe ? 'av-me' : ''}">${ini(m.name)}</div>
-      <div>
-        <div class="w-name">${isMe ? '★ ' : ''}${dn}</div>
+      <div style="flex:1;min-width:0">
+        <div class="w-name">${isMe ? '★ ' : ''}${dn}${hasChange ? ' <span class="change-badge">⚡ alt.</span>' : ''}</div>
         <div class="w-code">${c}</div>
       </div>
     </div>`;
@@ -1628,8 +1437,7 @@ function pick(day) {
     const pct = isOpen ? Math.round(v.t / maxC * 100) : Math.round(v.t / maxC * 55);
     let col = 'rgba(255,255,255,0.08)', tag = '';
     if (isOpen) {
-      if (v.brk) { col = '#f59e0b'; tag = `<span class="bar-tag" style="color:#f59e0b">PAUSA</span>`; }
-      else if (v.me) { col = '#3b82f6'; tag = `<span class="bar-tag" style="color:#3b82f6">TU</span>`; }
+      if (v.me) { col = '#3b82f6'; tag = `<span class="bar-tag" style="color:#3b82f6">TU</span>`; }
       else { col = '#10b981'; }
     }
     const namesHtml = v.workers.length > 0
@@ -1648,8 +1456,9 @@ function pick(day) {
     }
   });
 
-  const workingNow = areaTeam.filter(m => !isOff(m.sch[day])).length;
-  const offNow = areaTeam.length - workingNow;
+  const workingNow = TEAM.filter(m => !isOff(m.sch[day])).length;
+  const offNow = TEAM.length - workingNow;
+  const dateStr = `2026-04-${String(day).padStart(2,'0')}`;
 
   document.getElementById('detail-label').textContent = `${dow}, ${day} de Abril 2026`;
   document.getElementById('detail').innerHTML = `
@@ -1689,20 +1498,114 @@ function pick(day) {
       <div class="chart-legend">
         <div class="leg"><div class="leg-dot" style="background:#3b82f6"></div>Tu</div>
         <div class="leg"><div class="leg-dot" style="background:#10b981"></div>Equipa (loja aberta)</div>
-        <div class="leg"><div class="leg-dot" style="background:#f59e0b"></div>Tua Pausa</div>
         <div class="leg"><div class="leg-dot" style="background:rgba(255,255,255,0.08)"></div>Fora de loja</div>
       </div>
       ${chartRows}
     </div>
-    <div class="panel-section">
-      <div class="sec-title">Conselho de pausa</div>
-      ${buildBreakHTML()}
+    <div class="panel-section" id="checklist-section">
+      <div class="sec-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>📋 Tarefas do dia</span>
+        <span id="cl-count" style="font-size:10px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0"></span>
+      </div>
+      <div id="cl-add" style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+        <input id="cl-text" type="text" placeholder="Nova tarefa…" style="flex:1;min-width:120px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;">
+        <select id="cl-urg" style="padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;">
+          <option value="alta">🔴 Alta urgência</option>
+          <option value="media" selected>🟡 Média urgência</option>
+          <option value="baixa">🟢 Baixa urgência</option>
+        </select>
+        <select id="cl-imp" style="padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;">
+          <option value="alta">★★★ Alta imp.</option>
+          <option value="media" selected>★★☆ Média imp.</option>
+          <option value="baixa">★☆☆ Baixa imp.</option>
+        </select>
+        <button onclick="clAdd('${dateStr}')" style="padding:8px 14px;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-size:13px;font-weight:600;cursor:pointer;">+ Adicionar</button>
+      </div>
+      <div id="cl-list"></div>
     </div>`;
+
+  renderChecklist(dateStr);
 
   if (window.innerWidth < 700) {
     document.getElementById('detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
+
+// ── CHECKLIST FUNCTIONS ───────────────────────────────
+function renderChecklist(dateStr) {
+  const tasks = sortTasks(clLoad(dateStr));
+  const list = document.getElementById('cl-list');
+  if (!list) return;
+  const countEl = document.getElementById('cl-count');
+  const done = tasks.filter(t=>t.done).length;
+  if (countEl) countEl.textContent = `${done}/${tasks.length} concluída${tasks.length!==1?'s':''}`;
+  if (tasks.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--faint);font-size:13px;">Sem tarefas para este dia</div>`;
+    return;
+  }
+  const urgColor = { alta:'var(--red)', media:'var(--amber)', baixa:'var(--green)' };
+  const urgIcon  = { alta:'🔴', media:'🟡', baixa:'🟢' };
+  const impStars = { alta:'★★★', media:'★★☆', baixa:'★☆☆' };
+  list.innerHTML = tasks.map((t, i) => `
+    <div class="cl-task${t.done?' cl-done':''}" style="display:flex;align-items:flex-start;gap:8px;padding:10px;background:var(--surface2);border-radius:var(--r);margin-bottom:5px;border-left:3px solid ${urgColor[t.urgency]};">
+      <input type="checkbox" ${t.done?'checked':''} onchange="clToggle('${dateStr}',${i})" style="margin-top:2px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;${t.done?'text-decoration:line-through;color:var(--muted)':''}">${t.text}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px;display:flex;gap:8px;">
+          <span>${urgIcon[t.urgency]} ${t.urgency}</span>
+          <span style="color:var(--faint)">${impStars[t.importance]}</span>
+        </div>
+      </div>
+      <button onclick="clDelete('${dateStr}',${i})" style="background:none;border:none;color:var(--faint);cursor:pointer;font-size:14px;padding:0;flex-shrink:0;" title="Eliminar">✕</button>
+    </div>`).join('');
+}
+
+function clAdd(dateStr) {
+  const textEl = document.getElementById('cl-text');
+  const text = textEl ? textEl.value.trim() : '';
+  if (!text) return;
+  const urgency = document.getElementById('cl-urg').value;
+  const importance = document.getElementById('cl-imp').value;
+  const tasks = clLoad(dateStr);
+  tasks.push({ text, done: false, urgency, importance });
+  clSave(dateStr, tasks);
+  textEl.value = '';
+  renderChecklist(dateStr);
+  renderCal(); // refresh task badge in calendar
+}
+
+function clToggle(dateStr, rawIdx) {
+  // rawIdx is pre-sort index — find by position in sorted list
+  const sorted = sortTasks(clLoad(dateStr));
+  const task = sorted[rawIdx];
+  if (!task) return;
+  const all = clLoad(dateStr);
+  const match = all.find(t => t.text === task.text && t.urgency === task.urgency && t.importance === task.importance && t.done === task.done);
+  if (match) match.done = !match.done;
+  clSave(dateStr, all);
+  renderChecklist(dateStr);
+  renderCal();
+}
+
+function clDelete(dateStr, rawIdx) {
+  const sorted = sortTasks(clLoad(dateStr));
+  const task = sorted[rawIdx];
+  if (!task) return;
+  const all = clLoad(dateStr);
+  const idx = all.findIndex(t => t.text === task.text && t.urgency === task.urgency && t.importance === task.importance);
+  if (idx !== -1) all.splice(idx, 1);
+  clSave(dateStr, all);
+  renderChecklist(dateStr);
+  renderCal();
+}
+
+// enter key in checklist input
+document.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'cl-text') {
+    const dateStr = `2026-04-${String(selectedDay).padStart(2,'0')}`;
+    clAdd(dateStr);
+  }
+});
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', function() {
