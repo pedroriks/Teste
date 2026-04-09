@@ -990,6 +990,127 @@ header {
   color: var(--red);
   margin-top: 8px;
 }
+
+/* ── DIAS PASSADOS ──────────────────────────────────── */
+.cal-day.past .d-num { color: var(--faint); }
+.cal-day.past .d-count { font-weight: 700; color: var(--muted); }
+.cal-day.past .d-badge { opacity: .5; }
+.cal-day.past { opacity: .6; }
+.cal-day.today-marker { border-color: var(--green) !important; }
+
+/* ── MONTH NAV ──────────────────────────────────────── */
+.month-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.month-nav-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text); font-size: 12px;
+  font-weight: 600; padding: 5px 10px; cursor: pointer;
+  -webkit-appearance: none;
+}
+.month-nav-btn:disabled { opacity: .3; cursor: default; }
+.month-nav-title { font-size: 12px; font-weight: 700; color: var(--text); }
+
+/* ── RIGHT-COL TABS (manager) ───────────────────────── */
+.rtab-bar {
+  display: flex; gap: 3px; background: var(--surface2);
+  border-radius: var(--r); padding: 3px; margin-bottom: 12px;
+}
+.rtab {
+  flex: 1; padding: 7px 4px; border-radius: 7px; border: none;
+  background: transparent; color: var(--muted);
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  transition: all .12s; white-space: nowrap;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
+}
+.rtab.active { background: var(--surface); color: var(--text); }
+.rtab-panel { display: none; }
+.rtab-panel.active { display: block; }
+
+/* ── REQUEST CARDS ──────────────────────────────────── */
+.req-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 12px; margin-bottom: 8px;
+}
+.req-card .req-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.req-card .req-who { font-size: 13px; font-weight: 600; }
+.req-card .req-date { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.req-card .req-detail { font-size: 12px; color: var(--muted); }
+.req-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 10px; font-weight: 700;
+}
+.req-badge.pending { background: var(--amber-bg); color: var(--amber); }
+.req-badge.approved { background: var(--green-bg); color: var(--green); }
+.req-badge.rejected { background: rgba(239,68,68,.12); color: var(--red); }
+.req-actions { display: flex; gap: 6px; margin-top: 8px; }
+.req-btn {
+  flex: 1; padding: 6px; border-radius: 7px; border: none;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
+}
+.req-btn.approve { background: var(--green-bg); color: var(--green); }
+.req-btn.reject { background: rgba(239,68,68,.12); color: var(--red); }
+
+/* ── REQUEST MODAL ──────────────────────────────────── */
+#req-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.7);
+  z-index: 3000; display: flex; align-items: center;
+  justify-content: center; padding: 20px;
+}
+#req-modal-overlay.hidden { display: none !important; }
+.req-modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px;
+  max-width: 340px; width: 100%;
+}
+.req-modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.req-modal p { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.req-modal select, .req-modal input[type=date] {
+  width: 100%; padding: 10px 12px; margin-bottom: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
+  font-size: 13px; font-family: 'DM Sans', sans-serif;
+  -webkit-appearance: none; appearance: none;
+}
+.req-modal select:focus, .req-modal input:focus {
+  outline: none; border-color: var(--accent);
+}
+.req-modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.req-modal-btns button {
+  padding: 11px; border-radius: var(--r); border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
+}
+.req-modal-btns .btn-primary { background: var(--accent); color: #fff; }
+.req-modal-btns .btn-cancel { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.req-error { font-size: 12px; color: var(--red); margin-top: 6px; min-height: 18px; }
+
+/* ── REQUEST TRIGGER BUTTONS ────────────────────────── */
+.req-trigger-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.req-trigger-btn {
+  flex: 1; min-width: 140px; padding: 10px 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  text-align: center; -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.req-trigger-btn:active { opacity: .7; }
+.may-cal-day {
+  border-radius: 8px; padding: 5px 3px 4px;
+  cursor: pointer; background: var(--surface);
+  border: 1.5px solid transparent; min-height: 52px;
+  text-align: center; transition: border-color .12s;
+  -webkit-user-select: none; user-select: none;
+}
+.may-cal-day.selected { border-color: var(--accent); background: var(--accent-bg); }
+.may-cal-day.req-marked { border-color: var(--amber); background: var(--amber-bg); }
+.may-cal-day:active { transform: scale(.95); }
 </style>
 </head>
 <body>
@@ -1037,20 +1158,59 @@ header {
   <div class="content">
     <div class="left-col">
       <div class="cal-section">
-        <div class="section-label">Calendário</div>
+        <div class="section-label">
+          <div class="month-nav" style="width:100%">
+            <button class="month-nav-btn" id="btn-prev-month" onclick="navMonth(-1)" disabled>‹</button>
+            <span class="month-nav-title" id="month-title">Abril 2026</span>
+            <button class="month-nav-btn" id="btn-next-month" onclick="navMonth(1)">›</button>
+          </div>
+        </div>
         <div class="cal-grid" id="cal"></div>
       </div>
       <div class="stats-row" id="stats"></div>
     </div>
 
     <div class="right-col">
-      <div class="section-label" id="detail-label">Detalhe do dia</div>
-      <div class="detail-panel" id="detail">
-        <div class="empty-state">
-          <div class="ei">📅</div>
-          Toca num dia para ver detalhes
+      <!-- tab bar só para gestor -->
+      <div id="mgr-tab-bar" class="rtab-bar hidden">
+        <button class="rtab active" onclick="showTab('day')">📅 Dia</button>
+        <button class="rtab" onclick="showTab('swaps')">🔄 Trocas</button>
+        <button class="rtab" onclick="showTab('dayoffs')">🌙 Folgas</button>
+      </div>
+      <!-- painel dia -->
+      <div class="rtab-panel active" id="tab-day">
+        <div class="section-label" id="detail-label">Detalhe do dia</div>
+        <div class="detail-panel" id="detail">
+          <div class="empty-state">
+            <div class="ei">📅</div>
+            Toca num dia para ver detalhes
+          </div>
         </div>
       </div>
+      <!-- painel trocas -->
+      <div class="rtab-panel" id="tab-swaps">
+        <div class="section-label" style="margin-bottom:12px">🔄 Pedidos de Alteração</div>
+        <div id="swaps-content"></div>
+      </div>
+      <!-- painel folgas -->
+      <div class="rtab-panel" id="tab-dayoffs">
+        <div class="section-label" style="margin-bottom:12px">🌙 Pedidos de Folga</div>
+        <div id="dayoffs-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal de pedidos (troca / folga) -->
+<div id="req-modal-overlay" class="hidden">
+  <div class="req-modal">
+    <h3 id="modal-title">Pedido</h3>
+    <p id="modal-sub"></p>
+    <div id="modal-body"></div>
+    <div class="req-error" id="modal-error"></div>
+    <div class="req-modal-btns">
+      <button class="btn-primary" onclick="submitRequest()">Enviar pedido</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
     </div>
   </div>
 </div>
@@ -1184,6 +1344,10 @@ let currentUser = null;
 let selectedDay = 1;
 let pendingUser = null;
 let initialized = false;
+let currentMonth = 0; // 0 = Abril, 1 = Maio
+let modalType = null; // 'swap' | 'dayoff'
+let modalDay = null;
+let modalMonth = 0;
 
 const isOff = c => OFF.includes(c);
 const getS = c => SH[c] || null;
@@ -1259,6 +1423,7 @@ function cancelPassword() {
 
 function authenticateUser(user) {
   currentUser = user;
+  currentMonth = 0;
   document.getElementById('profile-overlay').classList.add('hidden');
   document.getElementById('main-app').classList.remove('hidden');
   const displayName = TEAM.filter(x => x.name.split(' ')[0] === user.name.split(' ')[0]).length > 1 
@@ -1267,9 +1432,19 @@ function authenticateUser(user) {
   document.getElementById('user-name').textContent = displayName;
   document.getElementById('user-av').textContent = ini(user.name);
   if (user.isManager) document.getElementById('user-av').classList.add('av-me');
-  
+
+  // show/hide tab bar for manager
+  const tabBar = document.getElementById('mgr-tab-bar');
+  if (tabBar) tabBar.classList.toggle('hidden', !user.isManager);
+  activeTab = 'day';
+  showTab('day');
+
+  // reset month nav
+  document.getElementById('month-title').textContent = MONTH_LABELS[0];
+  document.getElementById('btn-prev-month').disabled = true;
+  document.getElementById('btn-next-month').disabled = false;
+
   renderCal();
-  // auto-select today if it's April 2026, else day 1
   const now = new Date();
   const todayDay = (now.getFullYear() === 2026 && now.getMonth() === 3) ? now.getDate() : 1;
   pick(Math.min(Math.max(todayDay, 1), 30));
@@ -1283,7 +1458,311 @@ function logout() {
   document.getElementById('password-overlay').classList.add('hidden');
 }
 
+// ════════════════════════════════════════════════════════
+// MONTH NAVIGATION
+// ════════════════════════════════════════════════════════
+const MONTH_LABELS = ['Abril 2026', 'Maio 2026'];
+const MAY1_DOW = 5; // May 1 2026 = Friday
+const MAY_DAYS = 31;
+
+function navMonth(dir) {
+  currentMonth = Math.max(0, Math.min(1, currentMonth + dir));
+  document.getElementById('month-title').textContent = MONTH_LABELS[currentMonth];
+  document.getElementById('btn-prev-month').disabled = currentMonth === 0;
+  document.getElementById('btn-next-month').disabled = currentMonth === 1;
+  if (currentMonth === 0) {
+    renderCal();
+    pick(selectedDay);
+  } else {
+    renderMayCal();
+  }
+}
+
+function renderMayCal() {
+  // May has no shift data — show a day-off request calendar
+  const saved = getDayOffRequests().filter(r => r.month === 1);
+  const reqDays = new Set(saved.map(r => r.day));
+  let h = '';
+  DOW.forEach(d => { h += `<div class="dow">${d}</div>`; });
+  for (let i = 0; i < MAY1_DOW; i++) h += '<div></div>';
+  for (let d = 1; d <= MAY_DAYS; d++) {
+    const hasReq = reqDays.has(d);
+    h += `<div class="may-cal-day${hasReq ? ' req-marked' : ''}" onclick="mayDayClick(${d})" title="${hasReq ? 'Pedido enviado' : 'Clica para pedir folga'}">
+      <div class="d-num" style="font-size:9px;font-weight:600;color:var(--faint);margin-bottom:2px">${d}</div>
+      <div style="font-size:10px;color:${hasReq ? 'var(--amber)' : 'var(--faint)'}">${hasReq ? '🌙' : '+'}</div>
+    </div>`;
+  }
+  document.getElementById('cal').innerHTML = h;
+  document.getElementById('detail-label').textContent = 'Maio 2026 — Pedidos de folga';
+  document.getElementById('detail').innerHTML = `
+    <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">
+      Seleciona um dia de Maio para pedir folga.<br>
+      <span style="font-size:11px;color:var(--faint)">Dias com 🌙 já têm pedido enviado.</span>
+    </div>`;
+}
+
+function mayDayClick(d) {
+  if (!currentUser || currentUser.isManager) return;
+  openModal('dayoff', d, 1);
+}
+
+// ════════════════════════════════════════════════════════
+// MANAGER TABS
+// ════════════════════════════════════════════════════════
+let activeTab = 'day';
+function showTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.rtab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  const idx = ['day','swaps','dayoffs'].indexOf(tab);
+  document.querySelectorAll('.rtab')[idx]?.classList.add('active');
+  if (tab === 'swaps') renderSwapsPanel();
+  if (tab === 'dayoffs') renderDayoffsPanel();
+}
+
+// ════════════════════════════════════════════════════════
+// SWAP REQUESTS — localStorage
+// ════════════════════════════════════════════════════════
+function getSwapRequests() {
+  try { return JSON.parse(localStorage.getItem('swapRequests') || '[]'); } catch { return []; }
+}
+function saveSwapRequests(arr) {
+  localStorage.setItem('swapRequests', JSON.stringify(arr));
+}
+
+// ════════════════════════════════════════════════════════
+// DAY-OFF REQUESTS — localStorage
+// ════════════════════════════════════════════════════════
+function getDayOffRequests() {
+  try { return JSON.parse(localStorage.getItem('dayOffRequests') || '[]'); } catch { return []; }
+}
+function saveDayOffRequests(arr) {
+  localStorage.setItem('dayOffRequests', JSON.stringify(arr));
+}
+
+// ════════════════════════════════════════════════════════
+// 12H REST VALIDATION
+// ════════════════════════════════════════════════════════
+function validate12hRest(userId, day, month) {
+  // Check end time of previous day shift against start time of this day's shift
+  if (month === 1) {
+    // May — no schedule data, skip validation
+    return { ok: true };
+  }
+  // For April swap: check the day before (using current schedule of the target user)
+  const user = TEAM.find(m => m.id === userId);
+  if (!user) return { ok: true };
+  const prevIdx = day - 1; // idx 0 = Mar31, idx 1 = Apr1...
+  if (prevIdx < 0) return { ok: true };
+  const prevCode = user.sch[prevIdx];
+  const prevShift = getS(prevCode);
+  if (!prevShift) return { ok: true };
+  const prevEnd = prevShift.e; // e.g. 24 = midnight
+  const targetCode = user.sch[day];
+  const targetShift = getS(targetCode);
+  if (!targetShift) return { ok: true };
+  const targetStart = targetShift.s;
+  // Hours between prevEnd of previous day and targetStart of this day
+  const gap = (24 - prevEnd) + targetStart;
+  if (gap < 12) {
+    return {
+      ok: false,
+      msg: `Descanso insuficiente: ${prevCode} termina às ${prevEnd === 24 ? '00:00' : prevEnd + ':00'}, novo turno inicia às ${targetStart}:00 — apenas ${gap.toFixed(1)}h de descanso (mínimo: 12h).`
+    };
+  }
+  return { ok: true };
+}
+
+// ════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════
+function openModal(type, day, month) {
+  modalType = type;
+  modalDay = day;
+  modalMonth = month;
+  document.getElementById('modal-error').textContent = '';
+  const overlay = document.getElementById('req-modal-overlay');
+  overlay.classList.remove('hidden');
+
+  const dow = month === 0 ? DOW[(APR1_DOW + day - 1) % 7] : DOW[(MAY1_DOW + day - 1) % 7];
+  const monthLabel = month === 0 ? 'Abril' : 'Maio';
+
+  if (type === 'swap') {
+    document.getElementById('modal-title').textContent = '🔄 Pedir troca de horário';
+    document.getElementById('modal-sub').textContent = `${dow}, ${day} de ${monthLabel} 2026`;
+    const colleagues = TEAM.filter(m => m.id !== currentUser.id && !m.isManager && !isOff(m.sch[day]));
+    const opts = colleagues.length === 0
+      ? '<option value="">Nenhum colega disponível</option>'
+      : colleagues.map(m => `<option value="${m.id}">${m.name.split(' ')[0]} (${m.sch[day]})</option>`).join('');
+    document.getElementById('modal-body').innerHTML = `
+      <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Trocar com:</label>
+      <select id="modal-select">${opts}</select>`;
+  } else {
+    document.getElementById('modal-title').textContent = '🌙 Pedir folga';
+    document.getElementById('modal-sub').textContent = `${dow}, ${day} de ${monthLabel} 2026`;
+    document.getElementById('modal-body').innerHTML = `
+      <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Motivo (opcional):</label>
+      <input type="text" id="modal-reason" placeholder="Ex: consulta médica, compromisso pessoal…"
+        style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;">`;
+  }
+}
+
+function closeModal() {
+  document.getElementById('req-modal-overlay').classList.add('hidden');
+  modalType = null;
+}
+
+function submitRequest() {
+  document.getElementById('modal-error').textContent = '';
+  if (modalType === 'swap') {
+    const sel = document.getElementById('modal-select');
+    if (!sel || !sel.value) {
+      document.getElementById('modal-error').textContent = 'Seleciona um colega.';
+      return;
+    }
+    const targetId = sel.value;
+    // Validate 12h rest for both parties if swapping April days
+    if (modalMonth === 0) {
+      const checkFrom = validate12hRest(currentUser.id, modalDay, modalMonth);
+      if (!checkFrom.ok) {
+        document.getElementById('modal-error').textContent = checkFrom.msg;
+        return;
+      }
+      const checkTo = validate12hRest(targetId, modalDay, modalMonth);
+      if (!checkTo.ok) {
+        document.getElementById('modal-error').textContent = `Colega: ${checkTo.msg}`;
+        return;
+      }
+    }
+    const reqs = getSwapRequests();
+    reqs.push({
+      id: Date.now(),
+      from: currentUser.name,
+      fromId: currentUser.id,
+      to: TEAM.find(m => m.id === targetId)?.name || targetId,
+      toId: targetId,
+      day: modalDay,
+      month: modalMonth,
+      date: `2026-0${4 + modalMonth}-${String(modalDay).padStart(2,'0')}`,
+      status: 'pending',
+      ts: Date.now()
+    });
+    saveSwapRequests(reqs);
+  } else {
+    const reason = document.getElementById('modal-reason')?.value.trim() || '';
+    const reqs = getDayOffRequests();
+    // Avoid duplicate
+    if (reqs.some(r => r.fromId === currentUser.id && r.day === modalDay && r.month === modalMonth)) {
+      document.getElementById('modal-error').textContent = 'Já enviaste um pedido para este dia.';
+      return;
+    }
+    reqs.push({
+      id: Date.now(),
+      from: currentUser.name,
+      fromId: currentUser.id,
+      day: modalDay,
+      month: modalMonth,
+      date: `2026-0${4 + modalMonth}-${String(modalDay).padStart(2,'0')}`,
+      reason,
+      status: 'pending',
+      ts: Date.now()
+    });
+    saveDayOffRequests(reqs);
+    if (currentMonth === 1) renderMayCal(); // refresh May calendar dots
+  }
+  closeModal();
+  // refresh tabs if manager is viewing
+  if (currentUser.isManager && activeTab === 'swaps') renderSwapsPanel();
+  if (currentUser.isManager && activeTab === 'dayoffs') renderDayoffsPanel();
+}
+
+// ════════════════════════════════════════════════════════
+// MANAGER REQUEST PANELS
+// ════════════════════════════════════════════════════════
+function statusBadge(s) {
+  const label = s === 'pending' ? 'Pendente' : s === 'approved' ? 'Aprovado' : 'Rejeitado';
+  return `<span class="req-badge ${s}">${label}</span>`;
+}
+
+function updateSwapStatus(id, status) {
+  const reqs = getSwapRequests();
+  const r = reqs.find(r => r.id === id);
+  if (r) r.status = status;
+  saveSwapRequests(reqs);
+  renderSwapsPanel();
+}
+
+function updateDayOffStatus(id, status) {
+  const reqs = getDayOffRequests();
+  const r = reqs.find(r => r.id === id);
+  if (r) r.status = status;
+  saveDayOffRequests(reqs);
+  renderDayoffsPanel();
+}
+
+function renderSwapsPanel() {
+  const c = document.getElementById('swaps-content');
+  if (!c) return;
+  const reqs = getSwapRequests().sort((a,b) => b.ts - a.ts);
+  if (reqs.length === 0) {
+    c.innerHTML = `<div style="padding:30px 0;text-align:center;color:var(--faint);font-size:13px;">Sem pedidos de troca</div>`;
+    return;
+  }
+  const dow0 = d => DOW[(APR1_DOW + d - 1) % 7];
+  const dow1 = d => DOW[(MAY1_DOW + d - 1) % 7];
+  c.innerHTML = reqs.map(r => {
+    const dow = r.month === 0 ? dow0(r.day) : dow1(r.day);
+    const monthL = r.month === 0 ? 'Abril' : 'Maio';
+    const actions = r.status === 'pending' ? `
+      <div class="req-actions">
+        <button class="req-btn approve" onclick="updateSwapStatus(${r.id},'approved')">✓ Aprovar</button>
+        <button class="req-btn reject" onclick="updateSwapStatus(${r.id},'rejected')">✕ Rejeitar</button>
+      </div>` : '';
+    return `<div class="req-card">
+      <div class="req-top">
+        <span class="req-who">${r.from} → ${r.to}</span>
+        ${statusBadge(r.status)}
+      </div>
+      <div class="req-date">${dow}, ${r.day} ${monthL}</div>
+      ${actions}
+    </div>`;
+  }).join('');
+}
+
+function renderDayoffsPanel() {
+  const c = document.getElementById('dayoffs-content');
+  if (!c) return;
+  const reqs = getDayOffRequests().sort((a,b) => b.ts - a.ts);
+  if (reqs.length === 0) {
+    c.innerHTML = `<div style="padding:30px 0;text-align:center;color:var(--faint);font-size:13px;">Sem pedidos de folga</div>`;
+    return;
+  }
+  const dow0 = d => DOW[(APR1_DOW + d - 1) % 7];
+  const dow1 = d => DOW[(MAY1_DOW + d - 1) % 7];
+  c.innerHTML = reqs.map(r => {
+    const dow = r.month === 0 ? dow0(r.day) : dow1(r.day);
+    const monthL = r.month === 0 ? 'Abril' : 'Maio';
+    const actions = r.status === 'pending' ? `
+      <div class="req-actions">
+        <button class="req-btn approve" onclick="updateDayOffStatus(${r.id},'approved')">✓ Aprovar</button>
+        <button class="req-btn reject" onclick="updateDayOffStatus(${r.id},'rejected')">✕ Rejeitar</button>
+      </div>` : '';
+    return `<div class="req-card">
+      <div class="req-top">
+        <span class="req-who">${r.from}</span>
+        ${statusBadge(r.status)}
+      </div>
+      <div class="req-date">${dow}, ${r.day} ${monthL}${r.reason ? ' — ' + r.reason : ''}</div>
+      ${actions}
+    </div>`;
+  }).join('');
+}
+
 function renderCal() {
+  const now = new Date();
+  const todayApr = (now.getFullYear() === 2026 && now.getMonth() === 3) ? now.getDate() : null;
+
   let h = '';
   DOW.forEach(d => { h += `<div class="dow">${d}</div>`; });
   for (let i = 0; i < APR1_DOW; i++) h += '<div></div>';
@@ -1293,15 +1772,17 @@ function renderCal() {
     const cnt = countW(d);
     let bc = off ? (vac ? 'vac' : 'off') : '';
 
-    // check if any member has a change on this day
+    // past / today markers
+    const isPast = todayApr !== null && d < todayApr;
+    const isToday = todayApr !== null && d === todayApr;
+
+    // change and task badges (unchanged logic)
     const dayHasChange = Object.values(CHANGES).some(s => s.has(d));
-    // check if current user has a change
     const myChange = CHANGES[currentUser.id] && CHANGES[currentUser.id].has(d);
     const changeBadge = (currentUser.isManager && dayHasChange)
       ? `<div class="change-dot" title="Alteração neste dia">⚡</div>`
       : myChange ? `<div class="change-dot" title="Alteração neste dia">⚡</div>` : '';
 
-    // check if tasks exist for this day
     const dateStr = `2026-04-${String(d).padStart(2,'0')}`;
     const tasks = clLoad(dateStr);
     const taskBadge = tasks.length > 0
@@ -1314,7 +1795,8 @@ function renderCal() {
       : `<div class="d-count" style="font-size:13px;margin-top:4px">${off ? '—' : c}</div>
          <div class="d-lbl">${off ? (OFF_LABEL[c] || c).split(' ')[0] : 'turno'}</div>`;
 
-    h += `<div class="cal-day${selectedDay===d?' selected':''}" onclick="pick(${d})">
+    const extraClass = isPast ? ' past' : isToday ? ' today-marker' : '';
+    h += `<div class="cal-day${selectedDay===d?' selected':''}${extraClass}" onclick="pick(${d})">
       <div class="d-num">${d}${changeBadge}${taskBadge}</div>
       ${cellInner}
     </div>`;
@@ -1394,6 +1876,10 @@ function pick(day) {
       </div>
       <div class="panel-section">
         ${shiftHTML}
+        ${!p.off ? `<div class="req-trigger-row">
+          <button class="req-trigger-btn" onclick="openModal('swap',${day},0)">🔄 Pedir troca de horário</button>
+          <button class="req-trigger-btn" onclick="openModal('dayoff',${day},0)">🌙 Pedir folga</button>
+        </div>` : ''}
       </div>`;
     return;
   }
