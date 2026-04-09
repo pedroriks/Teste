@@ -21,9 +21,10 @@
   --text: #f0ede8;
   --muted: #8a8580;
   --faint: #555250;
-  --accent: #3b82f6;
-  --accent-bg: rgba(59,130,246,0.12);
-  --accent-border: rgba(59,130,246,0.3);
+  /* ── BRAND ORANGE ── */
+  --accent: #fd7d00;
+  --accent-bg: rgba(253,125,0,0.12);
+  --accent-border: rgba(253,125,0,0.3);
   --green: #10b981;
   --green-bg: rgba(16,185,129,0.1);
   --green-border: rgba(16,185,129,0.25);
@@ -31,6 +32,12 @@
   --amber-bg: rgba(245,158,11,0.1);
   --amber-border: rgba(245,158,11,0.25);
   --red: #ef4444;
+  --swap-color: #a78bfa;
+  --swap-bg: rgba(167,139,250,0.12);
+  --swap-border: rgba(167,139,250,0.3);
+  --manual-color: #22d3ee;
+  --manual-bg: rgba(34,211,238,0.1);
+  --manual-border: rgba(34,211,238,0.28);
   --r: 10px;
   --r-lg: 14px;
 }
@@ -67,7 +74,25 @@ body {
 /* desktop retém scroll interno controlado */
 @media (min-width: 700px) {
   html, body { height: 100%; overflow: hidden; }
-  .app { height: 100dvh; overflow: hidden; }
+  .app { height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+  .content { flex: 1; min-height: 0; overflow: hidden; }
+  .left-col {
+    flex: 0 0 320px !important;
+    width: 320px !important;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px 18px !important;
+    border-right: 1px solid var(--border);
+    /* no position:sticky — independent scroll column */
+  }
+  .right-col {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 24px !important;
+  }
 }
 
 /* ── LOGIN / PROFILE SELECT ────────────────────────── */
@@ -274,33 +299,11 @@ header {
   display: flex;
   flex-direction: column;
   width: 100%;
+  flex: 1;
 }
 
 @media (min-width: 700px) {
-  .content {
-    flex: 1;
-    flex-direction: row;
-    overflow: hidden;
-    padding: 0;
-  }
-
-  .left-col {
-    flex: 0 0 340px;
-    width: 340px;
-    padding: 24px;
-    border-right: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    height: calc(100vh - 60px);
-    overflow-y: auto;
-  }
-
-  .right-col {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 24px;
-  }
+  .content { flex-direction: row; padding: 0; }
 }
 
 .left-col {
@@ -1101,6 +1104,77 @@ header {
   font-family: 'DM Sans', sans-serif;
 }
 .req-trigger-btn:active { opacity: .7; }
+
+/* ── SWAP / MANUAL OVERRIDE BADGES ─────────────────── */
+.wcard.swap-w  { border-color: var(--swap-border) !important; background: var(--swap-bg) !important; }
+.wcard.manual-w { border-color: var(--manual-border) !important; background: var(--manual-bg) !important; }
+.cal-day.has-swap   { box-shadow: inset 0 0 0 1.5px var(--swap-border); }
+.cal-day.has-manual { box-shadow: inset 0 0 0 1.5px var(--manual-border); }
+.ovr-badge {
+  display: inline-block; padding: 1px 5px; border-radius: 3px;
+  font-size: 9px; font-weight: 700; margin-left: 3px; vertical-align: middle;
+}
+.ovr-badge.swap   { background: var(--swap-bg);   color: var(--swap-color); }
+.ovr-badge.manual { background: var(--manual-bg);  color: var(--manual-color); }
+.swap-dot   { color: var(--swap-color);   font-size: 8px; line-height: 1; }
+.manual-dot { color: var(--manual-color); font-size: 8px; line-height: 1; }
+
+/* ── EDIT BUTTON IN WORKER CARD ─────────────────────── */
+.edit-shift-btn {
+  background: none; border: 1px solid var(--border2);
+  border-radius: 5px; color: var(--muted);
+  font-size: 10px; cursor: pointer; padding: 2px 6px;
+  flex-shrink: 0; -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: color .12s, border-color .12s;
+}
+.edit-shift-btn:hover { color: var(--accent); border-color: var(--accent-border); }
+
+/* ── EDIT MODAL ─────────────────────────────────────── */
+#edit-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.75);
+  z-index: 3500; display: flex; align-items: center;
+  justify-content: center; padding: 20px;
+}
+#edit-modal-overlay.hidden { display: none !important; }
+.edit-modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px;
+  max-width: 320px; width: 100%;
+}
+.edit-modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.edit-modal p  { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.edit-modal select {
+  width: 100%; padding: 10px 12px; margin-bottom: 14px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
+  font-size: 13px; font-family: 'DM Sans', sans-serif;
+  -webkit-appearance: none; appearance: none;
+}
+.edit-modal select:focus { outline: none; border-color: var(--accent); }
+.edit-modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.edit-modal-btns button {
+  padding: 10px; border-radius: var(--r); border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
+}
+.edit-btn-save   { background: var(--accent); color: #fff; }
+.edit-btn-cancel { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.edit-btn-clear  {
+  grid-column: 1 / -1; background: var(--surface2);
+  color: var(--red); border: 1px solid rgba(239,68,68,.25); margin-top: 4px;
+}
+</style>
+.req-trigger-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.req-trigger-btn {
+  flex: 1; min-width: 140px; padding: 10px 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  text-align: center; -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.req-trigger-btn:active { opacity: .7; }
 .may-cal-day {
   border-radius: 8px; padding: 5px 3px 4px;
   cursor: pointer; background: var(--surface);
@@ -1211,6 +1285,21 @@ header {
     <div class="req-modal-btns">
       <button class="btn-primary" onclick="submitRequest()">Enviar pedido</button>
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal de edição manual de horário (gestor) -->
+<div id="edit-modal-overlay" class="hidden">
+  <div class="edit-modal">
+    <h3 id="edit-modal-title">✏️ Editar horário</h3>
+    <p id="edit-modal-sub"></p>
+    <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Novo turno:</label>
+    <select id="edit-shift-select"></select>
+    <div class="edit-modal-btns">
+      <button class="edit-btn-save"   onclick="saveManualEdit()">Guardar</button>
+      <button class="edit-btn-cancel" onclick="closeEditModal()">Cancelar</button>
+      <button class="edit-btn-clear"  onclick="clearManualEdit()">↺ Repor original</button>
     </div>
   </div>
 </div>
@@ -1344,10 +1433,12 @@ let currentUser = null;
 let selectedDay = 1;
 let pendingUser = null;
 let initialized = false;
-let currentMonth = 0; // 0 = Abril, 1 = Maio
-let modalType = null; // 'swap' | 'dayoff'
+let currentMonth = 0;
+let modalType = null;
 let modalDay = null;
 let modalMonth = 0;
+let editUserId = null;
+let editDayIdx = null;
 
 const isOff = c => OFF.includes(c);
 const getS = c => SH[c] || null;
@@ -1363,11 +1454,82 @@ function working(c, h) {
 }
 
 function getUserDayInfo(user, idx) {
-  const c = user.sch[idx];
+  const c = getEffectiveCode(user.id, idx);
   if (isOff(c)) return { code: c, off: true };
   const s = getS(c);
   if (!s) return { code: c, off: true };
   return { code: c, off: false, s, hasBreak: s.bs !== null, bs: s.bs, be: s.be };
+}
+
+// ════════════════════════════════════════════════════════
+// OVERRIDE ENGINE — swap & manual
+// ════════════════════════════════════════════════════════
+function getSwapOverrides()   { try { return JSON.parse(localStorage.getItem('shiftSwapOvr') || '{}'); }   catch { return {}; } }
+function getManualOverrides() { try { return JSON.parse(localStorage.getItem('shiftManualOvr') || '{}'); } catch { return {}; } }
+function saveSwapOverrides(o)   { localStorage.setItem('shiftSwapOvr',   JSON.stringify(o)); }
+function saveManualOverrides(o) { localStorage.setItem('shiftManualOvr', JSON.stringify(o)); }
+
+function ovrKey(userId, idx) { return `${userId}_${idx}`; }
+
+function getEffectiveCode(userId, idx) {
+  const key = ovrKey(userId, idx);
+  const manual = getManualOverrides();
+  if (manual[key]) return manual[key];
+  const swaps = getSwapOverrides();
+  if (swaps[key]) return swaps[key];
+  const m = TEAM.find(x => x.id === userId);
+  return m ? m.sch[idx] : 'V';
+}
+
+function getOvrType(userId, idx) {
+  const key = ovrKey(userId, idx);
+  if (getManualOverrides()[key]) return 'manual';
+  if (getSwapOverrides()[key])   return 'swap';
+  return null;
+}
+
+// ════════════════════════════════════════════════════════
+// EDIT MODAL (gestor — edição manual)
+// ════════════════════════════════════════════════════════
+function openEditModal(userId, dayIdx) {
+  editUserId = userId;
+  editDayIdx = dayIdx;
+  const member = TEAM.find(m => m.id === userId);
+  const dow = DOW[(APR1_DOW + dayIdx - 1) % 7];
+  document.getElementById('edit-modal-title').textContent = `✏️ ${member?.name.split(' ')[0] || userId}`;
+  document.getElementById('edit-modal-sub').textContent = `${dow}, ${dayIdx} de Abril 2026`;
+  const current = getEffectiveCode(userId, dayIdx);
+  const allCodes = Object.keys(SH).concat(Object.keys(OFF_LABEL));
+  const sel = document.getElementById('edit-shift-select');
+  sel.innerHTML = allCodes.map(c => `<option value="${c}"${c===current?' selected':''}>${c}${SH[c]?` — ${SH[c].s}:00→${SH[c].e===24?'00:00':SH[c].e+':00'}`:' — Folga/Off'}</option>`).join('');
+  document.getElementById('edit-modal-overlay').classList.remove('hidden');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal-overlay').classList.add('hidden');
+  editUserId = null; editDayIdx = null;
+}
+
+function saveManualEdit() {
+  const sel = document.getElementById('edit-shift-select');
+  if (!sel || !editUserId || !editDayIdx) return;
+  const ovr = getManualOverrides();
+  ovr[ovrKey(editUserId, editDayIdx)] = sel.value;
+  saveManualOverrides(ovr);
+  closeEditModal();
+  renderCal();
+  pick(editDayIdx);
+}
+
+function clearManualEdit() {
+  if (!editUserId || !editDayIdx) return;
+  const key = ovrKey(editUserId, editDayIdx);
+  const ovr = getManualOverrides();
+  delete ovr[key];
+  saveManualOverrides(ovr);
+  closeEditModal();
+  renderCal();
+  pick(editDayIdx);
 }
 
 function init() {
@@ -1688,8 +1850,22 @@ function statusBadge(s) {
 function updateSwapStatus(id, status) {
   const reqs = getSwapRequests();
   const r = reqs.find(r => r.id === id);
-  if (r) r.status = status;
+  if (!r) return;
+  r.status = status;
   saveSwapRequests(reqs);
+
+  // When approved: swap the effective shifts of both parties for that day
+  if (status === 'approved' && r.month === 0) {
+    const idx = r.day; // April idx 1–30
+    const codeFrom = getEffectiveCode(r.fromId, idx);
+    const codeTo   = getEffectiveCode(r.toId,   idx);
+    const swaps = getSwapOverrides();
+    swaps[ovrKey(r.fromId, idx)] = codeTo;
+    swaps[ovrKey(r.toId,   idx)] = codeFrom;
+    saveSwapOverrides(swaps);
+    // Refresh current view
+    if (currentUser?.isManager) { renderCal(); if (selectedDay === idx) pick(idx); }
+  }
   renderSwapsPanel();
 }
 
@@ -1767,9 +1943,9 @@ function renderCal() {
   DOW.forEach(d => { h += `<div class="dow">${d}</div>`; });
   for (let i = 0; i < APR1_DOW; i++) h += '<div></div>';
   for (let d = 1; d <= 30; d++) {
-    const c = currentUser.sch[d];
+    const c = getEffectiveCode(currentUser.id, d);  // use effective (swap/manual) code
     const off = isOff(c), vac = c === 'Fe';
-    const cnt = countW(d);
+    const cnt = TEAM.filter(m => !isOff(getEffectiveCode(m.id, d))).length;
     let bc = off ? (vac ? 'vac' : 'off') : '';
 
     // past / today markers
@@ -1788,6 +1964,14 @@ function renderCal() {
     const taskBadge = tasks.length > 0
       ? `<div class="task-dot">${tasks.filter(t=>!t.done).length > 0 ? '●' : '✓'}</div>` : '';
 
+    // override dots
+    const myOvrType = getOvrType(currentUser.id, d);
+    const dayHasOvr = currentUser.isManager && TEAM.some(m => getOvrType(m.id, d));
+    const ovrDot = myOvrType === 'swap'   ? `<div class="swap-dot"   title="Troca aprovada">⇄</div>`
+                 : myOvrType === 'manual' ? `<div class="manual-dot" title="Alterado manualmente">✏</div>`
+                 : dayHasOvr             ? `<div class="swap-dot"   title="Existem alterações neste dia">⇄</div>`
+                 : '';
+
     const cellInner = currentUser.isManager
       ? `<div class="d-count">${cnt}</div>
          <div class="d-lbl">eq</div>
@@ -1795,9 +1979,13 @@ function renderCal() {
       : `<div class="d-count" style="font-size:13px;margin-top:4px">${off ? '—' : c}</div>
          <div class="d-lbl">${off ? (OFF_LABEL[c] || c).split(' ')[0] : 'turno'}</div>`;
 
+    const hasSwapDay   = currentUser.isManager && TEAM.some(m => getOvrType(m.id, d) === 'swap');
+    const hasManualDay = currentUser.isManager && TEAM.some(m => getOvrType(m.id, d) === 'manual');
     const extraClass = isPast ? ' past' : isToday ? ' today-marker' : '';
-    h += `<div class="cal-day${selectedDay===d?' selected':''}${extraClass}" onclick="pick(${d})">
-      <div class="d-num">${d}${changeBadge}${taskBadge}</div>
+    const ovrClass = hasSwapDay ? ' has-swap' : hasManualDay ? ' has-manual' : '';
+
+    h += `<div class="cal-day${selectedDay===d?' selected':''}${extraClass}${ovrClass}" onclick="pick(${d})">
+      <div class="d-num">${d}${changeBadge}${taskBadge}${ovrDot}</div>
       ${cellInner}
     </div>`;
   }
@@ -1831,7 +2019,7 @@ function pick(day) {
   const cov = {};
   HOURS.forEach(h => { cov[h] = { t: 0, me: false, workers: [] }; });
   TEAM.forEach(m => {
-    const c = m.sch[day];
+    const c = getEffectiveCode(m.id, day);  // use effective shift
     HOURS.forEach(h => {
       if (working(c, h)) {
         cov[h].t++;
@@ -1893,21 +2081,29 @@ function pick(day) {
     return ao === bo ? 0 : ao ? 1 : -1;
   });
   const workers = sorted.map(m => {
-    const c = m.sch[day];
+    const c = getEffectiveCode(m.id, day);  // effective shift
+    const ovrType = getOvrType(m.id, day);
     const off = isOff(c), vac = c === 'Fe';
     let cl = off ? (vac ? 'vac-w' : 'off-w') : '';
     const isMe = m.id === currentUser.id;
     if (isMe) cl = 'me-w';
+    else if (ovrType === 'swap')   cl += ' swap-w';
+    else if (ovrType === 'manual') cl += ' manual-w';
     const hasChange = CHANGES[m.id] && CHANGES[m.id].has(day);
     const dn = TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
       ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1]
       : m.name.split(' ')[0];
+    const ovrBadge = ovrType === 'swap'   ? `<span class="ovr-badge swap">⇄ troca</span>`
+                   : ovrType === 'manual' ? `<span class="ovr-badge manual">✏ manual</span>`
+                   : '';
+    const editBtn = `<button class="edit-shift-btn" onclick="openEditModal('${m.id}',${day})" title="Editar horário">✏</button>`;
     return `<div class="wcard ${cl}${hasChange?' changed-w':''}">
       <div class="av ${isMe ? 'av-me' : ''}">${ini(m.name)}</div>
       <div style="flex:1;min-width:0">
-        <div class="w-name">${isMe ? '★ ' : ''}${dn}${hasChange ? ' <span class="change-badge">⚡ alt.</span>' : ''}</div>
+        <div class="w-name">${isMe ? '★ ' : ''}${dn}${hasChange ? ' <span class="change-badge">⚡ alt.</span>' : ''}${ovrBadge}</div>
         <div class="w-code">${c}</div>
       </div>
+      ${editBtn}
     </div>`;
   }).join('');
 
