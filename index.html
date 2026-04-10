@@ -1164,27 +1164,44 @@ header {
   grid-column: 1 / -1; background: var(--surface2);
   color: var(--red); border: 1px solid rgba(239,68,68,.25); margin-top: 4px;
 }
-</style>
-.req-trigger-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-.req-trigger-btn {
-  flex: 1; min-width: 140px; padding: 10px 12px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--r); color: var(--text);
-  font-size: 12px; font-weight: 600; cursor: pointer;
-  text-align: center; -webkit-appearance: none;
-  font-family: 'DM Sans', sans-serif;
-}
-.req-trigger-btn:active { opacity: .7; }
+
+/* ── MAY CALENDAR DAYS (idêntico ao .cal-day) ──────────── */
 .may-cal-day {
-  border-radius: 8px; padding: 5px 3px 4px;
-  cursor: pointer; background: var(--surface);
-  border: 1.5px solid transparent; min-height: 52px;
-  text-align: center; transition: border-color .12s;
-  -webkit-user-select: none; user-select: none;
+  border-radius: 8px;
+  padding: 5px 3px 4px;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1.5px solid transparent;
+  min-height: 64px;
+  text-align: center;
+  transition: border-color .12s, background .12s;
+  -webkit-user-select: none;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 .may-cal-day.selected { border-color: var(--accent); background: var(--accent-bg); }
 .may-cal-day.req-marked { border-color: var(--amber); background: var(--amber-bg); }
 .may-cal-day:active { transform: scale(.95); }
+.may-cal-day .d-num {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--faint);
+  margin-bottom: 2px;
+}
+.may-cal-day .d-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+.may-cal-day .d-lbl {
+  font-size: 7.5px;
+  color: var(--faint);
+}
+.may-cal-day.req-marked .d-num { color: var(--amber); }
+.may-cal-day.req-marked .d-lbl { color: var(--amber); }
 </style>
 </head>
 <body>
@@ -1649,9 +1666,11 @@ function renderMayCal() {
   for (let i = 0; i < MAY1_DOW; i++) h += '<div></div>';
   for (let d = 1; d <= MAY_DAYS; d++) {
     const hasReq = reqDays.has(d);
+    const dowLabel = DOW[(MAY1_DOW + d - 1) % 7];
     h += `<div class="may-cal-day${hasReq ? ' req-marked' : ''}" onclick="mayDayClick(${d})" title="${hasReq ? 'Pedido enviado' : 'Clica para pedir folga'}">
-      <div class="d-num" style="font-size:9px;font-weight:600;color:var(--faint);margin-bottom:2px">${d}</div>
-      <div style="font-size:10px;color:${hasReq ? 'var(--amber)' : 'var(--faint)'}">${hasReq ? '🌙' : '+'}</div>
+      <div class="d-num">${d}</div>
+      <div class="d-icon">${hasReq ? '🌙' : '+'}</div>
+      <div class="d-lbl">${hasReq ? 'pedido' : dowLabel}</div>
     </div>`;
   }
   document.getElementById('cal').innerHTML = h;
@@ -1664,7 +1683,35 @@ function renderMayCal() {
 }
 
 function mayDayClick(d) {
-  if (!currentUser || currentUser.isManager) return;
+  if (!currentUser) return;
+  // Managers can view requests but not submit; workers submit
+  const saved = getDayOffRequests().filter(r => r.month === 1);
+  const reqDays = new Set(saved.map(r => r.day));
+  const hasReq = reqDays.has(d);
+  const dowLabel = DOW[(MAY1_DOW + d - 1) % 7];
+
+  // Visual feedback: mark selected
+  document.querySelectorAll('.may-cal-day').forEach(el => el.classList.remove('selected'));
+  const cells = document.querySelectorAll('.may-cal-day');
+  // find the right cell (index = d - 1 + offset, easier via data)
+  cells.forEach(el => {
+    if (el.getAttribute('onclick') === `mayDayClick(${d})`) el.classList.add('selected');
+  });
+
+  if (currentUser.isManager) {
+    // Manager: show who requested this day off
+    const reqs = saved.filter(r => r.day === d);
+    const detail = document.getElementById('detail');
+    if (reqs.length === 0) {
+      detail.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">${dowLabel}, ${d} de Maio<br><span style="color:var(--faint);font-size:11px">Sem pedidos de folga para este dia.</span></div>`;
+    } else {
+      detail.innerHTML = `<div style="padding:16px"><div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)">${dowLabel}, ${d} de Maio — Pedidos</div>${reqs.map(r=>`<div style="padding:10px;background:var(--surface2);border-radius:var(--r);margin-bottom:6px;border-left:3px solid var(--amber)"><div style="font-size:12px;font-weight:600">${r.from}</div><div style="font-size:11px;color:var(--muted)">${r.reason||'Sem motivo'}</div><div style="font-size:10px;color:var(--amber);margin-top:4px">🌙 Pedido de folga</div></div>`).join('')}</div>`;
+    }
+    document.getElementById('detail-label').textContent = `${dowLabel}, ${d} Maio 2026`;
+    return;
+  }
+
+  // Worker: open modal
   openModal('dayoff', d, 1);
 }
 
