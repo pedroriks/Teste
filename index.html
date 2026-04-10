@@ -1460,7 +1460,7 @@ let editDayIdx = null;
 const isOff = c => OFF.includes(c);
 const getS = c => SH[c] || null;
 const ini = n => n.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-const countW = idx => TEAM.filter(m => !isOff(m.sch[idx])).length;
+const countW = idx => TEAM.filter(m => !isOff(getEffectiveCode(m.id, idx))).length;
 
 function working(c, h) {
   const s = getS(c);
@@ -1527,26 +1527,71 @@ function closeEditModal() {
   editUserId = null; editDayIdx = null;
 }
 
+// ── ORIGINAL SNAPSHOT — imutável, guardado antes de qualquer edição manual ──
+function getOriginalSnapshots() { try { return JSON.parse(localStorage.getItem('shiftOriginalSnap') || '{}'); } catch { return {}; } }
+function saveOriginalSnapshots(o) { localStorage.setItem('shiftOriginalSnap', JSON.stringify(o)); }
+
 function saveManualEdit() {
   const sel = document.getElementById('edit-shift-select');
   if (!sel || !editUserId || !editDayIdx) return;
+  const key = ovrKey(editUserId, editDayIdx);
+
+  // Guardar o código ORIGINAL apenas se ainda não existe snapshot para esta chave
+  // (protege contra sobrescrever o original em edições subsequentes)
+  const snaps = getOriginalSnapshots();
+  if (!snaps[key]) {
+    // Fonte verdadeira: ignora overrides existentes, vai direto ao sch do TEAM
+    const member = TEAM.find(m => m.id === editUserId);
+    snaps[key] = member ? member.sch[editDayIdx] : 'V';
+    saveOriginalSnapshots(snaps);
+  }
+
   const ovr = getManualOverrides();
-  ovr[ovrKey(editUserId, editDayIdx)] = sel.value;
+  ovr[key] = sel.value;
   saveManualOverrides(ovr);
+  const savedDay = editDayIdx;
   closeEditModal();
   renderCal();
-  pick(editDayIdx);
+  pick(savedDay);
 }
 
 function clearManualEdit() {
   if (!editUserId || !editDayIdx) return;
   const key = ovrKey(editUserId, editDayIdx);
+
+  // Restaurar a partir do snapshot original se existir
+  const snaps = getOriginalSnapshots();
+  const originalCode = snaps[key];
+
   const ovr = getManualOverrides();
-  delete ovr[key];
+  const swaps = getSwapOverrides();
+
+  if (originalCode) {
+    // Se existia um swap override antes da edição manual, restaurá-lo também
+    // A lógica: se o original já era resultado de swap, repõe o swap; caso contrário limpa tudo
+    // Simplificação correta: remove o manual override — o getEffectiveCode cai para swap ou sch[]
+    delete ovr[key];
+    // Se o originalCode não coincide com o que swap daria, significa que não havia swap antes
+    // então também limpamos o swap para garantir restauro total ao sch[] original
+    const swapCode = swaps[key];
+    if (swapCode && swapCode !== originalCode) {
+      // havia swap mas o original guardado é o sch[] puro — limpa swap também
+      delete swaps[key];
+      saveSwapOverrides(swaps);
+    }
+    // Remove o snapshot após restauro para permitir novas edições limpas
+    delete snaps[key];
+    saveOriginalSnapshots(snaps);
+  } else {
+    // Sem snapshot: comportamento anterior — apaga só o manual override
+    delete ovr[key];
+  }
+
   saveManualOverrides(ovr);
+  const savedDay = editDayIdx;
   closeEditModal();
   renderCal();
-  pick(editDayIdx);
+  pick(savedDay);
 }
 
 function init() {
@@ -1800,10 +1845,10 @@ function openModal(type, day, month) {
   if (type === 'swap') {
     document.getElementById('modal-title').textContent = '🔄 Pedir troca de horário';
     document.getElementById('modal-sub').textContent = `${dow}, ${day} de ${monthLabel} 2026`;
-    const colleagues = TEAM.filter(m => m.id !== currentUser.id && !m.isManager && !isOff(m.sch[day]));
+    const colleagues = TEAM.filter(m => m.id !== currentUser.id && !m.isManager && !isOff(getEffectiveCode(m.id, day)));
     const opts = colleagues.length === 0
       ? '<option value="">Nenhum colega disponível</option>'
-      : colleagues.map(m => `<option value="${m.id}">${m.name.split(' ')[0]} (${m.sch[day]})</option>`).join('');
+      : colleagues.map(m => `<option value="${m.id}">${m.name.split(' ')[0]} (${getEffectiveCode(m.id, day)})</option>`).join('');
     document.getElementById('modal-body').innerHTML = `
       <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Trocar com:</label>
       <select id="modal-select">${opts}</select>`;
@@ -2124,7 +2169,7 @@ function pick(day) {
   // ════════════════════════════════════════════════════
   const sorted = [...TEAM].sort((a, b) => {
     if (a.id === currentUser.id) return -1; if (b.id === currentUser.id) return 1;
-    const ao = isOff(a.sch[day]), bo = isOff(b.sch[day]);
+    const ao = isOff(getEffectiveCode(a.id, day)), bo = isOff(getEffectiveCode(b.id, day));
     return ao === bo ? 0 : ao ? 1 : -1;
   });
   const workers = sorted.map(m => {
@@ -2185,7 +2230,7 @@ function pick(day) {
     }
   });
 
-  const workingNow = TEAM.filter(m => !isOff(m.sch[day])).length;
+  const workingNow = TEAM.filter(m => !isOff(getEffectiveCode(m.id, day))).length;
   const offNow = TEAM.length - workingNow;
   const dateStr = `2026-04-${String(day).padStart(2,'0')}`;
 
