@@ -1228,37 +1228,53 @@ header {
 .h-row.current-hour .h-lbl { color: var(--accent) !important; font-weight: 700; }
 .h-row.current-hour .bar-wrap { outline: 1.5px solid var(--accent); border-radius: 4px; }
 
-/* ── LUNCH SELECTOR ─────────────────────────────────── */
-.lunch-selector {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+/* ── PAUSA DE ALMOÇO — trigger button ───────────────── */
+.lunch-trigger-row { margin-top: 8px; }
+.lunch-trigger-btn {
+  width: 100%; padding: 8px 12px;
+  background: var(--amber-bg); border: 1px solid var(--amber-border);
+  border-radius: var(--r); color: var(--amber);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  text-align: left; -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .12s;
 }
-.lunch-selector label { font-size: 12px; color: var(--muted); flex-shrink: 0; }
-.lunch-select {
-  flex: 1; min-width: 100px;
-  padding: 6px 8px;
-  background: var(--surface3); border: 1px solid var(--border);
+.lunch-trigger-btn strong { color: var(--text); }
+.lunch-trigger-btn:active { opacity: .75; }
+
+/* ── MODAL DE PAUSA DE ALMOÇO ────────────────────────── */
+#lunch-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.75);
+  z-index: 3500; display: flex; align-items: center;
+  justify-content: center; padding: 20px;
+}
+#lunch-modal-overlay.hidden { display: none !important; }
+.lunch-modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px;
+  max-width: 320px; width: 100%;
+}
+.lunch-modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+.lunch-modal p  { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.lunch-modal select {
+  width: 100%; padding: 10px 12px; margin-bottom: 14px;
+  background: var(--surface2); border: 1px solid var(--border);
   border-radius: var(--r); color: var(--text);
-  font-size: 12px; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-family: 'DM Sans', sans-serif;
   -webkit-appearance: none; appearance: none;
 }
-.lunch-select:focus { outline: none; border-color: var(--accent); }
-.lunch-save-btn {
-  padding: 6px 12px; background: var(--accent); border: none;
-  border-radius: var(--r); color: #fff; font-size: 12px;
-  font-weight: 600; cursor: pointer; flex-shrink: 0;
+.lunch-modal select:focus { outline: none; border-color: var(--accent); }
+.lunch-modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lunch-modal-btns button {
+  padding: 10px; border-radius: var(--r); border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer;
   -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
 }
-.lunch-save-btn:active { opacity: .8; }
-.lunch-badge {
-  display: inline-block; padding: 2px 7px; border-radius: 4px;
-  background: var(--amber-bg); color: var(--amber);
-  font-size: 10px; font-weight: 700; margin-left: 4px;
+.lunch-btn-save   { background: var(--accent); color: #fff; }
+.lunch-btn-cancel { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.lunch-btn-clear  {
+  grid-column: 1 / -1; background: var(--surface2);
+  color: var(--amber); border: 1px solid var(--amber-border); margin-top: 4px;
 }
 </style>
 </head>
@@ -1378,6 +1394,21 @@ header {
       <button class="edit-btn-save"   onclick="saveManualEdit()">Guardar</button>
       <button class="edit-btn-cancel" onclick="closeEditModal()">Cancelar</button>
       <button class="edit-btn-clear"  onclick="clearManualEdit()">↺ Repor original</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal de pausa de almoço -->
+<div id="lunch-modal-overlay" class="hidden">
+  <div class="lunch-modal">
+    <h3 id="lunch-modal-title">🍽 Pausa de almoço</h3>
+    <p id="lunch-modal-sub"></p>
+    <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Horário da pausa:</label>
+    <select id="lunch-select"></select>
+    <div class="lunch-modal-btns">
+      <button class="lunch-btn-save"   onclick="saveLunchModal()">Guardar</button>
+      <button class="lunch-btn-cancel" onclick="closeLunchModal()">Cancelar</button>
+      <button class="lunch-btn-clear"  onclick="clearLunchModal()">↺ Remover pausa</button>
     </div>
   </div>
 </div>
@@ -1523,11 +1554,24 @@ const getS = c => SH[c] || null;
 const ini = n => n.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
 const countW = idx => TEAM.filter(m => !isOff(m.sch[idx])).length;
 
-function working(c, h) {
+// working(c, h, userId, day) — inclui pausa manual de almoço se existir
+// userId e day são opcionais; sem eles comporta-se como antes
+function working(c, h, userId, day) {
   const s = getS(c);
   if (!s) return false;
   if (h < s.s || h >= s.e) return false;
-  if (s.bs !== null && h >= s.bs && h < s.be) return false;
+  // Pausa manual de almoço sobrepõe-se à pausa do turno
+  if (userId !== undefined && day !== undefined) {
+    const lbs = getLunch(userId, day);  // number | null — getLunch já devolve número
+    if (lbs !== null) {
+      const lbe = lbs + 1;
+      if (h >= lbs && h < lbe) return false;
+    } else if (s.bs !== null && h >= s.bs && h < s.be) {
+      return false;
+    }
+  } else {
+    if (s.bs !== null && h >= s.bs && h < s.be) return false;
+  }
   return true;
 }
 
@@ -1614,46 +1658,89 @@ function clearManualEdit() {
 // ════════════════════════════════════════════════════════
 // ALMOÇO MANUAL — localStorage
 // ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+// PAUSA DE ALMOÇO — localStorage
+// ════════════════════════════════════════════════════════
 function lunchKey(userId, day) { return `lunch_${userId}_${day}`; }
 function getLunch(userId, day) {
-  return localStorage.getItem(lunchKey(userId, day)) || null;
+  const v = localStorage.getItem(lunchKey(userId, day));
+  return v !== null ? parseFloat(v) : null;
 }
-function setLunch(userId, day, hour) {
-  if (hour === '') localStorage.removeItem(lunchKey(userId, day));
-  else localStorage.setItem(lunchKey(userId, day), hour);
-}
-function saveLunchFromUI(userId, day) {
-  const sel = document.getElementById('lunch-sel-' + userId + '-' + day);
-  if (!sel) return;
-  setLunch(userId, day, sel.value);
-  // Refresh the panel immediately
-  pick(day);
+function setLunch(userId, day, val) {
+  if (val === null || val === '') localStorage.removeItem(lunchKey(userId, day));
+  else localStorage.setItem(lunchKey(userId, day), String(val));
 }
 
+// Formata "13.5" → "13:30–14:30"
+function lunchLabel(t) {
+  if (t === null) return null;
+  const h = Math.floor(t), m = t % 1 === 0.5 ? '30' : '00';
+  const t2 = t + 1, h2 = Math.floor(t2), m2 = t2 % 1 === 0.5 ? '30' : '00';
+  return `${h}:${m} – ${h2}:${m2}`;
+}
+
+// Mostra botão de edição de pausa (abre modal) — UX idêntica ao edit de horário
 function buildLunchSelector(userId, day, shiftCode) {
   const s = getS(shiftCode);
-  // Only offer lunch selector for shifts >= 7h duration
-  if (!s || (s.e - s.s) < 7) return '';
+  if (!s || (s.e - s.s) < 7) return '';   // só turnos >= 7h
   const saved = getLunch(userId, day);
-  // Offer half-hour slots within the shift, excluding first/last hour
-  const opts = ['<option value="">— sem registo —</option>'];
-  for (let t = s.s + 1; t < s.e - 1; t += 0.5) {
-    const h = Math.floor(t), m = t % 1 === 0.5 ? '30' : '00';
-    const label = `${h}:${m} – ${t+1 < 10 ? '0' : ''}${Math.floor(t+1)}:${(t+1)%1===0.5?'30':'00'}`;
-    const val = t.toString();
-    opts.push(`<option value="${val}"${saved===val?' selected':''}>${label}</option>`);
-  }
-  const savedLabel = saved ? (() => {
-    const t = parseFloat(saved);
-    const h = Math.floor(t), m = t%1===0.5?'30':'00';
-    const t2 = t+1;
-    return `${h}:${m}–${Math.floor(t2)}:${t2%1===0.5?'30':'00'}`;
-  })() : null;
-  return `<div class="lunch-selector">
-    <label>🍽 Almoço${savedLabel ? `<span class="lunch-badge">${savedLabel}</span>` : ''}:</label>
-    <select class="lunch-select" id="lunch-sel-${userId}-${day}">${opts.join('')}</select>
-    <button class="lunch-save-btn" onclick="saveLunchFromUI('${userId}',${day})">Guardar</button>
+  const label = saved !== null ? lunchLabel(saved) : null;
+  return `<div class="lunch-trigger-row">
+    <button class="lunch-trigger-btn" onclick="openLunchModal('${userId}',${day},'${shiftCode}')">
+      🍽 ${label ? `Pausa: <strong>${label}</strong>` : 'Definir pausa de almoço'}
+    </button>
   </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// MODAL DE PAUSA DE ALMOÇO
+// ════════════════════════════════════════════════════════
+let lunchUserId = null, lunchDayIdx = null, lunchShiftCode = null;
+
+function openLunchModal(userId, day, shiftCode) {
+  lunchUserId = userId;
+  lunchDayIdx = day;
+  lunchShiftCode = shiftCode;
+  const s = getS(shiftCode);
+  const member = TEAM.find(m => m.id === userId);
+  const dow = DOW[(APR1_DOW + day - 1) % 7];
+  document.getElementById('lunch-modal-title').textContent =
+    `🍽 Pausa — ${member?.name.split(' ')[0] || userId}`;
+  document.getElementById('lunch-modal-sub').textContent =
+    `${dow}, ${day} de Abril 2026 · Turno ${shiftCode}`;
+  const saved = getLunch(userId, day);
+  // Gerar opções: slots de 30min dentro do turno, excluindo 1ª e última hora
+  const opts = ['<option value="">— Sem pausa registada —</option>'];
+  for (let t = s.s + 1; t < s.e - 1; t += 0.5) {
+    opts.push(`<option value="${t}"${saved===t?' selected':''}>${lunchLabel(t)}</option>`);
+  }
+  document.getElementById('lunch-select').innerHTML = opts.join('');
+  document.getElementById('lunch-modal-overlay').classList.remove('hidden');
+  document.getElementById('lunch-select').focus();
+}
+
+function closeLunchModal() {
+  document.getElementById('lunch-modal-overlay').classList.add('hidden');
+  lunchUserId = null; lunchDayIdx = null; lunchShiftCode = null;
+}
+
+function saveLunchModal() {
+  if (!lunchUserId || !lunchDayIdx) return;
+  const val = document.getElementById('lunch-select').value;
+  setLunch(lunchUserId, lunchDayIdx, val === '' ? null : parseFloat(val));
+  const savedDay = lunchDayIdx;
+  closeLunchModal();
+  renderCal();
+  pick(savedDay);
+}
+
+function clearLunchModal() {
+  if (!lunchUserId || !lunchDayIdx) return;
+  setLunch(lunchUserId, lunchDayIdx, null);
+  const savedDay = lunchDayIdx;
+  closeLunchModal();
+  renderCal();
+  pick(savedDay);
 }
 
 function init() {
@@ -2185,7 +2272,7 @@ function pick(day) {
   TEAM.forEach(m => {
     const c = getEffectiveCode(m.id, day);  // use effective shift
     HOURS.forEach(h => {
-      if (working(c, h)) {
+      if (working(c, h, m.id, day)) {  // passa userId+day para incluir pausa manual
         cov[h].t++;
         if (m.id === currentUser.id) cov[h].me = true;
         const dn = TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
@@ -2276,6 +2363,11 @@ function pick(day) {
 
   const openHours = HOURS.filter(h => h >= STORE_OPEN && h < STORE_CLOSE);
   const maxC = Math.max(...openHours.map(h => cov[h].t), 1);
+  // Calcular hora atual UMA VEZ, fora do loop
+  const _nowH = new Date();
+  const _isToday = _nowH.getFullYear() === 2026 && _nowH.getMonth() === 3 && _nowH.getDate() === day;
+  const _currentHour = _isToday ? _nowH.getHours() : -1;
+
   let chartRows = '';
   HOURS.forEach(h => {
     const isOpen = h >= STORE_OPEN && h < STORE_CLOSE;
@@ -2291,11 +2383,8 @@ function pick(day) {
     }
     const namesHtml = v.workers.length > 0
       ? `<div class="hour-names">${v.workers.join(', ')}</div>` : '';
-    const nowH = new Date();
-    const isToday2026Apr = nowH.getFullYear() === 2026 && nowH.getMonth() === 3 && nowH.getDate() === day;
-    const currentHour = isToday2026Apr ? nowH.getHours() : -1;
-    const isPastH = isToday2026Apr && h < currentHour;
-    const isCurrentH = isToday2026Apr && h === currentHour;
+    const isPastH = _isToday && h < _currentHour;
+    const isCurrentH = _isToday && h === _currentHour;
     chartRows += `<div class="h-row${isPastH ? ' past-hour' : isCurrentH ? ' current-hour' : ''}">
       <div class="h-lbl ${isOpen ? 'open' : 'closed'}">${h}h</div>
       <div class="bar-wrap ${isOpen ? 'open-h' : 'closed-h'}">
@@ -2310,7 +2399,7 @@ function pick(day) {
     }
   });
 
-  const workingNow = TEAM.filter(m => !isOff(m.sch[day])).length;
+  const workingNow = TEAM.filter(m => !isOff(getEffectiveCode(m.id, day))).length;
   const offNow = TEAM.length - workingNow;
   const dateStr = `2026-04-${String(day).padStart(2,'0')}`;
 
