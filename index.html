@@ -209,11 +209,34 @@ body {
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 14px 16px 12px;
+  /* safe-area para notch iPhone em modo standalone */
+  padding: max(14px, calc(14px + env(safe-area-inset-top))) 16px 12px;
   flex-shrink: 0;
   position: relative;
   z-index: 100;
 }
+
+/* safe-area também no profile overlay que cobre o ecrã inteiro */
+#profile-overlay {
+  padding-top: env(safe-area-inset-top);
+}
+
+.logout-btn {
+  background: none;
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: color .12s, border-color .12s;
+  margin-left: 6px;
+}
+.logout-btn:hover { color: var(--text); border-color: var(--border2); }
 
 .header-inner {
   max-width: 900px;
@@ -1165,7 +1188,45 @@ header {
   color: var(--red); border: 1px solid rgba(239,68,68,.25); margin-top: 4px;
 }
 
-/* ── MAY CALENDAR DAYS (idêntico ao .cal-day) ──────────── */
+/* ── PAST HOURS ─────────────────────────────────────── */
+.h-row.hour-past .bar-wrap { opacity: .35; }
+.h-row.hour-past .h-lbl    { color: var(--faint) !important; }
+.h-row.hour-past .bar-count { color: var(--faint); }
+
+/* ── LUNCH BREAK SECTION ────────────────────────────── */
+.lunch-section {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px;
+  margin-top: 10px;
+}
+.lunch-section .lunch-title {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px;
+}
+.lunch-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;
+}
+.lunch-row .lunch-name {
+  font-size: 12px; font-weight: 600; min-width: 90px; flex-shrink: 0;
+}
+.lunch-row select {
+  flex: 1; min-width: 120px; padding: 6px 8px;
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text);
+  font-size: 12px; font-family: 'DM Sans', sans-serif;
+  -webkit-appearance: none;
+}
+.lunch-row select:focus { outline: none; border-color: var(--accent); }
+.lunch-saved { color: var(--green); font-size: 10px; }
+.lunch-clear-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: 5px; color: var(--muted); font-size: 10px;
+  padding: 4px 7px; cursor: pointer; -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+}
+
 .may-cal-day {
   border-radius: 8px;
   padding: 5px 3px 4px;
@@ -1243,6 +1304,7 @@ header {
         <div class="user-av" id="user-av"></div>
         <span id="user-name"></span>
       </div>
+      <button class="logout-btn" onclick="logout()" title="Sair">Sair</button>
     </div>
   </header>
 
@@ -1418,7 +1480,8 @@ const TEAM = [
   {id:'12238',name:'Diogo Rebelo', isManager:false,
    sch:['110RA','160','170','200','130','FO','110RA','130TA','100QA','110RA','100QA','FC','FO','090PA','100QA','100QA','FC','FO','130TA','150VA','120SA','FC','FO','090PA','090PA','090PA','090PA','FC','090PA','110RA','110RA']},
   // PDF: 12339 PEDRO SILVA (manager)
-  {id:'12339',name:'Pedro Silva', isManager:true, password:'123',
+  {id:'12339',name:'Pedro Silva', isManager:true,
+   pwHash:'6636b31811ee0bbf593d11526ceb655267fe96d8daa4a164929664426952c348',
    sch:['150VA','150VA','150VA','150VA','FC','FO','070MA','100QA','120SA','FC','FO','110RA','110RA','100QA','FC','120SA','FO','120SA','150VA','150VA','FC','100QA','100QA','100QA','100QA','100QA','FO','100QA','100QA','120SA','120SA']},
   // PDF: 13777 JOSE PEREIRA
   {id:'13777',name:'José Pereira', isManager:false,
@@ -1628,9 +1691,16 @@ function selectProfile(user) {
   authenticateUser(user);
 }
 
-function checkPassword() {
-  const password = document.getElementById('password-input').value;
-  if (password === '123') {
+async function sha256hex(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPassword() {
+  const raw = document.getElementById('password-input').value;
+  const hash = await sha256hex(raw);
+  const mgr = TEAM.find(m => m.isManager);
+  if (hash === mgr.pwHash) {
     document.getElementById('password-overlay').classList.add('hidden');
     authenticateUser(pendingUser);
   } else {
@@ -2027,6 +2097,49 @@ function renderDayoffsPanel() {
   }).join('');
 }
 
+// ── LUNCH BREAKS (localStorage) ──────────────────────
+function lunchKey(dateStr) { return 'lunch_' + dateStr; }
+function getLunches(dateStr) {
+  try { return JSON.parse(localStorage.getItem(lunchKey(dateStr)) || '{}'); } catch { return {}; }
+}
+function saveLunches(dateStr, obj) { localStorage.setItem(lunchKey(dateStr), JSON.stringify(obj)); }
+
+function setLunch(dateStr, userId, slot) {
+  const obj = getLunches(dateStr);
+  if (slot === '') delete obj[userId];
+  else obj[userId] = slot;
+  saveLunches(dateStr, obj);
+  // re-render the lunch section without full pick() to avoid scroll jump
+  renderLunchSection(dateStr, selectedDay);
+}
+
+function clearLunch(dateStr, userId) { setLunch(dateStr, userId, ''); }
+
+function renderLunchSection(dateStr, day) {
+  const sec = document.getElementById('lunch-section');
+  if (!sec) return;
+  const lunches = getLunches(dateStr);
+  const SLOTS = ['','12:00–13:00','12:30–13:30','13:00–14:00','13:30–14:30','14:00–15:00','14:30–15:30','15:00–16:00'];
+  const members = TEAM.filter(m => {
+    const c = getEffectiveCode(m.id, day);
+    if (isOff(c)) return false;
+    const s = getS(c);
+    return s && (s.e - s.s >= 8); // full-time only (≥8h shift)
+  });
+  if (members.length === 0) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  sec.querySelector('.lunch-rows').innerHTML = members.map(m => {
+    const saved = lunches[m.id] || '';
+    const dn = m.name.split(' ')[0];
+    const opts = SLOTS.map(s => `<option value="${s}"${s===saved?' selected':''}>${s || '— não definido —'}</option>`).join('');
+    const badge = saved ? `<span class="lunch-saved">✓ ${saved}</span>` : '';
+    return `<div class="lunch-row">
+      <span class="lunch-name">${dn}${badge}</span>
+      <select onchange="setLunch('${dateStr}','${m.id}',this.value)">${opts}</select>
+    </div>`;
+  }).join('');
+}
+
 function renderCal() {
   const now = new Date();
   const todayApr = (now.getFullYear() === 2026 && now.getMonth() === 3) ? now.getDate() : null;
@@ -2214,9 +2327,10 @@ function pick(day) {
       if (v.me) { col = '#3b82f6'; tag = `<span class="bar-tag" style="color:#3b82f6">TU</span>`; }
       else { col = '#10b981'; }
     }
+    const isPastHour = currentHour >= 0 && h < currentHour;
     const namesHtml = v.workers.length > 0
       ? `<div class="hour-names">${v.workers.join(', ')}</div>` : '';
-    chartRows += `<div class="h-row">
+    chartRows += `<div class="h-row${isPastHour ? ' hour-past' : ''}">
       <div class="h-lbl ${isOpen ? 'open' : 'closed'}">${h}h</div>
       <div class="bar-wrap ${isOpen ? 'open-h' : 'closed-h'}">
         <div class="bar-fill" style="width:${pct}%;background:${col}"></div>
@@ -2233,6 +2347,11 @@ function pick(day) {
   const workingNow = TEAM.filter(m => !isOff(getEffectiveCode(m.id, day))).length;
   const offNow = TEAM.length - workingNow;
   const dateStr = `2026-04-${String(day).padStart(2,'0')}`;
+
+  // current hour for past-hour dimming
+  const now = new Date();
+  const currentHour = (now.getFullYear() === 2026 && now.getMonth() === 3 && now.getDate() === day)
+    ? now.getHours() : -1; // -1 = not today, no dimming
 
   document.getElementById('detail-label').textContent = `${dow}, ${day} de Abril 2026`;
   document.getElementById('detail').innerHTML = `
@@ -2275,6 +2394,11 @@ function pick(day) {
         <div class="leg"><div class="leg-dot" style="background:rgba(255,255,255,0.08)"></div>Fora de loja</div>
       </div>
       ${chartRows}
+      <!-- pausa almoço full-time -->
+      <div class="lunch-section" id="lunch-section" style="display:none">
+        <div class="lunch-title">☕ Pausa almoço (full-time)</div>
+        <div class="lunch-rows"></div>
+      </div>
     </div>
     <div class="panel-section" id="checklist-section">
       <div class="sec-title" style="display:flex;justify-content:space-between;align-items:center;">
@@ -2299,6 +2423,7 @@ function pick(day) {
     </div>`;
 
   renderChecklist(dateStr);
+  renderLunchSection(dateStr, day);
 
   if (window.innerWidth < 700) {
     document.getElementById('detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
