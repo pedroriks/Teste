@@ -61,6 +61,7 @@ body {
   color: var(--text);
   width: 100%;
   min-height: 100%;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* ── APP SHELL ─────────────────────────────────────── */
@@ -118,7 +119,7 @@ body {
 .profile-header {
   flex-shrink: 0;
   background: var(--bg);
-  padding: 24px 20px 16px;
+  padding: calc(24px + env(safe-area-inset-top)) 20px 16px;
   text-align: center;
   border-bottom: 1px solid var(--border);
 }
@@ -209,7 +210,8 @@ body {
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 14px 16px 12px;
+  padding: calc(14px + env(safe-area-inset-top)) 16px 12px;
+  padding: calc(14px + constant(safe-area-inset-top)) 16px 12px;
   flex-shrink: 0;
   position: relative;
   z-index: 100;
@@ -1202,6 +1204,78 @@ header {
 }
 .may-cal-day.req-marked .d-num { color: var(--amber); }
 .may-cal-day.req-marked .d-lbl { color: var(--amber); }
+
+/* ── LOGOUT BUTTON ─────────────────────────────────── */
+.logout-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  cursor: pointer;
+  margin-left: 6px;
+  flex-shrink: 0;
+  -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: color .12s, border-color .12s;
+}
+.logout-btn:active { opacity: .6; }
+
+/* ── PAST HOURS ─────────────────────────────────────── */
+.h-row.past-hour { opacity: 0.38; }
+.h-row.current-hour .h-lbl { color: var(--accent) !important; font-weight: 700; }
+.h-row.current-hour .bar-wrap { outline: 1.5px solid var(--accent); border-radius: 4px; }
+
+/* ── PAUSA DE ALMOÇO — trigger button ───────────────── */
+.lunch-trigger-row { margin-top: 8px; }
+.lunch-trigger-btn {
+  width: 100%; padding: 8px 12px;
+  background: var(--amber-bg); border: 1px solid var(--amber-border);
+  border-radius: var(--r); color: var(--amber);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  text-align: left; -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .12s;
+}
+.lunch-trigger-btn strong { color: var(--text); }
+.lunch-trigger-btn:active { opacity: .75; }
+
+/* ── MODAL DE PAUSA DE ALMOÇO ────────────────────────── */
+#lunch-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.75);
+  z-index: 3500; display: flex; align-items: center;
+  justify-content: center; padding: 20px;
+}
+#lunch-modal-overlay.hidden { display: none !important; }
+.lunch-modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px;
+  max-width: 320px; width: 100%;
+}
+.lunch-modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+.lunch-modal p  { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.lunch-modal select {
+  width: 100%; padding: 10px 12px; margin-bottom: 14px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text);
+  font-size: 13px; font-family: 'DM Sans', sans-serif;
+  -webkit-appearance: none; appearance: none;
+}
+.lunch-modal select:focus { outline: none; border-color: var(--accent); }
+.lunch-modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lunch-modal-btns button {
+  padding: 10px; border-radius: var(--r); border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
+}
+.lunch-btn-save   { background: var(--accent); color: #fff; }
+.lunch-btn-cancel { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.lunch-btn-clear  {
+  grid-column: 1 / -1; background: var(--surface2);
+  color: var(--amber); border: 1px solid var(--amber-border); margin-top: 4px;
+}
 </style>
 </head>
 <body>
@@ -1239,9 +1313,12 @@ header {
           <p>SPZ Leiria · SDSR Sports Division</p>
         </div>
       </div>
-      <div class="user-pill" id="current-user-pill">
-        <div class="user-av" id="user-av"></div>
-        <span id="user-name"></span>
+      <div style="display:flex;align-items:center;gap:0;flex-shrink:0">
+        <div class="user-pill" id="current-user-pill">
+          <div class="user-av" id="user-av"></div>
+          <span id="user-name"></span>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Sair">✕ Sair</button>
       </div>
     </div>
   </header>
@@ -1317,6 +1394,21 @@ header {
       <button class="edit-btn-save"   onclick="saveManualEdit()">Guardar</button>
       <button class="edit-btn-cancel" onclick="closeEditModal()">Cancelar</button>
       <button class="edit-btn-clear"  onclick="clearManualEdit()">↺ Repor original</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal de pausa de almoço -->
+<div id="lunch-modal-overlay" class="hidden">
+  <div class="lunch-modal">
+    <h3 id="lunch-modal-title">🍽 Pausa de almoço</h3>
+    <p id="lunch-modal-sub"></p>
+    <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Horário da pausa:</label>
+    <select id="lunch-select"></select>
+    <div class="lunch-modal-btns">
+      <button class="lunch-btn-save"   onclick="saveLunchModal()">Guardar</button>
+      <button class="lunch-btn-cancel" onclick="closeLunchModal()">Cancelar</button>
+      <button class="lunch-btn-clear"  onclick="clearLunchModal()">↺ Remover pausa</button>
     </div>
   </div>
 </div>
@@ -1418,7 +1510,7 @@ const TEAM = [
   {id:'12238',name:'Diogo Rebelo', isManager:false,
    sch:['110RA','160','170','200','130','FO','110RA','130TA','100QA','110RA','100QA','FC','FO','090PA','100QA','100QA','FC','FO','130TA','150VA','120SA','FC','FO','090PA','090PA','090PA','090PA','FC','090PA','110RA','110RA']},
   // PDF: 12339 PEDRO SILVA (manager)
-  {id:'12339',name:'Pedro Silva', isManager:true, password:'123',
+  {id:'12339',name:'Pedro Silva', isManager:true, passwordHash:'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
    sch:['150VA','150VA','150VA','150VA','FC','FO','070MA','100QA','120SA','FC','FO','110RA','110RA','100QA','FC','120SA','FO','120SA','150VA','150VA','FC','100QA','100QA','100QA','100QA','100QA','FO','100QA','100QA','120SA','120SA']},
   // PDF: 13777 JOSE PEREIRA
   {id:'13777',name:'José Pereira', isManager:false,
@@ -1460,13 +1552,26 @@ let editDayIdx = null;
 const isOff = c => OFF.includes(c);
 const getS = c => SH[c] || null;
 const ini = n => n.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-const countW = idx => TEAM.filter(m => !isOff(getEffectiveCode(m.id, idx))).length;
+const countW = idx => TEAM.filter(m => !isOff(m.sch[idx])).length;
 
-function working(c, h) {
+// working(c, h, userId, day) — inclui pausa manual de almoço se existir
+// userId e day são opcionais; sem eles comporta-se como antes
+function working(c, h, userId, day) {
   const s = getS(c);
   if (!s) return false;
   if (h < s.s || h >= s.e) return false;
-  if (s.bs !== null && h >= s.bs && h < s.be) return false;
+  // Pausa manual de almoço sobrepõe-se à pausa do turno
+  if (userId !== undefined && day !== undefined) {
+    const lbs = getLunch(userId, day);  // number | null — getLunch já devolve número
+    if (lbs !== null) {
+      const lbe = lbs + 1;
+      if (h >= lbs && h < lbe) return false;
+    } else if (s.bs !== null && h >= s.bs && h < s.be) {
+      return false;
+    }
+  } else {
+    if (s.bs !== null && h >= s.bs && h < s.be) return false;
+  }
   return true;
 }
 
@@ -1527,69 +1632,115 @@ function closeEditModal() {
   editUserId = null; editDayIdx = null;
 }
 
-// ── ORIGINAL SNAPSHOT — imutável, guardado antes de qualquer edição manual ──
-function getOriginalSnapshots() { try { return JSON.parse(localStorage.getItem('shiftOriginalSnap') || '{}'); } catch { return {}; } }
-function saveOriginalSnapshots(o) { localStorage.setItem('shiftOriginalSnap', JSON.stringify(o)); }
-
 function saveManualEdit() {
   const sel = document.getElementById('edit-shift-select');
   if (!sel || !editUserId || !editDayIdx) return;
-  const key = ovrKey(editUserId, editDayIdx);
-
-  // Guardar o código ORIGINAL apenas se ainda não existe snapshot para esta chave
-  // (protege contra sobrescrever o original em edições subsequentes)
-  const snaps = getOriginalSnapshots();
-  if (!snaps[key]) {
-    // Fonte verdadeira: ignora overrides existentes, vai direto ao sch do TEAM
-    const member = TEAM.find(m => m.id === editUserId);
-    snaps[key] = member ? member.sch[editDayIdx] : 'V';
-    saveOriginalSnapshots(snaps);
-  }
-
+  const day = editDayIdx; // guardar antes de closeEditModal() anular a variável
   const ovr = getManualOverrides();
-  ovr[key] = sel.value;
+  ovr[ovrKey(editUserId, day)] = sel.value;
   saveManualOverrides(ovr);
-  const savedDay = editDayIdx;
   closeEditModal();
   renderCal();
-  pick(savedDay);
+  pick(day);
 }
 
 function clearManualEdit() {
   if (!editUserId || !editDayIdx) return;
-  const key = ovrKey(editUserId, editDayIdx);
-
-  // Restaurar a partir do snapshot original se existir
-  const snaps = getOriginalSnapshots();
-  const originalCode = snaps[key];
-
+  const day = editDayIdx; // guardar antes de closeEditModal() anular a variável
+  const key = ovrKey(editUserId, day);
   const ovr = getManualOverrides();
-  const swaps = getSwapOverrides();
-
-  if (originalCode) {
-    // Se existia um swap override antes da edição manual, restaurá-lo também
-    // A lógica: se o original já era resultado de swap, repõe o swap; caso contrário limpa tudo
-    // Simplificação correta: remove o manual override — o getEffectiveCode cai para swap ou sch[]
-    delete ovr[key];
-    // Se o originalCode não coincide com o que swap daria, significa que não havia swap antes
-    // então também limpamos o swap para garantir restauro total ao sch[] original
-    const swapCode = swaps[key];
-    if (swapCode && swapCode !== originalCode) {
-      // havia swap mas o original guardado é o sch[] puro — limpa swap também
-      delete swaps[key];
-      saveSwapOverrides(swaps);
-    }
-    // Remove o snapshot após restauro para permitir novas edições limpas
-    delete snaps[key];
-    saveOriginalSnapshots(snaps);
-  } else {
-    // Sem snapshot: comportamento anterior — apaga só o manual override
-    delete ovr[key];
-  }
-
+  delete ovr[key];
   saveManualOverrides(ovr);
-  const savedDay = editDayIdx;
   closeEditModal();
+  renderCal();
+  pick(day);
+}
+
+
+// ════════════════════════════════════════════════════════
+// ALMOÇO MANUAL — localStorage
+// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+// PAUSA DE ALMOÇO — localStorage
+// ════════════════════════════════════════════════════════
+function lunchKey(userId, day) { return `lunch_${userId}_${day}`; }
+function getLunch(userId, day) {
+  const v = localStorage.getItem(lunchKey(userId, day));
+  return v !== null ? parseFloat(v) : null;
+}
+function setLunch(userId, day, val) {
+  if (val === null || val === '') localStorage.removeItem(lunchKey(userId, day));
+  else localStorage.setItem(lunchKey(userId, day), String(val));
+}
+
+// Formata "13.5" → "13:30–14:30"
+function lunchLabel(t) {
+  if (t === null) return null;
+  const h = Math.floor(t), m = t % 1 === 0.5 ? '30' : '00';
+  const t2 = t + 1, h2 = Math.floor(t2), m2 = t2 % 1 === 0.5 ? '30' : '00';
+  return `${h}:${m} – ${h2}:${m2}`;
+}
+
+// Mostra botão de edição de pausa (abre modal) — UX idêntica ao edit de horário
+function buildLunchSelector(userId, day, shiftCode) {
+  const s = getS(shiftCode);
+  if (!s || (s.e - s.s) < 7) return '';   // só turnos >= 7h
+  const saved = getLunch(userId, day);
+  const label = saved !== null ? lunchLabel(saved) : null;
+  return `<div class="lunch-trigger-row">
+    <button class="lunch-trigger-btn" onclick="openLunchModal('${userId}',${day},'${shiftCode}')">
+      🍽 ${label ? `Pausa: <strong>${label}</strong>` : 'Definir pausa de almoço'}
+    </button>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// MODAL DE PAUSA DE ALMOÇO
+// ════════════════════════════════════════════════════════
+let lunchUserId = null, lunchDayIdx = null, lunchShiftCode = null;
+
+function openLunchModal(userId, day, shiftCode) {
+  lunchUserId = userId;
+  lunchDayIdx = day;
+  lunchShiftCode = shiftCode;
+  const s = getS(shiftCode);
+  const member = TEAM.find(m => m.id === userId);
+  const dow = DOW[(APR1_DOW + day - 1) % 7];
+  document.getElementById('lunch-modal-title').textContent =
+    `🍽 Pausa — ${member?.name.split(' ')[0] || userId}`;
+  document.getElementById('lunch-modal-sub').textContent =
+    `${dow}, ${day} de Abril 2026 · Turno ${shiftCode}`;
+  const saved = getLunch(userId, day);
+  // Gerar opções: slots de 30min dentro do turno, excluindo 1ª e última hora
+  const opts = ['<option value="">— Sem pausa registada —</option>'];
+  for (let t = s.s + 1; t < s.e - 1; t += 0.5) {
+    opts.push(`<option value="${t}"${saved===t?' selected':''}>${lunchLabel(t)}</option>`);
+  }
+  document.getElementById('lunch-select').innerHTML = opts.join('');
+  document.getElementById('lunch-modal-overlay').classList.remove('hidden');
+  document.getElementById('lunch-select').focus();
+}
+
+function closeLunchModal() {
+  document.getElementById('lunch-modal-overlay').classList.add('hidden');
+  lunchUserId = null; lunchDayIdx = null; lunchShiftCode = null;
+}
+
+function saveLunchModal() {
+  if (!lunchUserId || !lunchDayIdx) return;
+  const val = document.getElementById('lunch-select').value;
+  setLunch(lunchUserId, lunchDayIdx, val === '' ? null : parseFloat(val));
+  const savedDay = lunchDayIdx;
+  closeLunchModal();
+  renderCal();
+  pick(savedDay);
+}
+
+function clearLunchModal() {
+  if (!lunchUserId || !lunchDayIdx) return;
+  setLunch(lunchUserId, lunchDayIdx, null);
+  const savedDay = lunchDayIdx;
+  closeLunchModal();
   renderCal();
   pick(savedDay);
 }
@@ -1603,7 +1754,11 @@ function init() {
   
   list.innerHTML = '';
   
-  TEAM.sort((a,b) => a.name.localeCompare(b.name)).forEach(u => {
+  TEAM.slice().sort((a, b) => {
+    if (a.isManager && !b.isManager) return -1;
+    if (!a.isManager && b.isManager) return 1;
+    return a.name.localeCompare(b.name);
+  }).forEach(u => {
     const btn = document.createElement('div');
     btn.className = `profile-btn ${u.isManager ? 'is-manager' : ''}`;
     const displayName = TEAM.filter(x => x.name.split(' ')[0] === u.name.split(' ')[0]).length > 1 
@@ -1628,9 +1783,16 @@ function selectProfile(user) {
   authenticateUser(user);
 }
 
-function checkPassword() {
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPassword() {
   const password = document.getElementById('password-input').value;
-  if (password === '123') {
+  if (!pendingUser) return;
+  const hash = await sha256(password);
+  if (hash === pendingUser.passwordHash) {
     document.getElementById('password-overlay').classList.add('hidden');
     authenticateUser(pendingUser);
   } else {
@@ -1677,6 +1839,9 @@ function authenticateUser(user) {
 function logout() {
   currentUser = null;
   pendingUser = null;
+  selectedDay = 1;
+  currentMonth = 0;
+  document.getElementById('user-av').classList.remove('av-me');
   document.getElementById('profile-overlay').classList.remove('hidden');
   document.getElementById('main-app').classList.add('hidden');
   document.getElementById('password-overlay').classList.add('hidden');
@@ -1845,10 +2010,10 @@ function openModal(type, day, month) {
   if (type === 'swap') {
     document.getElementById('modal-title').textContent = '🔄 Pedir troca de horário';
     document.getElementById('modal-sub').textContent = `${dow}, ${day} de ${monthLabel} 2026`;
-    const colleagues = TEAM.filter(m => m.id !== currentUser.id && !m.isManager && !isOff(getEffectiveCode(m.id, day)));
+    const colleagues = TEAM.filter(m => m.id !== currentUser.id && !m.isManager && !isOff(m.sch[day]));
     const opts = colleagues.length === 0
       ? '<option value="">Nenhum colega disponível</option>'
-      : colleagues.map(m => `<option value="${m.id}">${m.name.split(' ')[0]} (${getEffectiveCode(m.id, day)})</option>`).join('');
+      : colleagues.map(m => `<option value="${m.id}">${m.name.split(' ')[0]} (${m.sch[day]})</option>`).join('');
     document.getElementById('modal-body').innerHTML = `
       <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Trocar com:</label>
       <select id="modal-select">${opts}</select>`;
@@ -2113,7 +2278,7 @@ function pick(day) {
   TEAM.forEach(m => {
     const c = getEffectiveCode(m.id, day);  // use effective shift
     HOURS.forEach(h => {
-      if (working(c, h)) {
+      if (working(c, h, m.id, day)) {  // passa userId+day para incluir pausa manual
         cov[h].t++;
         if (m.id === currentUser.id) cov[h].me = true;
         const dn = TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
@@ -2143,6 +2308,7 @@ function pick(day) {
         <div style="font-size:22px;font-weight:700;letter-spacing:-0.5px">${s.s}:00 → ${s.e === 24 ? '00:00' : s.e + ':00'}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:4px">${s.e - s.s - (p.hasBreak ? 1 : 0)}h de trabalho efetivo</div>
         ${breakLine}
+        ${buildLunchSelector(currentUser.id, day, p.code)}
       </div>`;
     }
 
@@ -2189,11 +2355,13 @@ function pick(day) {
                    : ovrType === 'manual' ? `<span class="ovr-badge manual">✏ manual</span>`
                    : '';
     const editBtn = `<button class="edit-shift-btn" onclick="openEditModal('${m.id}',${day})" title="Editar horário">✏</button>`;
+    const lunchSel = !off ? buildLunchSelector(m.id, day, c) : '';
     return `<div class="wcard ${cl}${hasChange?' changed-w':''}">
       <div class="av ${isMe ? 'av-me' : ''}">${ini(m.name)}</div>
       <div style="flex:1;min-width:0">
         <div class="w-name">${isMe ? '★ ' : ''}${dn}${hasChange ? ' <span class="change-badge">⚡ alt.</span>' : ''}${ovrBadge}</div>
         <div class="w-code">${c}</div>
+        ${lunchSel}
       </div>
       ${editBtn}
     </div>`;
@@ -2201,6 +2369,11 @@ function pick(day) {
 
   const openHours = HOURS.filter(h => h >= STORE_OPEN && h < STORE_CLOSE);
   const maxC = Math.max(...openHours.map(h => cov[h].t), 1);
+  // Calcular hora atual UMA VEZ, fora do loop
+  const _nowH = new Date();
+  const _isToday = _nowH.getFullYear() === 2026 && _nowH.getMonth() === 3 && _nowH.getDate() === day;
+  const _currentHour = _isToday ? _nowH.getHours() : -1;
+
   let chartRows = '';
   HOURS.forEach(h => {
     const isOpen = h >= STORE_OPEN && h < STORE_CLOSE;
@@ -2216,7 +2389,9 @@ function pick(day) {
     }
     const namesHtml = v.workers.length > 0
       ? `<div class="hour-names">${v.workers.join(', ')}</div>` : '';
-    chartRows += `<div class="h-row">
+    const isPastH = _isToday && h < _currentHour;
+    const isCurrentH = _isToday && h === _currentHour;
+    chartRows += `<div class="h-row${isPastH ? ' past-hour' : isCurrentH ? ' current-hour' : ''}">
       <div class="h-lbl ${isOpen ? 'open' : 'closed'}">${h}h</div>
       <div class="bar-wrap ${isOpen ? 'open-h' : 'closed-h'}">
         <div class="bar-fill" style="width:${pct}%;background:${col}"></div>
