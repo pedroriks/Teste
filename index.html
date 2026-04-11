@@ -1167,7 +1167,161 @@ header {
   color: var(--red); border: 1px solid rgba(239,68,68,.25); margin-top: 4px;
 }
 
-/* ── MAY CALENDAR DAYS (idêntico ao .cal-day) ──────────── */
+/* ════════════════════════════════════════════════════
+   PAINEL DE GESTÃO
+   ════════════════════════════════════════════════════ */
+.pg-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.pg-section-title {
+  font-size: 13px; font-weight: 700; color: var(--text);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+}
+.pg-section-title span { font-size: 15px; }
+
+/* ── Performance por secção ── */
+.perf-bars { display: flex; flex-direction: column; gap: 8px; }
+.perf-row { display: flex; align-items: center; gap: 8px; }
+.perf-label { font-size: 12px; font-weight: 600; width: 80px; flex-shrink: 0; }
+.perf-input {
+  width: 54px; padding: 5px 7px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text); font-size: 12px;
+  font-family: 'DM Sans', sans-serif; text-align: right;
+  -webkit-appearance: none;
+}
+.perf-input:focus { outline: none; border-color: var(--accent); }
+.perf-bar-wrap {
+  flex: 1; height: 14px; background: var(--surface2);
+  border-radius: 4px; overflow: hidden;
+}
+.perf-bar-fill { height: 100%; border-radius: 4px; transition: width .4s; }
+.perf-pct { font-size: 11px; color: var(--muted); width: 32px; text-align: right; }
+
+/* ── Ranking de eficiência ── */
+.eff-grid {
+  display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-bottom: 8px;
+}
+.eff-day {
+  border-radius: 6px; padding: 6px 2px; text-align: center;
+  font-size: 10px; font-weight: 600; cursor: pointer;
+  border: 1.5px solid transparent; transition: all .12s;
+  -webkit-user-select: none;
+}
+.eff-day.hit  { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+.eff-day.miss { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.25); color: var(--red); }
+.eff-day.none { background: var(--surface2); color: var(--faint); }
+.eff-streak { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* ── Destaques positivos ── */
+.highlight-rows { display: flex; flex-direction: column; gap: 6px; }
+.hl-row { display: flex; gap: 6px; align-items: flex-start; }
+.hl-name { font-size: 11px; font-weight: 600; width: 80px; flex-shrink: 0; padding-top: 7px; }
+.hl-input {
+  flex: 1; padding: 7px 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 12px;
+  font-family: 'DM Sans', sans-serif; resize: none;
+  -webkit-appearance: none;
+}
+.hl-input:focus { outline: none; border-color: var(--accent); }
+.hl-save-btn {
+  padding: 7px 12px; border-radius: 8px;
+  background: var(--accent); border: none; color: #fff;
+  font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
+}
+.hl-saved { font-size: 10px; color: var(--green); margin-top: 3px; }
+
+/* ── Energia da equipa ── */
+.energy-rows { display: flex; flex-direction: column; gap: 6px; }
+.energy-row { display: flex; align-items: center; gap: 8px; }
+.energy-name { font-size: 12px; font-weight: 600; width: 80px; flex-shrink: 0; }
+.energy-stars { display: flex; gap: 3px; }
+.energy-star {
+  font-size: 16px; cursor: pointer; opacity: .3;
+  transition: opacity .1s; -webkit-user-select: none; user-select: none;
+}
+.energy-star.active { opacity: 1; }
+.energy-avg-bar {
+  height: 10px; border-radius: 5px; margin-top: 10px; transition: width .4s;
+}
+.energy-avg-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.energy-alert {
+  margin-top: 8px; padding: 8px 12px;
+  background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25);
+  border-radius: 8px; font-size: 12px; color: var(--red);
+}
+
+/* ── Banco de esforço ── */
+.effort-rows { display: flex; flex-direction: column; gap: 8px; }
+.effort-row { display: flex; align-items: center; gap: 8px; }
+.effort-name { font-size: 12px; font-weight: 600; width: 80px; flex-shrink: 0; }
+.battery-wrap {
+  flex: 1; height: 14px; background: var(--surface2);
+  border-radius: 4px; overflow: hidden; position: relative;
+}
+.battery-fill { height: 100%; border-radius: 4px; transition: width .5s; }
+.battery-pct { font-size: 11px; color: var(--muted); width: 36px; text-align: right; }
+
+/* ── Best of the Week ── */
+.botw-input {
+  width: 100%; padding: 8px 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 13px;
+  font-family: 'DM Sans', sans-serif; margin-bottom: 8px;
+  -webkit-appearance: none;
+}
+.botw-input:focus { outline: none; border-color: var(--accent); }
+.botw-save-btn {
+  padding: 8px 16px; border-radius: 8px;
+  background: var(--accent); border: none; color: #fff;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
+}
+.botw-log { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.botw-entry {
+  padding: 10px 12px;
+  background: var(--surface2); border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+.botw-entry-date { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+.botw-entry-text { font-size: 13px; }
+
+/* ── Trocas simplificadas ── */
+.swap-log { display: flex; flex-direction: column; gap: 6px; }
+.swap-entry {
+  padding: 10px 12px; background: var(--surface2);
+  border-radius: 8px; border-left: 3px solid var(--swap-color);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.swap-entry-info { font-size: 12px; }
+.swap-entry-date { font-size: 10px; color: var(--muted); }
+.swap-del-btn {
+  background: none; border: none; color: var(--faint);
+  cursor: pointer; font-size: 14px; padding: 0; flex-shrink: 0;
+}
+.swap-add-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.swap-add-row input, .swap-add-row select {
+  flex: 1; min-width: 100px; padding: 7px 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 12px;
+  font-family: 'DM Sans', sans-serif; -webkit-appearance: none;
+}
+.swap-add-row input:focus, .swap-add-row select:focus {
+  outline: none; border-color: var(--accent);
+}
+.swap-add-btn {
+  padding: 7px 14px; border-radius: 8px;
+  background: var(--accent); border: none; color: #fff;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif; flex-shrink: 0;
+}
+/* ── MAY CALENDAR DAYS ──────────── */
 .may-cal-day {
   border-radius: 8px;
   padding: 5px 3px 4px;
@@ -1344,6 +1498,7 @@ header {
         <button class="rtab active" onclick="showTab('day')">📅 Dia</button>
         <button class="rtab" onclick="showTab('swaps')">🔄 Trocas</button>
         <button class="rtab" onclick="showTab('dayoffs')">🌙 Folgas</button>
+        <button class="rtab" onclick="showTab('painel')">📊 Painel</button>
       </div>
       <!-- painel dia -->
       <div class="rtab-panel active" id="tab-day">
@@ -1365,6 +1520,8 @@ header {
         <div class="section-label" style="margin-bottom:12px">🌙 Pedidos de Folga</div>
         <div id="dayoffs-content"></div>
       </div>
+      <!-- painel gestão -->
+      <div class="rtab-panel" id="tab-painel"></div>
     </div>
   </div>
 </div>
@@ -1934,10 +2091,11 @@ function showTab(tab) {
   document.querySelectorAll('.rtab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  const idx = ['day','swaps','dayoffs'].indexOf(tab);
+  const idx = ['day','swaps','dayoffs','painel'].indexOf(tab);
   document.querySelectorAll('.rtab')[idx]?.classList.add('active');
   if (tab === 'swaps') renderSwapsPanel();
   if (tab === 'dayoffs') renderDayoffsPanel();
+  if (tab === 'painel') renderPainel();
 }
 
 // ════════════════════════════════════════════════════════
@@ -2555,6 +2713,508 @@ document.addEventListener('keypress', function(e) {
     clAdd(dateStr);
   }
 });
+
+// ════════════════════════════════════════════════════════
+// PAINEL DE GESTÃO — módulo completo
+// ════════════════════════════════════════════════════════
+
+// ── helpers de data ──
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function weekKey() {
+  const d = new Date();
+  const jan1 = new Date(d.getFullYear(), 0, 1);
+  const wk = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  return `${d.getFullYear()}-W${String(wk).padStart(2,'0')}`;
+}
+function monthKey() {
+  const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function pgGet(k)   { try { return JSON.parse(localStorage.getItem('pg_'+k)||'null'); } catch { return null; } }
+function pgSet(k,v) { localStorage.setItem('pg_'+k, JSON.stringify(v)); }
+function pgMerge(k, partial) {
+  const cur = pgGet(k) || {};
+  pgSet(k, Object.assign(cur, partial));
+}
+
+// ── nomes abreviados da equipa (excluindo gestor) ──
+function memberNames() {
+  return TEAM.filter(m => !m.isManager).map(m => ({
+    id: m.id,
+    name: m.name.split(' ')[0]
+  }));
+}
+
+// ── RENDER PAINEL ──
+function renderPainel() {
+  const c = document.getElementById('tab-painel');
+  if (!c) return;
+  c.innerHTML = `
+    <div style="padding:4px 0 12px;font-size:11px;font-weight:700;color:var(--muted);
+      text-transform:uppercase;letter-spacing:.08em">📊 Painel de Gestão</div>
+
+    <!-- 1. Performance por secção -->
+    <div class="pg-section" id="pg-perf">
+      <div class="pg-section-title"><span>📈</span> Performance por Secção</div>
+      <div class="perf-bars" id="perf-bars"></div>
+      <div id="perf-chart" style="margin-top:12px"></div>
+      <button onclick="savePerf()" style="margin-top:10px;padding:8px 16px;background:var(--accent);
+        border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:700;
+        cursor:pointer;font-family:'DM Sans',sans-serif">Guardar</button>
+    </div>
+
+    <!-- 2. Ranking de Eficiência -->
+    <div class="pg-section" id="pg-eff">
+      <div class="pg-section-title"><span>🎯</span> Ranking de Eficiência</div>
+      <div class="eff-grid" id="eff-grid"></div>
+      <div class="eff-streak" id="eff-streak"></div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button onclick="markEff(1)" style="flex:1;padding:8px;background:var(--green-bg);
+          border:1px solid var(--green-border);border-radius:var(--r);color:var(--green);
+          font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✓ Objetivo atingido</button>
+        <button onclick="markEff(0)" style="flex:1;padding:8px;background:rgba(239,68,68,.1);
+          border:1px solid rgba(239,68,68,.25);border-radius:var(--r);color:var(--red);
+          font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">✗ Não atingido</button>
+      </div>
+    </div>
+
+    <!-- 3. Destaques Positivos -->
+    <div class="pg-section" id="pg-hl">
+      <div class="pg-section-title"><span>⭐</span> Destaques Positivos</div>
+      <div class="highlight-rows" id="hl-rows"></div>
+    </div>
+
+    <!-- 4. Energia da Equipa -->
+    <div class="pg-section" id="pg-energy">
+      <div class="pg-section-title"><span>⚡</span> Energia da Equipa</div>
+      <div class="energy-rows" id="energy-rows"></div>
+      <div id="energy-avg" style="margin-top:12px"></div>
+      <div id="energy-alerts"></div>
+      <button onclick="saveEnergy()" style="margin-top:10px;padding:8px 16px;background:var(--accent);
+        border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:700;
+        cursor:pointer;font-family:'DM Sans',sans-serif">Guardar avaliações</button>
+    </div>
+
+    <!-- 5. Banco de Esforço -->
+    <div class="pg-section" id="pg-effort">
+      <div class="pg-section-title"><span>🔋</span> Banco de Esforço</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
+        Acumulado da semana — turnos longos reduzem mais a bateria</div>
+      <div class="effort-rows" id="effort-rows"></div>
+    </div>
+
+    <!-- 6. Best of the Week -->
+    <div class="pg-section" id="pg-botw">
+      <div class="pg-section-title"><span>🏆</span> Best of the Week</div>
+      <input class="botw-input" id="botw-input" placeholder="O que correu bem hoje?">
+      <button class="botw-save-btn" onclick="saveBotw()">Guardar</button>
+      <div class="botw-log" id="botw-log"></div>
+    </div>
+
+    <!-- 7. Registo de Trocas -->
+    <div class="pg-section" id="pg-swaps-simple">
+      <div class="pg-section-title"><span>🔄</span> Registo de Trocas</div>
+      <div class="swap-add-row">
+        <input id="swap-from" placeholder="De quem">
+        <input id="swap-to" placeholder="Para quem">
+        <input id="swap-date" type="date" style="max-width:140px">
+        <input id="swap-note" placeholder="Nota (opcional)">
+        <button class="swap-add-btn" onclick="addSwapLog()">+ Registar</button>
+      </div>
+      <div class="swap-log" id="swap-log" style="margin-top:10px"></div>
+    </div>`;
+
+  // render all sub-modules
+  renderPerfBars();
+  renderEffGrid();
+  renderHlRows();
+  renderEnergyRows();
+  renderEffortRows();
+  renderBotwLog();
+  renderSwapLog();
+}
+
+// ════════════════════════════════════════════════════════
+// 1. PERFORMANCE POR SECÇÃO
+// ════════════════════════════════════════════════════════
+const PERF_SECTIONS = [
+  { id:'calcado',    label:'Calçado',    color:'#fd7d00' },
+  { id:'textil',     label:'Têxtil',     color:'#3b82f6' },
+  { id:'acessorios', label:'Acessórios', color:'#10b981' },
+  { id:'outros',     label:'Outros',     color:'#8b5cf6' },
+];
+
+function loadPerf() {
+  return pgGet('perf_' + monthKey()) || { calcado:40, textil:35, acessorios:15, outros:10 };
+}
+
+function savePerf() {
+  const obj = {};
+  PERF_SECTIONS.forEach(s => {
+    const el = document.getElementById('perf-inp-' + s.id);
+    obj[s.id] = el ? Math.min(100, Math.max(0, parseInt(el.value) || 0)) : 0;
+  });
+  pgSet('perf_' + monthKey(), obj);
+  renderPerfBars();
+}
+
+function renderPerfBars() {
+  const bars = document.getElementById('perf-bars');
+  const chart = document.getElementById('perf-chart');
+  if (!bars) return;
+  const data = loadPerf();
+  bars.innerHTML = PERF_SECTIONS.map(s => `
+    <div class="perf-row">
+      <div class="perf-label">${s.label}</div>
+      <div class="perf-bar-wrap">
+        <div class="perf-bar-fill" style="width:${data[s.id]||0}%;background:${s.color}"></div>
+      </div>
+      <input class="perf-input" id="perf-inp-${s.id}" type="number" min="0" max="100"
+        value="${data[s.id]||0}" oninput="updatePerfBar('${s.id}','${s.color}')">
+      <div class="perf-pct">${data[s.id]||0}%</div>
+    </div>`).join('');
+
+  // mini donut-style bar chart (SVG)
+  if (chart) {
+    const total = PERF_SECTIONS.reduce((a, s) => a + (data[s.id]||0), 0) || 1;
+    let offset = 0;
+    const r = 40, cx = 50, cy = 50, sw = 18;
+    const circ = 2 * Math.PI * r;
+    const arcs = PERF_SECTIONS.map(s => {
+      const pct = (data[s.id]||0) / total;
+      const dash = `${(pct * circ).toFixed(2)} ${circ}`;
+      const arc = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
+        stroke="${s.color}" stroke-width="${sw}"
+        stroke-dasharray="${dash}" stroke-dashoffset="${-offset * circ}"
+        transform="rotate(-90 ${cx} ${cy})"/>`;
+      offset += pct;
+      return arc;
+    }).join('');
+    chart.innerHTML = `<svg viewBox="0 0 100 100" width="100" height="100" style="display:block;margin:0 auto">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="${sw}"/>
+      ${arcs}
+    </svg>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px">
+      ${PERF_SECTIONS.map(s=>`<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)">
+        <div style="width:8px;height:8px;border-radius:2px;background:${s.color}"></div>${s.label}
+      </div>`).join('')}
+    </div>`;
+  }
+}
+
+function updatePerfBar(id, color) {
+  const inp = document.getElementById('perf-inp-' + id);
+  const row = inp?.closest('.perf-row');
+  if (!row) return;
+  const val = Math.min(100, Math.max(0, parseInt(inp.value)||0));
+  row.querySelector('.perf-bar-fill').style.width = val + '%';
+  row.querySelector('.perf-pct').textContent = val + '%';
+}
+
+// ════════════════════════════════════════════════════════
+// 2. RANKING DE EFICIÊNCIA
+// ════════════════════════════════════════════════════════
+function loadEff() {
+  return pgGet('eff_' + monthKey()) || {};
+}
+
+function markEff(val) {
+  const obj = loadEff();
+  obj[todayKey()] = val;
+  pgSet('eff_' + monthKey(), obj);
+  renderEffGrid();
+}
+
+function renderEffGrid() {
+  const grid = document.getElementById('eff-grid');
+  const streak = document.getElementById('eff-streak');
+  if (!grid) return;
+  const obj = loadEff();
+  // show last 28 days
+  const days = [];
+  for (let i = 27; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    days.push({ k, label: d.getDate(), v: obj[k] });
+  }
+  grid.innerHTML = days.map(d =>
+    `<div class="eff-day ${d.v === 1 ? 'hit' : d.v === 0 ? 'miss' : 'none'}" title="${d.k}">
+      ${d.label}<br>${d.v === 1 ? '✓' : d.v === 0 ? '✗' : '-'}
+    </div>`).join('');
+  // streak count
+  let s = 0;
+  for (let i = days.length - 1; i >= 0; i--) {
+    if (days[i].v === 1) s++; else break;
+  }
+  if (streak) streak.textContent = s > 0
+    ? `🔥 Sequência atual: ${s} dia${s !== 1 ? 's' : ''} consecutivos`
+    : 'Marca o dia de hoje para iniciar uma sequência!';
+}
+
+// ════════════════════════════════════════════════════════
+// 3. DESTAQUES POSITIVOS
+// ════════════════════════════════════════════════════════
+function loadHl(dateStr) { return pgGet('hl_' + dateStr) || {}; }
+function saveHl(dateStr, obj) { pgSet('hl_' + dateStr, obj); }
+
+function saveHlRow(userId, dateStr) {
+  const inp = document.getElementById('hl-inp-' + userId);
+  if (!inp) return;
+  const text = inp.value.trim();
+  const obj = loadHl(dateStr);
+  if (text) obj[userId] = text;
+  else delete obj[userId];
+  saveHl(dateStr, obj);
+  const saved = document.getElementById('hl-saved-' + userId);
+  if (saved) { saved.textContent = text ? '✓ guardado' : ''; }
+}
+
+function renderHlRows() {
+  const rows = document.getElementById('hl-rows');
+  if (!rows) return;
+  const dateStr = todayKey();
+  const saved = loadHl(dateStr);
+  rows.innerHTML = memberNames().map(m => `
+    <div class="hl-row">
+      <div class="hl-name">${m.name}</div>
+      <div style="flex:1">
+        <input class="hl-input" id="hl-inp-${m.id}" placeholder="Destaque do dia…"
+          value="${saved[m.id] || ''}"
+          onblur="saveHlRow('${m.id}','${dateStr}')">
+        <div class="hl-saved" id="hl-saved-${m.id}">${saved[m.id] ? '✓ guardado' : ''}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// 4. ENERGIA DA EQUIPA
+// ════════════════════════════════════════════════════════
+function loadEnergy(dateStr) { return pgGet('energy_' + dateStr) || {}; }
+
+function setStars(userId, val) {
+  for (let i = 1; i <= 5; i++) {
+    const s = document.getElementById('star-' + userId + '-' + i);
+    if (s) s.classList.toggle('active', i <= val);
+  }
+  // store pending value in data attribute
+  const row = document.getElementById('energy-row-' + userId);
+  if (row) row.dataset.pending = val;
+}
+
+function saveEnergy() {
+  const dateStr = todayKey();
+  const obj = loadEnergy(dateStr);
+  memberNames().forEach(m => {
+    const row = document.getElementById('energy-row-' + m.id);
+    if (row && row.dataset.pending) obj[m.id] = parseInt(row.dataset.pending);
+  });
+  pgSet('energy_' + dateStr, obj);
+  checkEnergyAlerts();
+  renderEnergyAvg(dateStr);
+}
+
+function renderEnergyRows() {
+  const rows = document.getElementById('energy-rows');
+  if (!rows) return;
+  const dateStr = todayKey();
+  const saved = loadEnergy(dateStr);
+  rows.innerHTML = memberNames().map(m => {
+    const cur = saved[m.id] || 0;
+    const stars = [1,2,3,4,5].map(i =>
+      `<span class="energy-star${i <= cur ? ' active' : ''}" id="star-${m.id}-${i}"
+        onclick="setStars('${m.id}',${i})">★</span>`).join('');
+    return `<div class="energy-row" id="energy-row-${m.id}" data-pending="${cur}">
+      <div class="energy-name">${m.name}</div>
+      <div class="energy-stars">${stars}</div>
+    </div>`;
+  }).join('');
+  renderEnergyAvg(dateStr);
+  checkEnergyAlerts();
+}
+
+function renderEnergyAvg(dateStr) {
+  const avg = document.getElementById('energy-avg');
+  if (!avg) return;
+  const obj = loadEnergy(dateStr);
+  const vals = Object.values(obj).filter(v => v > 0);
+  if (vals.length === 0) { avg.innerHTML = ''; return; }
+  const mean = vals.reduce((a,b)=>a+b,0) / vals.length;
+  const pct = (mean / 5) * 100;
+  const col = mean >= 3.5 ? 'var(--green)' : mean >= 2.5 ? 'var(--amber)' : 'var(--red)';
+  avg.innerHTML = `
+    <div style="background:var(--surface2);border-radius:5px;overflow:hidden;height:10px">
+      <div class="energy-avg-bar" style="width:${pct}%;background:${col}"></div>
+    </div>
+    <div class="energy-avg-label">Média da equipa: ${mean.toFixed(1)}/5</div>`;
+}
+
+function checkEnergyAlerts() {
+  const box = document.getElementById('energy-alerts');
+  if (!box) return;
+  const alerts = [];
+  memberNames().forEach(m => {
+    let lowCount = 0;
+    for (let i = 0; i < 3; i++) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const obj = loadEnergy(k);
+      if (obj[m.id] !== undefined && obj[m.id] <= 2) lowCount++;
+    }
+    if (lowCount >= 3) alerts.push(m.name);
+  });
+  box.innerHTML = alerts.length
+    ? `<div class="energy-alert">⚠ Atenção: ${alerts.join(', ')} com energia baixa há 3+ dias</div>`
+    : '';
+}
+
+// ════════════════════════════════════════════════════════
+// 5. BANCO DE ESFORÇO (acumulado semanal)
+// ════════════════════════════════════════════════════════
+// Lógica: cada turno trabalhado contribui com um "peso"
+// Turnos 8h = 2pt; 4h = 1pt; armazém/runner (heurística por hora de início) +0.5
+function shiftWeight(code) {
+  const s = getS(code);
+  if (!s) return 0;
+  const hours = s.e - s.s - (s.bs !== null ? 1 : 0);
+  let w = hours >= 8 ? 2 : 1;
+  // Turno começa antes das 8h ou termina depois das 22h → mais esforço
+  if (s.s < 8 || s.e > 22) w += 0.5;
+  return w;
+}
+
+function renderEffortRows() {
+  const rows = document.getElementById('effort-rows');
+  if (!rows) return;
+  // Calcular esforço acumulado esta semana (últimos 7 dias)
+  const weekScores = {};
+  memberNames().forEach(m => { weekScores[m.id] = 0; });
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    if (d.getMonth() !== 3 || d.getFullYear() !== 2026) continue; // só Abril 2026
+    const dayIdx = d.getDate(); // 1-30
+    memberNames().forEach(m => {
+      const code = typeof getEffectiveCode === 'function'
+        ? getEffectiveCode(m.id, dayIdx)
+        : (TEAM.find(x => x.id === m.id)?.sch[dayIdx] || 'V');
+      if (!isOff(code)) weekScores[m.id] += shiftWeight(code);
+    });
+  }
+  const maxScore = Math.max(...Object.values(weekScores), 1);
+  rows.innerHTML = memberNames().map(m => {
+    const score = weekScores[m.id];
+    const pct = Math.round(score / maxScore * 100);
+    const col = pct >= 75 ? 'var(--red)' : pct >= 40 ? 'var(--amber)' : 'var(--green)';
+    const label = pct >= 75 ? 'Alta carga' : pct >= 40 ? 'Carga média' : 'Carga leve';
+    return `<div class="effort-row">
+      <div class="effort-name">${m.name}</div>
+      <div class="battery-wrap">
+        <div class="battery-fill" style="width:${pct}%;background:${col}"></div>
+      </div>
+      <div class="battery-pct" style="color:${col}">${label}</div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// 6. BEST OF THE WEEK
+// ════════════════════════════════════════════════════════
+function loadBotw() { return pgGet('botw_' + weekKey()) || []; }
+
+function saveBotw() {
+  const inp = document.getElementById('botw-input');
+  if (!inp) return;
+  const text = inp.value.trim();
+  if (!text) return;
+  const entries = loadBotw();
+  entries.unshift({ date: todayKey(), text });
+  pgSet('botw_' + weekKey(), entries.slice(0, 30));
+  inp.value = '';
+  renderBotwLog();
+}
+
+function deleteBotw(idx) {
+  const entries = loadBotw();
+  entries.splice(idx, 1);
+  pgSet('botw_' + weekKey(), entries);
+  renderBotwLog();
+}
+
+function renderBotwLog() {
+  const log = document.getElementById('botw-log');
+  if (!log) return;
+  const entries = loadBotw();
+  if (entries.length === 0) {
+    log.innerHTML = `<div style="text-align:center;padding:16px 0;color:var(--faint);font-size:12px">
+      Sem entradas esta semana</div>`;
+    return;
+  }
+  log.innerHTML = entries.map((e, i) => `
+    <div class="botw-entry">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="botw-entry-date">${e.date}</div>
+          <div class="botw-entry-text">${e.text}</div>
+        </div>
+        <button onclick="deleteBotw(${i})" style="background:none;border:none;
+          color:var(--faint);cursor:pointer;font-size:14px;padding:0;flex-shrink:0">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// 7. REGISTO DE TROCAS (simplificado — só anotações)
+// ════════════════════════════════════════════════════════
+function loadSwapLog() { return pgGet('swaplog') || []; }
+
+function addSwapLog() {
+  const from = document.getElementById('swap-from')?.value.trim();
+  const to   = document.getElementById('swap-to')?.value.trim();
+  const date = document.getElementById('swap-date')?.value;
+  const note = document.getElementById('swap-note')?.value.trim() || '';
+  if (!from || !to) return;
+  const entries = loadSwapLog();
+  entries.unshift({ from, to, date: date || todayKey(), note, ts: Date.now() });
+  pgSet('swaplog', entries.slice(0, 100));
+  document.getElementById('swap-from').value = '';
+  document.getElementById('swap-to').value = '';
+  document.getElementById('swap-date').value = '';
+  document.getElementById('swap-note').value = '';
+  renderSwapLog();
+}
+
+function deleteSwapLog(idx) {
+  const entries = loadSwapLog();
+  entries.splice(idx, 1);
+  pgSet('swaplog', entries);
+  renderSwapLog();
+}
+
+function renderSwapLog() {
+  const log = document.getElementById('swap-log');
+  if (!log) return;
+  const entries = loadSwapLog();
+  if (entries.length === 0) {
+    log.innerHTML = `<div style="text-align:center;padding:16px 0;color:var(--faint);font-size:12px">
+      Sem trocas registadas</div>`;
+    return;
+  }
+  log.innerHTML = entries.map((e, i) => `
+    <div class="swap-entry">
+      <div>
+        <div class="swap-entry-info">
+          <strong>${e.from}</strong> → <strong>${e.to}</strong>
+          ${e.note ? `<span style="color:var(--muted)"> — ${e.note}</span>` : ''}
+        </div>
+        <div class="swap-entry-date">${e.date}</div>
+      </div>
+      <button class="swap-del-btn" onclick="deleteSwapLog(${i})">✕</button>
+    </div>`).join('');
+}
+// ════════════════════════════════════════════════════════
+// FIM DO MÓDULO PAINEL DE GESTÃO
+// ════════════════════════════════════════════════════════
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', function() {
