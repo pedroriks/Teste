@@ -1321,6 +1321,71 @@ header {
   font-size: 12px; font-weight: 700; cursor: pointer;
   -webkit-appearance: none; font-family: 'DM Sans', sans-serif; flex-shrink: 0;
 }
+
+/* ── Painel helpers ── */
+.pg-select, .pg-input {
+  width: 100%; padding: 8px 10px; margin-bottom: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 12px;
+  font-family: 'DM Sans', sans-serif; -webkit-appearance: none; appearance: none;
+  display: block;
+}
+.pg-select:focus, .pg-input:focus { outline: none; border-color: var(--accent); }
+.pg-save-btn {
+  padding: 8px 16px; border-radius: var(--r);
+  background: var(--accent); border: none; color: #fff;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Sub-tabs dentro de secção ── */
+.pg-sub-tabs {
+  display: flex; gap: 3px; background: var(--surface2);
+  border-radius: 8px; padding: 3px; margin-bottom: 12px;
+}
+.pg-sub-tab {
+  flex: 1; padding: 5px 8px; border-radius: 6px; border: none;
+  background: transparent; color: var(--muted); font-size: 11px;
+  font-weight: 600; cursor: pointer; -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif; transition: all .12s;
+}
+.pg-sub-tab.active { background: var(--surface); color: var(--text); }
+
+/* ── Semana nav (performance) ── */
+.pg-week-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); font-size: 12px;
+  font-weight: 700; padding: 2px 8px; cursor: pointer;
+  -webkit-appearance: none; font-family: 'DM Sans', sans-serif;
+}
+.pg-week-btn:disabled { opacity: .3; cursor: default; }
+
+/* ── Destaques histórico ── */
+.hl-history-entry {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 12px; background: var(--surface2);
+  border-radius: 8px; border-left: 3px solid var(--accent);
+  margin-bottom: 6px;
+}
+
+/* ── Energia nome em alerta ── */
+.energy-name-alert {
+  color: var(--red) !important;
+  font-weight: 700;
+}
+
+/* ── BotW summary ── */
+.botw-summary-badge {
+  background: var(--accent-bg); border: 1px solid var(--accent-border);
+  border-radius: 7px; padding: 7px 10px; font-size: 11px;
+  font-weight: 600; color: var(--accent); margin-bottom: 10px;
+}
+.botw-summary-header {
+  font-size: 11px; font-weight: 700; color: var(--accent);
+  margin-bottom: 8px; padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.botw-today { border-left-color: var(--green) !important; }
 /* ── MAY CALENDAR DAYS ──────────── */
 .may-cal-day {
   border-radius: 8px;
@@ -2723,11 +2788,34 @@ function todayKey() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-function weekKey() {
-  const d = new Date();
-  const jan1 = new Date(d.getFullYear(), 0, 1);
-  const wk = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
-  return `${d.getFullYear()}-W${String(wk).padStart(2,'0')}`;
+// ── Époque do calendário de loja: Semana 1 = 26 Jan 2026 (Segunda) ──
+const SCHED_EPOCH = new Date('2026-01-26T00:00:00');
+
+function _weekMonday(offset = 0) {
+  const now = new Date();
+  now.setDate(now.getDate() + offset * 7);
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
+
+function customWeekNum(offset = 0) {
+  const monday = _weekMonday(offset);
+  return Math.round((monday - SCHED_EPOCH) / (7 * 24 * 60 * 60 * 1000)) + 1;
+}
+
+function weekKey(offset = 0) {
+  const wk = customWeekNum(offset);
+  return `semana_${String(wk).padStart(2, '0')}`;
+}
+
+function weekLabel(offset = 0) {
+  const wk = customWeekNum(offset);
+  const monday = _weekMonday(offset);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  const fmt = x => `${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;
+  return `Semana ${wk} · ${fmt(monday)}–${fmt(sunday)}`;
 }
 function monthKey() {
   const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
@@ -2739,30 +2827,46 @@ function pgMerge(k, partial) {
   pgSet(k, Object.assign(cur, partial));
 }
 
-// ── nomes abreviados da equipa (excluindo gestor) ──
+// ── nomes COMPLETOS da equipa (excluindo gestor) ──
 function memberNames() {
-  return TEAM.filter(m => !m.isManager).map(m => ({
-    id: m.id,
-    name: m.name.split(' ')[0]
-  }));
+  return TEAM.filter(m => !m.isManager).map(m => ({ id: m.id, name: m.name }));
+}
+
+// ── membros a trabalhar num dia específico ──
+function workingMembersOnDay(day) {
+  return TEAM.filter(m => !m.isManager && !isOff(getEffectiveCode(m.id, day)));
 }
 
 // ── RENDER PAINEL ──
+let perfWeekOffset = 0; // semana atual = 0, semana anterior = -1
+
 function renderPainel() {
   const c = document.getElementById('tab-painel');
   if (!c) return;
+
+  // Saturday = day 6 → mostrar resumo automático da semana
+  const isSaturday = new Date().getDay() === 6;
+
   c.innerHTML = `
     <div style="padding:4px 0 12px;font-size:11px;font-weight:700;color:var(--muted);
       text-transform:uppercase;letter-spacing:.08em">📊 Painel de Gestão</div>
 
     <!-- 1. Performance por secção -->
     <div class="pg-section" id="pg-perf">
-      <div class="pg-section-title"><span>📈</span> Performance por Secção</div>
+      <div class="pg-section-title"><span>📈</span> Performance por Secção
+        <div class="pg-week-nav" style="margin-left:auto;display:flex;gap:6px;align-items:center">
+          <button onclick="navPerfWeek(-1)" class="pg-week-btn">‹</button>
+          <span id="perf-week-lbl" style="font-size:10px;font-weight:600;color:var(--muted);white-space:nowrap"></span>
+          <button onclick="navPerfWeek(1)" class="pg-week-btn" id="perf-week-next">›</button>
+        </div>
+      </div>
       <div class="perf-bars" id="perf-bars"></div>
       <div id="perf-chart" style="margin-top:12px"></div>
-      <button onclick="savePerf()" style="margin-top:10px;padding:8px 16px;background:var(--accent);
-        border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:700;
-        cursor:pointer;font-family:'DM Sans',sans-serif">Guardar</button>
+      <button onclick="savePerf()" id="perf-save-btn" style="margin-top:10px;padding:8px 16px;
+        background:var(--accent);border:none;border-radius:var(--r);color:#fff;
+        font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">
+        Guardar semana atual
+      </button>
     </div>
 
     <!-- 2. Ranking de Eficiência -->
@@ -2783,61 +2887,135 @@ function renderPainel() {
     <!-- 3. Destaques Positivos -->
     <div class="pg-section" id="pg-hl">
       <div class="pg-section-title"><span>⭐</span> Destaques Positivos</div>
-      <div class="highlight-rows" id="hl-rows"></div>
+      <div class="pg-sub-tabs" id="hl-tabs">
+        <button class="pg-sub-tab active" onclick="hlShowTab('form')">Registar</button>
+        <button class="pg-sub-tab" onclick="hlShowTab('history')">Histórico</button>
+      </div>
+      <div id="hl-form-panel">
+        <select class="pg-select" id="hl-member">
+          <option value="">— Seleciona colaborador —</option>
+          ${memberNames().map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
+        </select>
+        <input class="hl-input" id="hl-text" placeholder="Destaque positivo do dia…" style="width:100%;margin-bottom:8px">
+        <button onclick="saveHl()" class="pg-save-btn">⭐ Guardar destaque</button>
+        <div id="hl-feedback" style="font-size:11px;color:var(--green);margin-top:6px;min-height:16px"></div>
+      </div>
+      <div id="hl-history-panel" style="display:none">
+        <div id="hl-history-list"></div>
+      </div>
     </div>
 
     <!-- 4. Energia da Equipa -->
     <div class="pg-section" id="pg-energy">
-      <div class="pg-section-title"><span>⚡</span> Energia da Equipa</div>
-      <div class="energy-rows" id="energy-rows"></div>
-      <div id="energy-avg" style="margin-top:12px"></div>
-      <div id="energy-alerts"></div>
-      <button onclick="saveEnergy()" style="margin-top:10px;padding:8px 16px;background:var(--accent);
-        border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:700;
-        cursor:pointer;font-family:'DM Sans',sans-serif">Guardar avaliações</button>
+      <div class="pg-section-title"><span>⚡</span> Energia da Equipa
+        <span style="margin-left:6px;font-size:10px;font-weight:400;color:var(--muted)">
+          (${DOW[(APR1_DOW + selectedDay - 1) % 7]}, ${selectedDay} Abr)
+        </span>
+      </div>
+      <div class="pg-sub-tabs">
+        <button class="pg-sub-tab active" onclick="energyShowTab('today')">Hoje</button>
+        <button class="pg-sub-tab" onclick="energyShowTab('week')">Média semanal</button>
+      </div>
+      <div id="energy-today-panel">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">
+          A trabalhar hoje: <strong id="energy-working-count"></strong> colaboradores
+        </div>
+        <div class="energy-rows" id="energy-rows"></div>
+        <div id="energy-avg" style="margin-top:12px"></div>
+        <div id="energy-alerts"></div>
+        <button onclick="saveEnergy()" style="margin-top:10px;padding:8px 16px;background:var(--accent);
+          border:none;border-radius:var(--r);color:#fff;font-size:12px;font-weight:700;
+          cursor:pointer;font-family:'DM Sans',sans-serif">Guardar avaliações</button>
+      </div>
+      <div id="energy-week-panel" style="display:none">
+        <div id="energy-week-table"></div>
+      </div>
     </div>
 
-    <!-- 5. Banco de Esforço -->
-    <div class="pg-section" id="pg-effort">
-      <div class="pg-section-title"><span>🔋</span> Banco de Esforço</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
-        Acumulado da semana — turnos longos reduzem mais a bateria</div>
-      <div class="effort-rows" id="effort-rows"></div>
-    </div>
-
-    <!-- 6. Best of the Week -->
+    <!-- 5. Best of the Week -->
     <div class="pg-section" id="pg-botw">
       <div class="pg-section-title"><span>🏆</span> Best of the Week</div>
-      <input class="botw-input" id="botw-input" placeholder="O que correu bem hoje?">
+      ${isSaturday ? '<div class="botw-summary-badge">📅 Sábado — Resumo automático da semana</div>' : ''}
+      <input class="botw-input" id="botw-input" placeholder="O que correu bem hoje? (1 registo por dia)">
       <button class="botw-save-btn" onclick="saveBotw()">Guardar</button>
       <div class="botw-log" id="botw-log"></div>
     </div>
 
-    <!-- 7. Registo de Trocas -->
+    <!-- 6. Registo de Trocas -->
     <div class="pg-section" id="pg-swaps-simple">
       <div class="pg-section-title"><span>🔄</span> Registo de Trocas</div>
-      <div class="swap-add-row">
-        <input id="swap-from" placeholder="De quem">
-        <input id="swap-to" placeholder="Para quem">
-        <input id="swap-date" type="date" style="max-width:140px">
-        <input id="swap-note" placeholder="Nota (opcional)">
-        <button class="swap-add-btn" onclick="addSwapLog()">+ Registar</button>
+      <div class="swap-add-row" style="flex-direction:column;gap:8px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">De:</div>
+            <select class="pg-select" id="swap-from">
+              <option value="">— Colaborador —</option>
+              ${memberNames().map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Para:</div>
+            <select class="pg-select" id="swap-to">
+              <option value="">— Colaborador —</option>
+              ${memberNames().map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Data:</div>
+            <input id="swap-date" type="date" class="pg-input">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Turno trocado:</div>
+            <select class="pg-select" id="swap-shift">
+              <option value="">— Seleciona data primeiro —</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Nota (opcional):</div>
+          <input id="swap-note" class="pg-input" placeholder="Contexto da troca…">
+        </div>
+        <button class="swap-add-btn" onclick="addSwapLog()">+ Registar troca</button>
       </div>
-      <div class="swap-log" id="swap-log" style="margin-top:10px"></div>
+      <div class="swap-log" id="swap-log" style="margin-top:14px"></div>
     </div>`;
+
+  // init swap-date listener for shift population
+  const swapDate = document.getElementById('swap-date');
+  if (swapDate) {
+    swapDate.addEventListener('change', populateSwapShifts);
+    swapDate.value = todayKey(); // default to today
+    populateSwapShifts();
+  }
 
   // render all sub-modules
   renderPerfBars();
   renderEffGrid();
-  renderHlRows();
+  renderHlHistory();
   renderEnergyRows();
-  renderEffortRows();
   renderBotwLog();
   renderSwapLog();
 }
 
+// ── sub-tab helpers ──
+function hlShowTab(tab) {
+  document.getElementById('hl-form-panel').style.display = tab === 'form' ? '' : 'none';
+  document.getElementById('hl-history-panel').style.display = tab === 'history' ? '' : 'none';
+  document.querySelectorAll('#pg-hl .pg-sub-tab').forEach((b,i) => b.classList.toggle('active', (i===0 && tab==='form')||(i===1 && tab==='history')));
+  if (tab === 'history') renderHlHistory();
+}
+
+function energyShowTab(tab) {
+  document.getElementById('energy-today-panel').style.display = tab === 'today' ? '' : 'none';
+  document.getElementById('energy-week-panel').style.display = tab === 'week' ? '' : 'none';
+  document.querySelectorAll('#pg-energy .pg-sub-tab').forEach((b,i) => b.classList.toggle('active', (i===0 && tab==='today')||(i===1 && tab==='week')));
+  if (tab === 'week') renderEnergyWeekTable();
+}
+
 // ════════════════════════════════════════════════════════
-// 1. PERFORMANCE POR SECÇÃO
+// 1. PERFORMANCE POR SECÇÃO — por semana com navegação
 // ════════════════════════════════════════════════════════
 const PERF_SECTIONS = [
   { id:'calcado',    label:'Calçado',    color:'#fd7d00' },
@@ -2846,37 +3024,61 @@ const PERF_SECTIONS = [
   { id:'outros',     label:'Outros',     color:'#8b5cf6' },
 ];
 
-function loadPerf() {
-  return pgGet('perf_' + monthKey()) || { calcado:40, textil:35, acessorios:15, outros:10 };
+function loadPerf(offset = 0) {
+  return pgGet('perf_' + weekKey(offset)) || { calcado:0, textil:0, acessorios:0, outros:0 };
+}
+
+function navPerfWeek(dir) {
+  perfWeekOffset = Math.min(0, perfWeekOffset + dir); // não permitir semanas futuras
+  renderPerfBars();
 }
 
 function savePerf() {
+  // só guarda na semana atual (offset=0)
+  if (perfWeekOffset !== 0) {
+    alert('Só podes guardar dados para a semana atual.');
+    return;
+  }
   const obj = {};
   PERF_SECTIONS.forEach(s => {
     const el = document.getElementById('perf-inp-' + s.id);
     obj[s.id] = el ? Math.min(100, Math.max(0, parseInt(el.value) || 0)) : 0;
   });
-  pgSet('perf_' + monthKey(), obj);
+  pgSet('perf_' + weekKey(0), obj);
   renderPerfBars();
+  // feedback visual
+  const btn = document.getElementById('perf-save-btn');
+  if (btn) { btn.textContent = '✓ Guardado!'; setTimeout(() => { btn.textContent = 'Guardar semana atual'; }, 1800); }
 }
 
 function renderPerfBars() {
   const bars = document.getElementById('perf-bars');
   const chart = document.getElementById('perf-chart');
+  const lbl = document.getElementById('perf-week-lbl');
+  const nextBtn = document.getElementById('perf-week-next');
+  const saveBtn = document.getElementById('perf-save-btn');
   if (!bars) return;
-  const data = loadPerf();
+
+  if (lbl) lbl.textContent = weekLabel(perfWeekOffset);
+  if (nextBtn) nextBtn.disabled = perfWeekOffset >= 0;
+  const isCurrentWeek = perfWeekOffset === 0;
+  if (saveBtn) saveBtn.style.display = isCurrentWeek ? '' : 'none';
+
+  const data = loadPerf(perfWeekOffset);
   bars.innerHTML = PERF_SECTIONS.map(s => `
     <div class="perf-row">
       <div class="perf-label">${s.label}</div>
       <div class="perf-bar-wrap">
         <div class="perf-bar-fill" style="width:${data[s.id]||0}%;background:${s.color}"></div>
       </div>
-      <input class="perf-input" id="perf-inp-${s.id}" type="number" min="0" max="100"
-        value="${data[s.id]||0}" oninput="updatePerfBar('${s.id}','${s.color}')">
+      ${isCurrentWeek
+        ? `<input class="perf-input" id="perf-inp-${s.id}" type="number" min="0" max="100"
+            value="${data[s.id]||0}" oninput="updatePerfBar('${s.id}','${s.color}')">`
+        : `<span style="font-size:12px;color:var(--muted);width:54px;text-align:right">${data[s.id]||0}</span>`
+      }
       <div class="perf-pct">${data[s.id]||0}%</div>
     </div>`).join('');
 
-  // mini donut-style bar chart (SVG)
   if (chart) {
     const total = PERF_SECTIONS.reduce((a, s) => a + (data[s.id]||0), 0) || 1;
     let offset = 0;
@@ -2954,42 +3156,64 @@ function renderEffGrid() {
 }
 
 // ════════════════════════════════════════════════════════
-// 3. DESTAQUES POSITIVOS
+// 3. DESTAQUES POSITIVOS — 1 registo por vez, histórico global
 // ════════════════════════════════════════════════════════
-function loadHl(dateStr) { return pgGet('hl_' + dateStr) || {}; }
-function saveHl(dateStr, obj) { pgSet('hl_' + dateStr, obj); }
+function loadHlHistory() { return pgGet('hl_history') || []; }
 
-function saveHlRow(userId, dateStr) {
-  const inp = document.getElementById('hl-inp-' + userId);
-  if (!inp) return;
-  const text = inp.value.trim();
-  const obj = loadHl(dateStr);
-  if (text) obj[userId] = text;
-  else delete obj[userId];
-  saveHl(dateStr, obj);
-  const saved = document.getElementById('hl-saved-' + userId);
-  if (saved) { saved.textContent = text ? '✓ guardado' : ''; }
+function saveHl() {
+  const userId = document.getElementById('hl-member')?.value;
+  const text = document.getElementById('hl-text')?.value.trim();
+  if (!userId || !text) {
+    const fb = document.getElementById('hl-feedback');
+    if (fb) { fb.style.color = 'var(--red)'; fb.textContent = 'Seleciona colaborador e escreve o destaque.'; }
+    return;
+  }
+  const member = TEAM.find(m => m.id === userId);
+  const history = loadHlHistory();
+  history.unshift({ date: todayKey(), userId, name: member?.name || userId, text, ts: Date.now() });
+  pgSet('hl_history', history.slice(0, 300));
+  document.getElementById('hl-text').value = '';
+  document.getElementById('hl-member').value = '';
+  const fb = document.getElementById('hl-feedback');
+  if (fb) { fb.style.color = 'var(--green)'; fb.textContent = '✓ Destaque guardado!'; setTimeout(() => { fb.textContent = ''; }, 2000); }
+  renderHlHistory();
 }
 
-function renderHlRows() {
-  const rows = document.getElementById('hl-rows');
-  if (!rows) return;
-  const dateStr = todayKey();
-  const saved = loadHl(dateStr);
-  rows.innerHTML = memberNames().map(m => `
-    <div class="hl-row">
-      <div class="hl-name">${m.name}</div>
-      <div style="flex:1">
-        <input class="hl-input" id="hl-inp-${m.id}" placeholder="Destaque do dia…"
-          value="${saved[m.id] || ''}"
-          onblur="saveHlRow('${m.id}','${dateStr}')">
-        <div class="hl-saved" id="hl-saved-${m.id}">${saved[m.id] ? '✓ guardado' : ''}</div>
+function deleteHl(idx) {
+  const history = loadHlHistory();
+  history.splice(idx, 1);
+  pgSet('hl_history', history);
+  renderHlHistory();
+}
+
+function renderHlHistory() {
+  const list = document.getElementById('hl-history-list');
+  if (!list) return;
+  const history = loadHlHistory();
+  if (history.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--faint);font-size:12px">Sem destaques registados</div>`;
+    return;
+  }
+  list.innerHTML = history.map((e, i) => `
+    <div class="hl-history-entry">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <span style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace">${e.date}</span>
+          <span style="font-size:11px;font-weight:700;color:var(--accent)">${e.name}</span>
+        </div>
+        <div style="font-size:13px;color:var(--text)">${e.text}</div>
       </div>
+      <button onclick="deleteHl(${i})" style="background:none;border:none;color:var(--faint);
+        cursor:pointer;font-size:14px;padding:0;flex-shrink:0;margin-left:8px">✕</button>
     </div>`).join('');
 }
 
+// keep old function names as aliases (called nowhere now, but safe)
+function renderHlRows() { renderHlHistory(); }
+function saveHlRow() {}
+
 // ════════════════════════════════════════════════════════
-// 4. ENERGIA DA EQUIPA
+// 4. ENERGIA DA EQUIPA — só colaboradores a trabalhar, alerta ≥2 dias ≤2
 // ════════════════════════════════════════════════════════
 function loadEnergy(dateStr) { return pgGet('energy_' + dateStr) || {}; }
 
@@ -2998,7 +3222,6 @@ function setStars(userId, val) {
     const s = document.getElementById('star-' + userId + '-' + i);
     if (s) s.classList.toggle('active', i <= val);
   }
-  // store pending value in data attribute
   const row = document.getElementById('energy-row-' + userId);
   if (row) row.dataset.pending = val;
 }
@@ -3006,30 +3229,52 @@ function setStars(userId, val) {
 function saveEnergy() {
   const dateStr = todayKey();
   const obj = loadEnergy(dateStr);
-  memberNames().forEach(m => {
+  // only save rows that exist in the DOM (working members today)
+  workingMembersOnDay(selectedDay).forEach(m => {
     const row = document.getElementById('energy-row-' + m.id);
     if (row && row.dataset.pending) obj[m.id] = parseInt(row.dataset.pending);
   });
   pgSet('energy_' + dateStr, obj);
   checkEnergyAlerts();
   renderEnergyAvg(dateStr);
+  const btn = document.querySelector('#pg-energy button[onclick="saveEnergy()"]');
+  if (btn) { btn.textContent = '✓ Guardado!'; setTimeout(() => { btn.textContent = 'Guardar avaliações'; }, 1800); }
 }
 
 function renderEnergyRows() {
   const rows = document.getElementById('energy-rows');
+  const countEl = document.getElementById('energy-working-count');
   if (!rows) return;
   const dateStr = todayKey();
   const saved = loadEnergy(dateStr);
-  rows.innerHTML = memberNames().map(m => {
+
+  // only show members working on selectedDay
+  const working = workingMembersOnDay(selectedDay);
+  if (countEl) countEl.textContent = working.length;
+
+  if (working.length === 0) {
+    rows.innerHTML = `<div style="color:var(--muted);font-size:12px;padding:8px 0">
+      Nenhum colaborador a trabalhar neste dia.</div>`;
+    renderEnergyAvg(dateStr);
+    checkEnergyAlerts();
+    return;
+  }
+
+  // check who has alert (2+ days ≤2 in last 7 days)
+  const alertIds = getEnergyAlertIds();
+
+  rows.innerHTML = working.map(m => {
     const cur = saved[m.id] || 0;
+    const hasAlert = alertIds.has(m.id);
     const stars = [1,2,3,4,5].map(i =>
       `<span class="energy-star${i <= cur ? ' active' : ''}" id="star-${m.id}-${i}"
         onclick="setStars('${m.id}',${i})">★</span>`).join('');
     return `<div class="energy-row" id="energy-row-${m.id}" data-pending="${cur}">
-      <div class="energy-name">${m.name}</div>
+      <div class="energy-name${hasAlert ? ' energy-name-alert' : ''}">${m.name}${hasAlert ? ' ⚠' : ''}</div>
       <div class="energy-stars">${stars}</div>
     </div>`;
   }).join('');
+
   renderEnergyAvg(dateStr);
   checkEnergyAlerts();
 }
@@ -3050,136 +3295,227 @@ function renderEnergyAvg(dateStr) {
     <div class="energy-avg-label">Média da equipa: ${mean.toFixed(1)}/5</div>`;
 }
 
-function checkEnergyAlerts() {
-  const box = document.getElementById('energy-alerts');
-  if (!box) return;
-  const alerts = [];
+function getEnergyAlertIds() {
+  // Alert: colaborador com 2+ avaliações ≤2 nos últimos 7 dias
+  const alertSet = new Set();
   memberNames().forEach(m => {
     let lowCount = 0;
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 7; i++) {
       const d = new Date(); d.setDate(d.getDate() - i);
       const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
       const obj = loadEnergy(k);
       if (obj[m.id] !== undefined && obj[m.id] <= 2) lowCount++;
     }
-    if (lowCount >= 3) alerts.push(m.name);
+    if (lowCount >= 2) alertSet.add(m.id);
   });
-  box.innerHTML = alerts.length
-    ? `<div class="energy-alert">⚠ Atenção: ${alerts.join(', ')} com energia baixa há 3+ dias</div>`
+  return alertSet;
+}
+
+function checkEnergyAlerts() {
+  const box = document.getElementById('energy-alerts');
+  if (!box) return;
+  const alertIds = getEnergyAlertIds();
+  const alertNames = memberNames().filter(m => alertIds.has(m.id)).map(m => m.name.split(' ')[0]);
+  box.innerHTML = alertNames.length
+    ? `<div class="energy-alert">⚠ Atenção: ${alertNames.join(', ')} com energia baixa (2+ dias com ≤ 2/5)</div>`
     : '';
 }
 
-// ════════════════════════════════════════════════════════
-// 5. BANCO DE ESFORÇO (acumulado semanal)
-// ════════════════════════════════════════════════════════
-// Lógica: cada turno trabalhado contribui com um "peso"
-// Turnos 8h = 2pt; 4h = 1pt; armazém/runner (heurística por hora de início) +0.5
-function shiftWeight(code) {
-  const s = getS(code);
-  if (!s) return 0;
-  const hours = s.e - s.s - (s.bs !== null ? 1 : 0);
-  let w = hours >= 8 ? 2 : 1;
-  // Turno começa antes das 8h ou termina depois das 22h → mais esforço
-  if (s.s < 8 || s.e > 22) w += 0.5;
-  return w;
-}
+// ── Vista de média semanal por colaborador ──
+function renderEnergyWeekTable() {
+  const panel = document.getElementById('energy-week-table');
+  if (!panel) return;
 
-function renderEffortRows() {
-  const rows = document.getElementById('effort-rows');
-  if (!rows) return;
-  // Calcular esforço acumulado esta semana (últimos 7 dias)
-  const weekScores = {};
-  memberNames().forEach(m => { weekScores[m.id] = 0; });
-  for (let i = 0; i < 7; i++) {
+  // Last 7 days
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
-    if (d.getMonth() !== 3 || d.getFullYear() !== 2026) continue; // só Abril 2026
-    const dayIdx = d.getDate(); // 1-30
-    memberNames().forEach(m => {
-      const code = typeof getEffectiveCode === 'function'
-        ? getEffectiveCode(m.id, dayIdx)
-        : (TEAM.find(x => x.id === m.id)?.sch[dayIdx] || 'V');
-      if (!isOff(code)) weekScores[m.id] += shiftWeight(code);
-    });
+    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    days.push({ k, label: DOW[d.getDay()].slice(0,3), date: d.getDate() });
   }
-  const maxScore = Math.max(...Object.values(weekScores), 1);
-  rows.innerHTML = memberNames().map(m => {
-    const score = weekScores[m.id];
-    const pct = Math.round(score / maxScore * 100);
-    const col = pct >= 75 ? 'var(--red)' : pct >= 40 ? 'var(--amber)' : 'var(--green)';
-    const label = pct >= 75 ? 'Alta carga' : pct >= 40 ? 'Carga média' : 'Carga leve';
-    return `<div class="effort-row">
-      <div class="effort-name">${m.name}</div>
-      <div class="battery-wrap">
-        <div class="battery-fill" style="width:${pct}%;background:${col}"></div>
-      </div>
-      <div class="battery-pct" style="color:${col}">${label}</div>
-    </div>`;
+
+  const alertIds = getEnergyAlertIds();
+  const members = memberNames();
+  const rows = members.map(m => {
+    const scores = days.map(d => {
+      const obj = loadEnergy(d.k);
+      return obj[m.id] ?? null;
+    });
+    const validScores = scores.filter(v => v !== null);
+    const avg = validScores.length > 0 ? (validScores.reduce((a,b)=>a+b,0)/validScores.length) : null;
+    const hasAlert = alertIds.has(m.id);
+    const firstName = m.name.split(' ')[0];
+    const avgCol = avg === null ? 'var(--faint)' : avg >= 3.5 ? 'var(--green)' : avg >= 2.5 ? 'var(--amber)' : 'var(--red)';
+    const cells = scores.map(v => {
+      if (v === null) return `<td style="text-align:center;font-size:11px;color:var(--faint)">—</td>`;
+      const c = v >= 4 ? 'var(--green)' : v >= 3 ? 'var(--amber)' : 'var(--red)';
+      return `<td style="text-align:center;font-size:11px;color:${c};font-weight:700">${v}</td>`;
+    }).join('');
+    return `<tr>
+      <td style="font-size:11px;font-weight:600;padding:4px 6px 4px 0;color:${hasAlert?'var(--red)':'var(--text)'};white-space:nowrap">
+        ${hasAlert ? '⚠ ' : ''}${firstName}
+      </td>
+      ${cells}
+      <td style="text-align:center;font-size:11px;font-weight:700;color:${avgCol};padding-left:6px">
+        ${avg !== null ? avg.toFixed(1) : '—'}
+      </td>
+    </tr>`;
   }).join('');
+
+  panel.innerHTML = `
+    <div style="overflow-x:auto;margin-top:8px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="font-size:10px;color:var(--muted);text-align:left;padding-bottom:6px;font-weight:600">Nome</th>
+            ${days.map(d=>`<th style="font-size:9px;color:var(--muted);text-align:center;padding-bottom:6px">${d.label}<br>${d.date}</th>`).join('')}
+            <th style="font-size:10px;color:var(--muted);text-align:center;padding-bottom:6px;padding-left:6px">Média</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
 // ════════════════════════════════════════════════════════
-// 6. BEST OF THE WEEK
+// 5. BANCO DE ESFORÇO — removido por pedido do gestor
 // ════════════════════════════════════════════════════════
-function loadBotw() { return pgGet('botw_' + weekKey()) || []; }
+
+// ════════════════════════════════════════════════════════
+// 6. BEST OF THE WEEK — 1 registo por dia, resumo ao sábado
+// ════════════════════════════════════════════════════════
+// Estrutura: { "2026-04-10": "texto", ... } por semana
+function loadBotwWeek(offset = 0) { return pgGet('botw_' + weekKey(offset)) || {}; }
 
 function saveBotw() {
   const inp = document.getElementById('botw-input');
   if (!inp) return;
   const text = inp.value.trim();
   if (!text) return;
-  const entries = loadBotw();
-  entries.unshift({ date: todayKey(), text });
-  pgSet('botw_' + weekKey(), entries.slice(0, 30));
+  const obj = loadBotwWeek(0);
+  obj[todayKey()] = text;  // 1 entrada por dia — substitui se já existir
+  pgSet('botw_' + weekKey(0), obj);
   inp.value = '';
   renderBotwLog();
 }
 
-function deleteBotw(idx) {
-  const entries = loadBotw();
-  entries.splice(idx, 1);
-  pgSet('botw_' + weekKey(), entries);
+function deleteBotw(dateStr) {
+  const obj = loadBotwWeek(0);
+  delete obj[dateStr];
+  pgSet('botw_' + weekKey(0), obj);
   renderBotwLog();
 }
 
 function renderBotwLog() {
   const log = document.getElementById('botw-log');
   if (!log) return;
-  const entries = loadBotw();
+  const obj = loadBotwWeek(0);
+  const entries = Object.entries(obj).sort((a, b) => a[0].localeCompare(b[0])); // asc por data
+  const isSaturday = new Date().getDay() === 6;
+
   if (entries.length === 0) {
     log.innerHTML = `<div style="text-align:center;padding:16px 0;color:var(--faint);font-size:12px">
       Sem entradas esta semana</div>`;
     return;
   }
-  log.innerHTML = entries.map((e, i) => `
-    <div class="botw-entry">
+
+  // Sábado → mostrar resumo em destaque
+  const summaryHeader = isSaturday
+    ? `<div class="botw-summary-header">📋 Resumo semanal — ${entries.length} dia${entries.length!==1?'s':''} registados</div>`
+    : '';
+
+  log.innerHTML = summaryHeader + entries.map(([dateStr, text]) => {
+    const d = new Date(dateStr + 'T12:00:00');
+    const dayLabel = DOW[d.getDay()];
+    const dayNum = d.getDate();
+    const isToday = dateStr === todayKey();
+    return `<div class="botw-entry${isToday ? ' botw-today' : ''}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div>
-          <div class="botw-entry-date">${e.date}</div>
-          <div class="botw-entry-text">${e.text}</div>
+          <div class="botw-entry-date">${dayLabel}, ${dayNum} Abr${isToday ? ' · Hoje' : ''}</div>
+          <div class="botw-entry-text">${text}</div>
         </div>
-        <button onclick="deleteBotw(${i})" style="background:none;border:none;
+        <button onclick="deleteBotw('${dateStr}')" style="background:none;border:none;
           color:var(--faint);cursor:pointer;font-size:14px;padding:0;flex-shrink:0">✕</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ════════════════════════════════════════════════════════
-// 7. REGISTO DE TROCAS (simplificado — só anotações)
+// 7. REGISTO DE TROCAS — dropdowns, seletor de turno, nota
 // ════════════════════════════════════════════════════════
 function loadSwapLog() { return pgGet('swaplog') || []; }
 
+// Popula o select de turno com base na data selecionada
+function populateSwapShifts() {
+  const dateInput = document.getElementById('swap-date');
+  const shiftSel = document.getElementById('swap-shift');
+  if (!shiftSel || !dateInput || !dateInput.value) return;
+
+  // Determinar se é Abril e qual dia
+  const parts = dateInput.value.split('-');
+  const isApril = parseInt(parts[0]) === 2026 && parseInt(parts[1]) === 4;
+  const dayIdx = isApril ? parseInt(parts[2]) : null;
+
+  const opts = ['<option value="">— Seleciona turno —</option>'];
+
+  if (dayIdx) {
+    // Mostrar todos os turnos do dia
+    const shiftsOnDay = TEAM.filter(m => !m.isManager).map(m => {
+      const code = getEffectiveCode(m.id, dayIdx);
+      return { member: m, code };
+    }).filter(x => !isOff(x.code));
+
+    const uniqueShifts = [...new Set(shiftsOnDay.map(x => x.code))].sort();
+    uniqueShifts.forEach(code => {
+      const s = SH[code];
+      const label = s ? `${code} · ${s.s}:00 → ${s.e === 24 ? '00:00' : s.e + ':00'}` : code;
+      opts.push(`<option value="${code}">${label}</option>`);
+    });
+  } else {
+    // Dia não é Abril — mostrar todos os turnos possíveis
+    Object.keys(SH).forEach(code => {
+      const s = SH[code];
+      opts.push(`<option value="${code}">${code} · ${s.s}:00 → ${s.e === 24 ? '00:00' : s.e + ':00'}</option>`);
+    });
+  }
+
+  shiftSel.innerHTML = opts.join('');
+}
+
 function addSwapLog() {
-  const from = document.getElementById('swap-from')?.value.trim();
-  const to   = document.getElementById('swap-to')?.value.trim();
-  const date = document.getElementById('swap-date')?.value;
-  const note = document.getElementById('swap-note')?.value.trim() || '';
-  if (!from || !to) return;
+  const fromId  = document.getElementById('swap-from')?.value;
+  const toId    = document.getElementById('swap-to')?.value;
+  const date    = document.getElementById('swap-date')?.value;
+  const shift   = document.getElementById('swap-shift')?.value;
+  const note    = document.getElementById('swap-note')?.value.trim() || '';
+
+  if (!fromId || !toId) {
+    alert('Seleciona os dois colaboradores.'); return;
+  }
+  if (fromId === toId) {
+    alert('Os colaboradores têm de ser diferentes.'); return;
+  }
+
+  const fromName = TEAM.find(m => m.id === fromId)?.name || fromId;
+  const toName   = TEAM.find(m => m.id === toId)?.name   || toId;
+
   const entries = loadSwapLog();
-  entries.unshift({ from, to, date: date || todayKey(), note, ts: Date.now() });
+  entries.unshift({
+    from: fromName, fromId,
+    to: toName,     toId,
+    date: date || todayKey(),
+    shift: shift || '',
+    note,
+    ts: Date.now()
+  });
   pgSet('swaplog', entries.slice(0, 100));
+
+  // reset
   document.getElementById('swap-from').value = '';
   document.getElementById('swap-to').value = '';
-  document.getElementById('swap-date').value = '';
+  document.getElementById('swap-shift').innerHTML = '<option value="">— Seleciona data primeiro —</option>';
   document.getElementById('swap-note').value = '';
   renderSwapLog();
 }
@@ -3202,12 +3538,13 @@ function renderSwapLog() {
   }
   log.innerHTML = entries.map((e, i) => `
     <div class="swap-entry">
-      <div>
+      <div style="flex:1;min-width:0">
         <div class="swap-entry-info">
           <strong>${e.from}</strong> → <strong>${e.to}</strong>
-          ${e.note ? `<span style="color:var(--muted)"> — ${e.note}</span>` : ''}
+          ${e.shift ? `<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);
+            background:var(--accent-bg);border-radius:4px;padding:1px 5px;margin-left:4px">${e.shift}</span>` : ''}
         </div>
-        <div class="swap-entry-date">${e.date}</div>
+        <div class="swap-entry-date">${e.date}${e.note ? ' · ' + e.note : ''}</div>
       </div>
       <button class="swap-del-btn" onclick="deleteSwapLog(${i})">✕</button>
     </div>`).join('');
