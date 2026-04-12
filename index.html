@@ -85,7 +85,6 @@ body {
     -webkit-overflow-scrolling: touch;
     padding: 20px 18px !important;
     border-right: 1px solid var(--border);
-    /* no position:sticky — independent scroll column */
   }
   .right-col {
     flex: 1;
@@ -95,6 +94,15 @@ body {
     padding: 24px !important;
   }
 }
+
+/* mobile: right-col não tem altura fixa — scroll natural da página */
+@media (max-width: 699px) {
+  .right-col { padding-bottom: 32px; }
+}
+
+/* tab panels não devem ter altura mínima que cause espaço vazio */
+.rtab-panel { min-height: 0; }
+.rtab-panel.active { display: block; }
 
 /* ── LOGIN / PROFILE SELECT ────────────────────────── */
 #profile-overlay {
@@ -2948,15 +2956,15 @@ function renderPainel() {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <div>
             <div style="font-size:10px;color:var(--muted);margin-bottom:4px">De:</div>
-            <select class="pg-select" id="swap-from">
+            <select class="pg-select" id="swap-from" onchange="onSwapFromChange()">
               <option value="">— Colaborador —</option>
               ${memberNames().map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
             </select>
           </div>
           <div>
-            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Para:</div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Para: <span style="color:var(--faint);font-size:9px">(opcional)</span></div>
             <select class="pg-select" id="swap-to">
-              <option value="">— Colaborador —</option>
+              <option value="">— Sem troca —</option>
               ${memberNames().map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
             </select>
           </div>
@@ -2964,12 +2972,26 @@ function renderPainel() {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <div>
             <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Data:</div>
-            <input id="swap-date" type="date" class="pg-input">
+            <input id="swap-date" type="date" class="pg-input" onchange="onSwapDateChange()">
           </div>
           <div>
-            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Turno trocado:</div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Turno:</div>
             <select class="pg-select" id="swap-shift">
-              <option value="">— Seleciona data primeiro —</option>
+              <option value="">— Seleciona colaborador e data —</option>
+            </select>
+          </div>
+        </div>
+        <!-- fallback: seleção manual de hora quando não há turno reconhecido -->
+        <div id="swap-manual-row" style="display:none">
+          <div style="font-size:10px;color:var(--amber);margin-bottom:4px">⚠ Turno não identificado — seleciona manualmente:</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <select class="pg-select" id="swap-manual-start">
+              <option value="">Início</option>
+              ${Array.from({length:24},(_,i)=>`<option value="${i}">${String(i).padStart(2,'0')}:00</option>`).join('')}
+            </select>
+            <select class="pg-select" id="swap-manual-end">
+              <option value="">Fim</option>
+              ${Array.from({length:24},(_,i)=>`<option value="${i}">${String(i).padStart(2,'0')}:00</option>`).join('')}
             </select>
           </div>
         </div>
@@ -2977,7 +2999,7 @@ function renderPainel() {
           <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Nota (opcional):</div>
           <input id="swap-note" class="pg-input" placeholder="Contexto da troca…">
         </div>
-        <button class="swap-add-btn" onclick="addSwapLog()">+ Registar troca</button>
+        <button class="swap-add-btn" onclick="addSwapLog()">+ Registar</button>
       </div>
       <div class="swap-log" id="swap-log" style="margin-top:14px"></div>
     </div>`;
@@ -2985,10 +3007,10 @@ function renderPainel() {
   // init swap-date listener for shift population
   const swapDate = document.getElementById('swap-date');
   if (swapDate) {
-    swapDate.addEventListener('change', populateSwapShifts);
     swapDate.value = todayKey(); // default to today
-    populateSwapShifts();
   }
+  // trigger initial population if from is already set
+  onSwapDateChange();
 
   // render all sub-modules
   renderPerfBars();
@@ -3443,80 +3465,116 @@ function renderBotwLog() {
 }
 
 // ════════════════════════════════════════════════════════
-// 7. REGISTO DE TROCAS — dropdowns, seletor de turno, nota
+// 7. REGISTO DE TROCAS — auto-detecção de turno + sem "Para" + fallback manual
 // ════════════════════════════════════════════════════════
 function loadSwapLog() { return pgGet('swaplog') || []; }
 
-// Popula o select de turno com base na data selecionada
-function populateSwapShifts() {
-  const dateInput = document.getElementById('swap-date');
-  const shiftSel = document.getElementById('swap-shift');
-  if (!shiftSel || !dateInput || !dateInput.value) return;
+// Chamado quando muda "De" ou "Data" — tenta detetar o turno automaticamente
+function onSwapFromChange() { populateSwapShifts(); }
+function onSwapDateChange() { populateSwapShifts(); }
 
-  // Determinar se é Abril e qual dia
+function _getDateParts() {
+  const dateInput = document.getElementById('swap-date');
+  if (!dateInput || !dateInput.value) return null;
   const parts = dateInput.value.split('-');
   const isApril = parseInt(parts[0]) === 2026 && parseInt(parts[1]) === 4;
-  const dayIdx = isApril ? parseInt(parts[2]) : null;
+  return isApril ? parseInt(parts[2]) : null;
+}
 
-  const opts = ['<option value="">— Seleciona turno —</option>'];
+function populateSwapShifts() {
+  const shiftSel    = document.getElementById('swap-shift');
+  const manualRow   = document.getElementById('swap-manual-row');
+  const fromId      = document.getElementById('swap-from')?.value;
+  if (!shiftSel) return;
 
-  if (dayIdx) {
-    // Mostrar todos os turnos do dia
-    const shiftsOnDay = TEAM.filter(m => !m.isManager).map(m => {
-      const code = getEffectiveCode(m.id, dayIdx);
-      return { member: m, code };
-    }).filter(x => !isOff(x.code));
+  const dayIdx = _getDateParts();
 
-    const uniqueShifts = [...new Set(shiftsOnDay.map(x => x.code))].sort();
-    uniqueShifts.forEach(code => {
+  // ── Caso 1: Abril 2026 + colaborador selecionado → auto-detecção ──
+  if (dayIdx && fromId) {
+    const code = typeof getEffectiveCode === 'function'
+      ? getEffectiveCode(fromId, dayIdx)
+      : (TEAM.find(m => m.id === fromId)?.sch[dayIdx] || 'V');
+
+    if (!isOff(code) && SH[code]) {
+      // Turno identificado → pré-selecionar e esconder fallback
       const s = SH[code];
-      const label = s ? `${code} · ${s.s}:00 → ${s.e === 24 ? '00:00' : s.e + ':00'}` : code;
-      opts.push(`<option value="${code}">${label}</option>`);
-    });
-  } else {
-    // Dia não é Abril — mostrar todos os turnos possíveis
-    Object.keys(SH).forEach(code => {
-      const s = SH[code];
-      opts.push(`<option value="${code}">${code} · ${s.s}:00 → ${s.e === 24 ? '00:00' : s.e + ':00'}</option>`);
-    });
+      const endFmt = s.e === 24 ? '00:00' : s.e + ':00';
+      shiftSel.innerHTML = `<option value="${code}" selected>${code} · ${s.s}:00 → ${endFmt}</option>`;
+      // Adicionar opção para escolher outro
+      shiftSel.innerHTML += `<optgroup label="Outros turnos do dia">`;
+      const others = TEAM.filter(m => !m.isManager && m.id !== fromId).map(m => {
+        const c = typeof getEffectiveCode === 'function'
+          ? getEffectiveCode(m.id, dayIdx) : m.sch[dayIdx];
+        return c;
+      }).filter(c => !isOff(c) && SH[c] && c !== code);
+      [...new Set(others)].forEach(c => {
+        const ss = SH[c];
+        const ef = ss.e === 24 ? '00:00' : ss.e + ':00';
+        shiftSel.innerHTML += `<option value="${c}">${c} · ${ss.s}:00 → ${ef}</option>`;
+      });
+      shiftSel.innerHTML += `</optgroup>`;
+      if (manualRow) manualRow.style.display = 'none';
+      return;
+    }
+
+    // Turno é folga ou desconhecido → mostrar fallback manual
+    shiftSel.innerHTML = `<option value="">— Turno não identificado —</option>`;
+    if (manualRow) manualRow.style.display = '';
+    return;
   }
 
-  shiftSel.innerHTML = opts.join('');
+  // ── Caso 2: data não é Abril OU colaborador não selecionado → lista completa de turnos ──
+  shiftSel.innerHTML = ['<option value="">— Seleciona turno —</option>']
+    .concat(Object.keys(SH).map(code => {
+      const s = SH[code];
+      const ef = s.e === 24 ? '00:00' : s.e + ':00';
+      return `<option value="${code}">${code} · ${s.s}:00 → ${ef}</option>`;
+    })).join('');
+  if (manualRow) manualRow.style.display = 'none';
 }
 
 function addSwapLog() {
-  const fromId  = document.getElementById('swap-from')?.value;
-  const toId    = document.getElementById('swap-to')?.value;
-  const date    = document.getElementById('swap-date')?.value;
-  const shift   = document.getElementById('swap-shift')?.value;
-  const note    = document.getElementById('swap-note')?.value.trim() || '';
+  const fromId = document.getElementById('swap-from')?.value;
+  const toId   = document.getElementById('swap-to')?.value;   // pode estar vazio
+  const date   = document.getElementById('swap-date')?.value;
+  const note   = document.getElementById('swap-note')?.value.trim() || '';
 
-  if (!fromId || !toId) {
-    alert('Seleciona os dois colaboradores.'); return;
-  }
-  if (fromId === toId) {
-    alert('Os colaboradores têm de ser diferentes.'); return;
+  if (!fromId) { alert('Seleciona o colaborador "De".'); return; }
+  if (toId && toId === fromId) { alert('Os colaboradores têm de ser diferentes.'); return; }
+
+  // Obter turno: do select auto-detetado OU dos campos manuais
+  let shift = document.getElementById('swap-shift')?.value || '';
+  const manualRow = document.getElementById('swap-manual-row');
+  if (manualRow && manualRow.style.display !== 'none' && !shift) {
+    const mStart = document.getElementById('swap-manual-start')?.value;
+    const mEnd   = document.getElementById('swap-manual-end')?.value;
+    if (mStart !== '' && mEnd !== '') {
+      shift = `${String(mStart).padStart(2,'0')}:00–${String(mEnd).padStart(2,'0')}:00`;
+    }
   }
 
   const fromName = TEAM.find(m => m.id === fromId)?.name || fromId;
-  const toName   = TEAM.find(m => m.id === toId)?.name   || toId;
+  const toName   = toId ? (TEAM.find(m => m.id === toId)?.name || toId) : null;
 
   const entries = loadSwapLog();
   entries.unshift({
     from: fromName, fromId,
-    to: toName,     toId,
+    to: toName,     toId: toId || null,   // null = sem troca
     date: date || todayKey(),
-    shift: shift || '',
+    shift,
     note,
     ts: Date.now()
   });
   pgSet('swaplog', entries.slice(0, 100));
 
-  // reset
+  // reset form
   document.getElementById('swap-from').value = '';
   document.getElementById('swap-to').value = '';
-  document.getElementById('swap-shift').innerHTML = '<option value="">— Seleciona data primeiro —</option>';
+  document.getElementById('swap-shift').innerHTML = '<option value="">— Seleciona colaborador e data —</option>';
   document.getElementById('swap-note').value = '';
+  if (document.getElementById('swap-manual-start')) document.getElementById('swap-manual-start').value = '';
+  if (document.getElementById('swap-manual-end'))   document.getElementById('swap-manual-end').value = '';
+  if (manualRow) manualRow.style.display = 'none';
   renderSwapLog();
 }
 
@@ -3536,18 +3594,24 @@ function renderSwapLog() {
       Sem trocas registadas</div>`;
     return;
   }
-  log.innerHTML = entries.map((e, i) => `
-    <div class="swap-entry">
+  log.innerHTML = entries.map((e, i) => {
+    const toLabel = e.to
+      ? `<strong>${e.to}</strong>`
+      : `<span style="color:var(--muted);font-style:italic">Sem troca</span>`;
+    const shiftBadge = e.shift
+      ? `<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);
+          background:var(--accent-bg);border-radius:4px;padding:1px 5px;margin-left:4px">${e.shift}</span>`
+      : '';
+    return `<div class="swap-entry">
       <div style="flex:1;min-width:0">
         <div class="swap-entry-info">
-          <strong>${e.from}</strong> → <strong>${e.to}</strong>
-          ${e.shift ? `<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);
-            background:var(--accent-bg);border-radius:4px;padding:1px 5px;margin-left:4px">${e.shift}</span>` : ''}
+          <strong>${e.from}</strong> → ${toLabel}${shiftBadge}
         </div>
         <div class="swap-entry-date">${e.date}${e.note ? ' · ' + e.note : ''}</div>
       </div>
       <button class="swap-del-btn" onclick="deleteSwapLog(${i})">✕</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 // ════════════════════════════════════════════════════════
 // FIM DO MÓDULO PAINEL DE GESTÃO
