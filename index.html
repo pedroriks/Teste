@@ -1687,24 +1687,25 @@ const DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const APR1_DOW = 3;
 const STORE_OPEN = 10, STORE_CLOSE = 23;
 
-// ── ALTERAÇÕES v12 → v13 (dias com mudanças por colaborador) ──
-// Formato: id → Set de índices de dias alterados (0=Mar31, 1=1Abr...)
+// ── Alterações V7 (vs V6 anterior) ──
 const CHANGES = {
-  '9457':  new Set([0,11]),           // Catarina: Mar31 080PA→090PA corrigido; dia 11 080NA adicionado
-  '11821': new Set([18,19]),          // Leandro: dias 19-20 corrigidos (170→200, 140 mantido)
-  '13778': new Set([15]),             // Tiago: dia 15 100→100QA
-  '13782': new Set([14]),             // Bernardo: dia 14 140→170
-  '13783': new Set([13,17,18]),       // Cláudia: dias 13,17,18 corrigidos
-  '13784': new Set([15,16]),          // Micael: dias 15,16 corrigidos
+  '9457':  new Set([17]),             // Catarina: dia 17 090PA→070MA
+  '13777': new Set([23,24,25]),       // José: dias 23/24 trocados (FO↔200), dia 25 120SA→V
+  '13779': new Set([29]),             // Tomás: dia 29 180→190
+  '13784': new Set([23,24,25]),       // Micael: dias 23/24 trocados (200↔V), dia 25 110RA→120SA
+  '13818': new Set([19]),             // Francisco Santos: dia 19 140→110
+  '14058': new Set([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]), // Filipa Mendes: nova
+  '900017031': new Set([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]), // Bianca Xavier: nova
+  '14045': new Set([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]), // Maria Bugalho: nova
 };
 
-// ── CHECKLIST (localStorage) ──
+// ── CHECKLIST (Supabase via cache) ──
 function clKey(dateStr) { return 'checklist_' + dateStr; }
 function clLoad(dateStr) {
-  try { return JSON.parse(localStorage.getItem(clKey(dateStr)) || '[]'); } catch { return []; }
+  return pgGet(clKey(dateStr)) || [];
 }
 function clSave(dateStr, tasks) {
-  try { localStorage.setItem(clKey(dateStr), JSON.stringify(tasks)); } catch {}
+  pgSet(clKey(dateStr), tasks);
 }
 const URGENCY_ORDER = { alta: 0, media: 1, baixa: 2 };
 const IMPORTANCE_ORDER = { alta: 0, media: 1, baixa: 2 };
@@ -1723,7 +1724,7 @@ const TEAM = [
    sch:['100','V','V','150','FO','100QA','150','150','V','140','FC','FO','120SA','150','150','V','150','FC','FO','110RA','150','150','V','150','FC','FO','100QA','150','150','V','150']},
   // PDF: 9457 CATARINA CARREIRA
   {id:'9457', name:'Catarina Carreira', isManager:false,
-   sch:['080PA','090','FO','110RA','090PA','120SA','130TA','FC','FO','090PA','090PA','080NA','090PA','FC','090PA','090PA','090PA','090PA','090PA','FO','Fe','Fe','Fe','Fe','Fe','FC','FO','090','110','090','FC']},
+   sch:['080PA','090','FO','110RA','090PA','120SA','130TA','FC','FO','090PA','090PA','080NA','090PA','FC','090PA','090PA','090PA','070MA','090PA','FO','Fe','Fe','Fe','Fe','Fe','FC','FO','090','110','090','FC']},
   // PDF: 9704 FRANCISCO BARRELA
   {id:'9704', name:'Francisco Barrela', isManager:false,
    sch:['V','200','FC','FO','150VA','120SA','V','V','130','FC','FO','150VA','130TA','V','130','V','FC','FO','150VA','120SA','V','130','V','FC','FO','150VA','120SA','V','V','130','FC']},
@@ -1744,13 +1745,13 @@ const TEAM = [
    sch:['150VA','150VA','150VA','150VA','FC','FO','070MA','100QA','120SA','FC','FO','110RA','110RA','100QA','FC','120SA','FO','120SA','150VA','150VA','FC','100QA','100QA','100QA','100QA','100QA','FO','100QA','100QA','120SA','120SA']},
   // PDF: 13777 JOSE PEREIRA
   {id:'13777',name:'José Pereira', isManager:false,
-   sch:['V','FC','FO','170','150VA','150VA','V','V','FC','FO','200','130TA','150VA','V','V','180','FC','FO','100QA','100QA','FC','V','200','FO','200','120SA','150VA','V','V','FC','FO']},
+   sch:['V','FC','FO','170','150VA','150VA','V','V','FC','FO','200','130TA','150VA','V','V','180','FC','FO','100QA','100QA','FC','V','200','200','FO','V','150VA','V','V','FC','FO']},
   // PDF: 13778 TIAGO BENTO
   {id:'13778',name:'Tiago Bento', isManager:false,
    sch:['200','FO','130','100','130','110','FC','100','200','160','160','160','FO','100','110','100QA','100','100','FC','FO','160','170','190','FC','200','160','FO','130','FC','FO','130']},
   // PDF: 13779 TOMAS PACIFICO
   {id:'13779',name:'Tomás Pacífico', isManager:false,
-   sch:['180','130','100','100','FC','FO','100','170','170','FC','FO','100','100','180','FC','FO','100','100','100','100','FC','200','160','190','170','190','FO','190','200','180','170']},
+   sch:['180','130','100','100','FC','FO','100','170','170','FC','FO','100','100','180','FC','FO','100','100','100','100','FC','200','160','190','170','190','FO','190','200','190','170']},
   // PDF: 13782 BERNARDO ROCHA
   {id:'13782',name:'Bernardo Rocha', isManager:false,
    sch:['120','110','FC','FO','110','100','180','FC','FO','100','100','140','140','FC','170','200','140','180','140','FO','100','130','100','100','100','FC','FO','150','200','200','FC']},
@@ -1759,13 +1760,22 @@ const TEAM = [
    sch:['140','150','140','130','FC','FO','160','140','100','FC','FO','100','100','150VA','FC','130TA','150VA','150VA','FO','150VA','FC','100','140','140','130','100','FO','100','120','100','100']},
   // PDF: 13784 MICAEL DOMINGUES
   {id:'13784',name:'Micael Domingues', isManager:false,
-   sch:['FO','V','200','V','100QA','090PA','FC','FO','200','V','V','150VA','150VA','V','FC','120SA','190','FO','120SA','100QA','FC','FO','V','200','V','110RA','150VA','FC','FO','V','140']},
+   sch:['FO','V','200','V','100QA','090PA','FC','FO','200','V','V','150VA','150VA','V','FC','120SA','190','FO','120SA','100QA','FC','FO','V','V','200','120SA','150VA','FC','FO','V','140']},
   // PDF: 13808 DIOGO COSTA
   {id:'13808',name:'Diogo Costa', isManager:false,
    sch:['160','V','FC','FO','150VA','150VA','V','FC','V','FO','200','150VA','150VA','V','FC','V','FO','200','150VA','150VA','130','V','V','FC','FO','100QA','100QA','V','160','V','FC']},
   // PDF: 13818 FRANCISCO SANTOS
   {id:'13818',name:'Francisco Santos', isManager:false,
-   sch:['180','190','FC','200','170','FO','200','200','FC','200','FO','170','180','200','200','FC','200','FO','140','140','200','200','FC','200','FO','200','200','200','200','FC','200']},
+   sch:['180','190','FC','200','170','FO','200','200','FC','200','FO','170','180','200','200','FC','200','FO','140','110','200','200','FC','200','FO','200','200','200','200','FC','200']},
+  // PDF V7: 14058 FILIPA MENDES (nova)
+  {id:'14058',name:'Filipa Mendes', isManager:false,
+   sch:['200','160','100','FO','110','160','160','160','140','FC','FO','150','200','200','FC','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
+  // PDF V7: 900017031 BIANCA XAVIER (nova)
+  {id:'900017031',name:'Bianca Xavier', isManager:false,
+   sch:['200','FO','180','180','160','FC','FO','200','160','140','140','FC','160','170','100','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
+  // PDF V7: 14045 MARIA BUGALHO (nova)
+  {id:'14045',name:'Maria Bugalho', isManager:false,
+   sch:['200','FO','120SA','120SA','V','V','FC','FO','200','120SA','120SA','V','V','FC','FO','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
 ];
 
 let currentUser = null;
@@ -1816,10 +1826,10 @@ function getUserDayInfo(user, idx) {
 // ════════════════════════════════════════════════════════
 // OVERRIDE ENGINE — swap & manual
 // ════════════════════════════════════════════════════════
-function getSwapOverrides()   { try { return JSON.parse(localStorage.getItem('shiftSwapOvr') || '{}'); }   catch { return {}; } }
-function getManualOverrides() { try { return JSON.parse(localStorage.getItem('shiftManualOvr') || '{}'); } catch { return {}; } }
-function saveSwapOverrides(o)   { localStorage.setItem('shiftSwapOvr',   JSON.stringify(o)); }
-function saveManualOverrides(o) { localStorage.setItem('shiftManualOvr', JSON.stringify(o)); }
+function getSwapOverrides()   { return pgGet('shiftSwapOvr')   || {}; }
+function getManualOverrides() { return pgGet('shiftManualOvr') || {}; }
+function saveSwapOverrides(o)   { pgSet('shiftSwapOvr',   o); }
+function saveManualOverrides(o) { pgSet('shiftManualOvr', o); }
 
 function ovrKey(userId, idx) { return `${userId}_${idx}`; }
 
@@ -1888,19 +1898,19 @@ function clearManualEdit() {
 
 
 // ════════════════════════════════════════════════════════
-// ALMOÇO MANUAL — localStorage
+// PAUSA DE ALMOÇO — Supabase (via cache)
 // ════════════════════════════════════════════════════════
-// ════════════════════════════════════════════════════════
-// PAUSA DE ALMOÇO — localStorage
-// ════════════════════════════════════════════════════════
-function lunchKey(userId, day) { return `lunch_${userId}_${day}`; }
 function getLunch(userId, day) {
-  const v = localStorage.getItem(lunchKey(userId, day));
-  return v !== null ? parseFloat(v) : null;
+  const obj = pgGet('lunch') || {};
+  const v = obj[`${userId}_${day}`];
+  return v !== undefined ? v : null;
 }
 function setLunch(userId, day, val) {
-  if (val === null || val === '') localStorage.removeItem(lunchKey(userId, day));
-  else localStorage.setItem(lunchKey(userId, day), String(val));
+  const obj = pgGet('lunch') || {};
+  const k = `${userId}_${day}`;
+  if (val === null || val === '') delete obj[k];
+  else obj[k] = val;
+  pgSet('lunch', obj);
 }
 
 // Formata "13.5" → "13:30–14:30"
@@ -1975,10 +1985,18 @@ function clearLunchModal() {
   pick(savedDay);
 }
 
-function init() {
+async function init() {
   if (initialized) return;
   initialized = true;
-  
+
+  // ── Mostrar overlay de carregamento ──
+  const loadOv = document.getElementById('loading-overlay');
+  if (loadOv) loadOv.classList.remove('hidden');
+
+  await _supaLoad();
+
+  if (loadOv) loadOv.classList.add('hidden');
+
   const list = document.getElementById('profile-list');
   if (!list) return;
   
@@ -2828,11 +2846,59 @@ function weekLabel(offset = 0) {
 function monthKey() {
   const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
 }
-function pgGet(k)   { try { return JSON.parse(localStorage.getItem('pg_'+k)||'null'); } catch { return null; } }
-function pgSet(k,v) { localStorage.setItem('pg_'+k, JSON.stringify(v)); }
+// ════════════════════════════════════════════════════════
+// SUPABASE — config + cache + helpers
+// ════════════════════════════════════════════════════════
+const SUPA_URL = 'https://ppmctkilbcpkpgwhlopf.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwbWN0a2lsYmNwa3Bnd2hsb3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzc5NDUsImV4cCI6MjA5MTc1Mzk0NX0.ZzpcWn1gdt17oQ9zHDCqlU2JFigShSGwTiam5lnEKi8';
+const SUPA_H = {
+  'apikey': SUPA_KEY,
+  'Authorization': 'Bearer ' + SUPA_KEY,
+  'Content-Type': 'application/json'
+};
+
+// In-memory cache — UI reads here (sync), Supabase is the backing store (async)
+const DB = {};
+let _supaReady = false;
+
+function pgGet(k) { return (DB[k] !== undefined) ? DB[k] : null; }
+
+function pgSet(k, v) {
+  DB[k] = v;
+  _supaWrite(k, v);
+}
+
 function pgMerge(k, partial) {
   const cur = pgGet(k) || {};
   pgSet(k, Object.assign(cur, partial));
+}
+
+async function _supaWrite(key, value) {
+  if (!_supaReady) return;
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/kv_store`, {
+      method: 'POST',
+      headers: { ...SUPA_H, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ key, value })
+    });
+  } catch(e) { console.warn('Supabase write error', e); }
+}
+
+async function _supaLoad() {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/kv_store?select=key,value`, { headers: SUPA_H });
+    if (res.status === 404 || res.status === 401) {
+      console.warn('Supabase: tabela kv_store não encontrada. Cria-a no dashboard.');
+      return;
+    }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const rows = await res.json();
+    if (Array.isArray(rows)) rows.forEach(r => { DB[r.key] = r.value; });
+    _supaReady = true;
+  } catch(e) {
+    console.warn('Supabase load error:', e);
+    _supaReady = true; // permite uso offline
+  }
 }
 
 // ── nomes COMPLETOS da equipa (excluindo gestor) ──
@@ -3056,21 +3122,16 @@ function navPerfWeek(dir) {
 }
 
 function savePerf() {
-  // só guarda na semana atual (offset=0)
-  if (perfWeekOffset !== 0) {
-    alert('Só podes guardar dados para a semana atual.');
-    return;
-  }
   const obj = {};
   PERF_SECTIONS.forEach(s => {
     const el = document.getElementById('perf-inp-' + s.id);
     obj[s.id] = el ? Math.min(100, Math.max(0, parseInt(el.value) || 0)) : 0;
   });
-  pgSet('perf_' + weekKey(0), obj);
+  pgSet('perf_' + weekKey(perfWeekOffset), obj);
   renderPerfBars();
   // feedback visual
   const btn = document.getElementById('perf-save-btn');
-  if (btn) { btn.textContent = '✓ Guardado!'; setTimeout(() => { btn.textContent = 'Guardar semana atual'; }, 1800); }
+  if (btn) { btn.textContent = '✓ Guardado!'; setTimeout(() => { btn.textContent = 'Guardar'; }, 1800); }
 }
 
 function renderPerfBars() {
@@ -3084,7 +3145,10 @@ function renderPerfBars() {
   if (lbl) lbl.textContent = weekLabel(perfWeekOffset);
   if (nextBtn) nextBtn.disabled = perfWeekOffset >= 0;
   const isCurrentWeek = perfWeekOffset === 0;
-  if (saveBtn) saveBtn.style.display = isCurrentWeek ? '' : 'none';
+  if (saveBtn) {
+    saveBtn.style.display = '';
+    saveBtn.textContent = isCurrentWeek ? 'Guardar semana atual' : 'Guardar alterações';
+  }
 
   const data = loadPerf(perfWeekOffset);
   bars.innerHTML = PERF_SECTIONS.map(s => `
@@ -3093,11 +3157,8 @@ function renderPerfBars() {
       <div class="perf-bar-wrap">
         <div class="perf-bar-fill" style="width:${data[s.id]||0}%;background:${s.color}"></div>
       </div>
-      ${isCurrentWeek
-        ? `<input class="perf-input" id="perf-inp-${s.id}" type="number" min="0" max="100"
-            value="${data[s.id]||0}" oninput="updatePerfBar('${s.id}','${s.color}')">`
-        : `<span style="font-size:12px;color:var(--muted);width:54px;text-align:right">${data[s.id]||0}</span>`
-      }
+      <input class="perf-input" id="perf-inp-${s.id}" type="number" min="0" max="100"
+          value="${data[s.id]||0}" oninput="updatePerfBar('${s.id}','${s.color}')">
       <div class="perf-pct">${data[s.id]||0}%</div>
     </div>`).join('');
 
@@ -3140,14 +3201,33 @@ function updatePerfBar(id, color) {
 // ════════════════════════════════════════════════════════
 // 2. RANKING DE EFICIÊNCIA
 // ════════════════════════════════════════════════════════
+function _effKey(dateKey) { return 'eff_' + dateKey.slice(0, 7); }
 function loadEff() {
   return pgGet('eff_' + monthKey()) || {};
 }
+function _getEffVal(dateKey) {
+  const obj = pgGet(_effKey(dateKey)) || {};
+  return obj[dateKey];
+}
 
 function markEff(val) {
-  const obj = loadEff();
-  obj[todayKey()] = val;
-  pgSet('eff_' + monthKey(), obj);
+  const today = todayKey();
+  const storKey = _effKey(today);
+  const obj = pgGet(storKey) || {};
+  obj[today] = val;
+  pgSet(storKey, obj);
+  renderEffGrid();
+}
+
+// Clica num dia para ciclar entre: atingido → não atingido → sem registo
+function toggleEffDay(dateKey) {
+  const storKey = _effKey(dateKey);
+  const obj = pgGet(storKey) || {};
+  const cur = obj[dateKey];
+  if (cur === undefined || cur === null) obj[dateKey] = 1;
+  else if (cur === 1) obj[dateKey] = 0;
+  else delete obj[dateKey];
+  pgSet(storKey, obj);
   renderEffGrid();
 }
 
@@ -3155,16 +3235,16 @@ function renderEffGrid() {
   const grid = document.getElementById('eff-grid');
   const streak = document.getElementById('eff-streak');
   if (!grid) return;
-  const obj = loadEff();
   // show last 28 days
   const days = [];
   for (let i = 27; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
     const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    days.push({ k, label: d.getDate(), v: obj[k] });
+    days.push({ k, label: d.getDate(), v: _getEffVal(k) });
   }
   grid.innerHTML = days.map(d =>
-    `<div class="eff-day ${d.v === 1 ? 'hit' : d.v === 0 ? 'miss' : 'none'}" title="${d.k}">
+    `<div class="eff-day ${d.v === 1 ? 'hit' : d.v === 0 ? 'miss' : 'none'}"
+      title="${d.k} · clica para alterar" onclick="toggleEffDay('${d.k}')" style="cursor:pointer">
       ${d.label}<br>${d.v === 1 ? '✓' : d.v === 0 ? '✗' : '-'}
     </div>`).join('');
   // streak count
@@ -3174,7 +3254,7 @@ function renderEffGrid() {
   }
   if (streak) streak.textContent = s > 0
     ? `🔥 Sequência atual: ${s} dia${s !== 1 ? 's' : ''} consecutivos`
-    : 'Marca o dia de hoje para iniciar uma sequência!';
+    : 'Clica num dia para registar se o orçamento foi atingido.';
 }
 
 // ════════════════════════════════════════════════════════
