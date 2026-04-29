@@ -1659,19 +1659,28 @@ const SH = {
   '100QA':{s:10,e:19,bs:14,be:15},
   '100QB':{s:10,e:19,bs:14.25,be:15.25},
   '100PC':{s:10,e:19,bs:13.5,be:14.5},
+  '100RA':{s:10,e:19,bs:15,be:16},
   '110':{s:11,e:15,bs:null,be:null},
   '110QA':{s:11,e:20,bs:14,be:15},
   '110RA':{s:11,e:20,bs:15,be:16},
+  '113RC':{s:11,e:21,bs:15,be:16},
   '120':{s:12,e:16,bs:null,be:null},
+  '120RA':{s:12,e:20,bs:15,be:16},
   '120SA':{s:12,e:21,bs:16,be:17},
+  '123':{s:12,e:17,bs:null,be:null},
+  '123SC':{s:12,e:22,bs:16,be:17},
   '130':{s:13,e:17,bs:null,be:null},
   '130TA':{s:13,e:22,bs:17,be:18},
   '133':{s:13.5,e:17.5,bs:null,be:null},
   '140':{s:14,e:18,bs:null,be:null},
   '140UA':{s:14,e:23,bs:18,be:19},
+  '144':{s:14,e:19,bs:null,be:null},
   '150':{s:15,e:19,bs:null,be:null},
   '150VA':{s:15,e:24,bs:19,be:20},
+  '150VB':{s:15,e:24,bs:19,be:20},
+  '150WA':{s:15,e:24,bs:20,be:21},
   '160':{s:16,e:20,bs:null,be:null},
+  '163':{s:16,e:21,bs:null,be:null},
   '170':{s:17,e:21,bs:null,be:null},
   '173':{s:17.5,e:21.5,bs:null,be:null},
   '180':{s:18,e:22,bs:null,be:null},
@@ -1681,8 +1690,8 @@ const SH = {
   '200':{s:20,e:24,bs:null,be:null},
 };
 
-const OFF = ['FC','FO','V','Fe','Bx','IT','AutDe'];
-const OFF_LABEL = {FC:'Folga Complementar',FO:'Folga Obrigatória',V:'Dia Off',Fe:'Férias',Bx:'Baixa Médica',IT:'Intermédio',AutDe:'Auto Declaração'};
+const OFF = ['FC','FO','V','Fe','Bx','IT','AutDe','BH-'];
+const OFF_LABEL = {FC:'Folga Complementar',FO:'Folga Obrigatória',V:'Dia Off',Fe:'Férias',Bx:'Baixa Médica',IT:'Intermédio',AutDe:'Auto Declaração','BH-':'Banco de Horas'};
 const DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const APR1_DOW = 3;
 const STORE_OPEN = 10, STORE_CLOSE = 23;
@@ -1721,61 +1730,84 @@ const TEAM = [
   // idx: 0=Mar31  1=1Abr  2=2  3=3  4=4  5=5  6=6  7=7  8=8  9=9  10=10 11=11 12=12 13=13 14=14 15=15 16=16 17=17 18=18 19=19 20=20 21=21 22=22 23=23 24=24 25=25 26=26 27=27 28=28 29=29 30=30
   // PDF: 2595 JOAO CABETE
   {id:'2595', name:'João Cabete', isManager:false,
-   sch:['100','V','V','150','FO','100QA','150','150','V','140','FC','FO','120SA','150','150','V','150','FC','FO','110RA','150','150','V','150','FC','FO','100QA','150','150','V','150']},
+   sch:['100','V','V','150','FO','100QA','150','150','V','140','FC','FO','120SA','150','150','V','150','FC','FO','110RA','150','150','V','150','FC','FO','100QA','150','150','V','150'],
+   schMay:['150','FC','FO','100QA','150','150','V','150','FC','FO','100QA','150','150','V','150','FC','FO','100QA','150','150','V','150','FC','FO','100QA','150','150','V','150','FC','FO','100QA']},
   // PDF: 9457 CATARINA CARREIRA
   {id:'9457', name:'Catarina Carreira', isManager:false,
-   sch:['080PA','090','FO','110RA','090PA','120SA','130TA','FC','FO','090PA','090PA','080NA','090PA','FC','090PA','090PA','090PA','070MA','090PA','FO','Fe','Fe','Fe','Fe','Fe','FC','FO','090','110','090','FC']},
+   sch:['080PA','090','FO','110RA','090PA','120SA','130TA','FC','FO','090PA','090PA','080NA','090PA','FC','090PA','090PA','090PA','070MA','090PA','FO','Fe','Fe','Fe','Fe','Fe','FC','FO','090','110','090','FC'],
+   schMay:['FO','110RA','100QA','090PA','V','V','200','FC','FC','FO','090PA','V','200','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe']},
   // PDF: 9704 FRANCISCO BARRELA
   {id:'9704', name:'Francisco Barrela', isManager:false,
-   sch:['V','200','FC','FO','150VA','120SA','V','V','130','FC','FO','150VA','130TA','V','130','V','FC','FO','150VA','120SA','V','130','V','FC','FO','150VA','120SA','V','V','130','FC']},
+   sch:['V','200','FC','FO','150VA','120SA','V','V','130','FC','FO','150VA','130TA','V','130','V','FC','FO','150VA','120SA','V','130','V','FC','FO','150VA','120SA','V','V','130','FC'],
+   schMay:['FC','FO','150VA','120SA','100','V','V','FC','FO','100QA','Fe','Fe','Fe','Fe','Fe','Fe','Fe','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
   // PDF: 11449 MARIA MORAIS
   {id:'11449',name:'Maria Morais', isManager:false,
-   sch:['FC','FO','090','090','200','200','FC','090','090','180','130','200','FO','130','160','180','160','140','FC','FO','090','090','090','FC','FO','200','170','190','FC','FO','090']},
+   sch:['FC','FO','090','090','200','200','FC','090','090','180','130','200','FO','130','160','180','160','140','FC','FO','090','090','090','FC','FO','200','170','190','FC','FO','090'],
+   schMay:['090','100','100','110','FC','100','090','090','100','100','FO','090','100','100','200','180','FC','FO','100','090','090','160','FC','FO','160','090','FC','FO','Fe','Fe','Fe','130']},
   // PDF: 11550 MARIA LOPES
   {id:'11550',name:'Maria Lopes', isManager:false,
-   sch:['FC','FO','200','200','170','160','FC','200','150','140','170','200','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','200','190','200','FC','FO','160','190','200','FC','FO','200']},
+   sch:['FC','FO','200','200','170','160','FC','200','150','140','170','200','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','200','190','200','FC','FO','160','190','200','FC','FO','200'],
+   schMay:['200','200','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe']},
   // PDF: 11821 LEANDRO GUEDES
   {id:'11821',name:'Leandro Guedes', isManager:false,
-   sch:['FC','100','100','160','100','FO','200','190','200','200','200','FC','FO','200','200','200','FC','FO','200','140','200','FC','FO','180','170','200','130','FC','180','200','200']},
+   sch:['FC','100','100','160','100','FO','200','190','200','200','200','FC','FO','200','200','200','FC','FO','200','140','200','FC','FO','180','170','200','130','FC','180','200','200'],
+   schMay:['200','150','200','FO','200','200','180','200','180','FC','FO','200','200','200','FC','FO','200','200','180','180','FO','110','160','200','200','FC','180','180','180','160','200','FO']},
   // PDF: 12238 DIOGO REBELO
   {id:'12238',name:'Diogo Rebelo', isManager:false,
-   sch:['110RA','160','170','200','130','FO','110RA','130TA','100QA','110RA','100QA','FC','FO','090PA','100QA','100QA','FC','FO','130TA','150VA','120SA','FC','FO','090PA','090PA','090PA','090PA','FC','090PA','110RA','110RA']},
+   sch:['110RA','160','170','200','130','FO','110RA','130TA','100QA','110RA','100QA','FC','FO','090PA','100QA','100QA','FC','FO','130TA','150VA','120SA','FC','FO','090PA','090PA','090PA','090PA','FC','090PA','110RA','110RA'],
+   schMay:['110RA','090PA','090PA','FO','110RA','090PA','110RA','110RA','110RA','FC','FO','110RA','090PA','090PA','140UA','FC','FO','090PA','090PA','FC','110RA','FO','090PA','090PA','090PA','FC','090PA','090PA','090PA','090PA','090PA','FO']},
   // PDF: 12339 PEDRO SILVA (manager)
   {id:'12339',name:'Pedro Silva', isManager:true, passwordHash:'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
-   sch:['150VA','150VA','150VA','150VA','FC','FO','070MA','100QA','120SA','FC','FO','110RA','110RA','100QA','FC','120SA','FO','120SA','150VA','150VA','FC','100QA','100QA','100QA','100QA','100QA','FO','100QA','100QA','120SA','120SA']},
+   sch:['150VA','150VA','150VA','150VA','FC','FO','070MA','100QA','120SA','FC','FO','110RA','110RA','100QA','FC','120SA','FO','120SA','150VA','150VA','FC','100QA','100QA','100QA','100QA','100QA','FO','100QA','100QA','120SA','120SA'],
+   schMay:['120SA','120SA','FC','FO','070MA','070MA','070MA','FC','FO','150VA','150VA','120SA','090PA','FC','FC','070MA','FO','120SA','FC','150VA','150VA','150VA','150VA','150VA','FO','120SA','120SA','120SA','150VA','150VA','FC','FO']},
   // PDF: 13777 JOSE PEREIRA
   {id:'13777',name:'José Pereira', isManager:false,
-   sch:['V','FC','FO','170','150VA','150VA','V','V','FC','FO','200','130TA','150VA','V','V','180','FC','FO','100QA','100QA','FC','V','200','200','FO','V','150VA','V','V','FC','FO']},
+   sch:['V','FC','FO','170','150VA','150VA','V','V','FC','FO','200','130TA','150VA','V','V','180','FC','FO','100QA','100QA','FC','V','200','200','FO','V','150VA','V','V','FC','FO'],
+   schMay:['FO','200','150VA','150VA','V','V','FC','FO','200','120SA','120SA','V','V','FC','FO','200','150VA','150VA','200','200','FC','FO','200','150VA','150VA','V','V','FC','FO','200','150VA','150VA']},
   // PDF: 13778 TIAGO BENTO
   {id:'13778',name:'Tiago Bento', isManager:false,
-   sch:['200','FO','130','100','130','110','FC','100','200','160','160','160','FO','100','110','100QA','100','100','FC','FO','160','170','190','FC','200','160','FO','130','FC','FO','130']},
+   sch:['200','FO','130','100','130','110','FC','100','200','160','160','160','FO','100','110','100QA','100','100','FC','FO','160','170','190','FC','200','160','FO','130','FC','FO','130'],
+   schMay:['130','100','120','120','FC','180','140','180','150','200','FO','140','110','110','100','100','FC','FO','200','130','200','FC','110','180','FO','110','140','FC','FO','110','160','170']},
   // PDF: 13779 TOMAS PACIFICO
   {id:'13779',name:'Tomás Pacífico', isManager:false,
-   sch:['180','130','100','100','FC','FO','100','170','170','FC','FO','100','100','180','FC','FO','100','100','100','100','FC','200','160','190','170','190','FO','190','200','190','170']},
+   sch:['180','130','100','100','FC','FO','100','170','170','FC','FO','100','100','180','FC','FO','100','100','100','100','FC','200','160','190','170','190','FO','190','200','190','170'],
+   schMay:['170','120','FC','FO','100','110','100','FC','FO','160','200','200','FC','FO','110','110','160','160','FC','100','160','100','160','150','FO','100','110','110','100','100','FC','FO']},
   // PDF: 13782 BERNARDO ROCHA
-  {id:'13782',name:'Bernardo Rocha', isManager:false,
-   sch:['120','110','FC','FO','110','100','180','FC','FO','100','100','140','140','FC','170','200','140','180','140','FO','100','130','100','100','100','FC','FO','150','200','200','FC']},
+  {id:'13782',name:'Bernardo Rocha', isManager:false, inactiveFrom:1,
+   sch:['120','110','FC','FO','110','100','180','FC','FO','100','100','140','140','FC','170','200','140','180','140','FO','100','130','100','100','100','FC','FO','150','200','200','FC'],
+   schMay:['V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
   // PDF: 13783 CLAUDIA MORCELA
   {id:'13783',name:'Cláudia Morcela', isManager:false,
-   sch:['140','150','140','130','FC','FO','160','140','100','FC','FO','100','100','150VA','FC','130TA','150VA','150VA','FO','150VA','FC','100','140','140','130','100','FO','100','120','100','100']},
+   sch:['140','150','140','130','FC','FO','160','140','100','FC','FO','100','100','150VA','FC','130TA','150VA','150VA','FO','150VA','FC','100','140','140','130','100','FO','100','120','100','100'],
+   schMay:['100','160','FC','FO','160','160','160','200','FC','FO','160','160','FC','180','100','FO','110','110','FC','100','100','100','100','110','FO','170','180','200','200','160','FC','FO']},
   // PDF: 13784 MICAEL DOMINGUES
   {id:'13784',name:'Micael Domingues', isManager:false,
-   sch:['FO','V','200','V','100QA','090PA','FC','FO','200','V','V','150VA','150VA','V','FC','120SA','190','FO','120SA','100QA','FC','FO','V','V','200','120SA','150VA','FC','FO','V','140']},
+   sch:['FO','V','200','V','100QA','090PA','FC','FO','200','V','V','150VA','150VA','V','FC','120SA','190','FO','120SA','100QA','FC','FO','V','V','200','120SA','150VA','FC','FO','V','140'],
+   schMay:['140','V','123SC','150VA','FC','FO','V','140','V','V','100QA','FC','FO','V','160','V','090PA','100QA','FC','FO','V','200','V','100QA','100QA','160','FC','100','V','V','FO','100QA']},
   // PDF: 13808 DIOGO COSTA
   {id:'13808',name:'Diogo Costa', isManager:false,
-   sch:['160','V','FC','FO','150VA','150VA','V','FC','V','FO','200','150VA','150VA','V','FC','V','FO','200','150VA','150VA','130','V','V','FC','FO','100QA','100QA','V','160','V','FC']},
+   sch:['160','V','FC','FO','150VA','150VA','V','FC','V','FO','200','150VA','150VA','V','FC','V','FO','200','150VA','150VA','130','V','V','FC','FO','100QA','100QA','V','160','V','FC'],
+   schMay:['FC','FO','150VA','150VA','V','FC','V','200','FO','150VA','150VA','V','V','FC','FO','100','150VA','150VA','V','170','V','FC','FO','100QA','110RA','V','100','V','FC','FO','100QA','110RA']},
   // PDF: 13818 FRANCISCO SANTOS
   {id:'13818',name:'Francisco Santos', isManager:false,
-   sch:['180','190','FC','200','170','FO','200','200','FC','200','FO','170','180','200','200','FC','200','FO','140','110','200','200','FC','200','FO','200','200','200','200','FC','200']},
+   sch:['180','190','FC','200','170','FO','200','200','FC','200','FO','170','180','200','200','FC','200','FO','140','110','200','200','FC','200','FO','200','200','200','200','FC','200'],
+   schMay:['200','200','FC','FO','200','200','200','FC','FO','180','200','FC','FO','200','200','150','200','200','FC','200','200','200','200','200','FO','200','200','200','200','200','FC','FO']},
   // PDF V7: 14058 FILIPA MENDES (nova)
   {id:'14058',name:'Filipa Mendes', isManager:false,
-   sch:['200','160','100','FO','110','160','160','160','140','FC','FO','150','200','200','FC','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
+   sch:['200','160','100','FO','110','160','160','160','140','FC','FO','150','200','200','FC','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V'],
+   schMay:['FC','FO','160','160','140','FC','FO','100','100','140','160','FC','160','150','160','150','110','FO','110','140','140','140','FC','FO','160','140','FC','150','110','FO','120','200']},
   // PDF V7: 900017031 BIANCA XAVIER (nova)
   {id:'900017031',name:'Bianca Xavier', isManager:false,
-   sch:['200','FO','180','180','160','FC','FO','200','160','140','140','FC','160','170','100','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
+   sch:['200','FO','180','180','160','FC','FO','200','160','140','140','FC','160','170','100','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V'],
+   schMay:['100','160','160','FO','180','140','130','130','140','FC','FO','100','160','160','FC','FO','160','160','160','FC','FO','180','150','160','190','FC','160','160','160','140','180','FO']},
   // PDF V7: 14045 MARIA BUGALHO (nova)
   {id:'14045',name:'Maria Bugalho', isManager:false,
-   sch:['200','FO','120SA','120SA','V','V','FC','FO','200','120SA','120SA','V','V','FC','FO','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
+   sch:['200','FO','120SA','120SA','V','V','FC','FO','200','120SA','120SA','V','V','FC','FO','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V'],
+   schMay:['FO','200','150VA','150VA','V','V','FC','FO','200','150VA','150VA','V','V','FC','FO','200','150VA','150VA','V','V','FC','FO','200','120SA','130TA','V','V','FC','FO','200','150VA','150VA']},
+  // PDF Maio V2: 900017102 CRISTIANO (novo, só existe em Maio)
+  {id:'900017102',name:'Cristiano', isManager:false, activeFrom:1,
+   sch:['V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V'],
+   schMay:['160','100QA','100QA','V','V','FC','FO','190','110RA','110RA','V','V','FC','FO','170','100QA','100QA','V','V','FC','FO','160','150VA','150VA','200','V','FC','FO','V','100QA','120SA','V']},
 ];
 
 let currentUser = null;
@@ -1815,6 +1847,17 @@ function working(c, h, userId, day) {
   return true;
 }
 
+// ── Filtragem por mês ativo ──
+// activeFrom: mês a partir do qual está ativo (ex: 1 = só existe a partir de Maio)
+// inactiveFrom: mês a partir do qual está inativo (ex: 1 = deixa de existir em Maio)
+function getActiveMembers(month) {
+  return TEAM.filter(m => {
+    if (m.activeFrom !== undefined && month < m.activeFrom) return false;
+    if (m.inactiveFrom !== undefined && month >= m.inactiveFrom) return false;
+    return true;
+  });
+}
+
 function getUserDayInfo(user, idx) {
   const c = getEffectiveCode(user.id, idx);
   if (isOff(c)) return { code: c, off: true };
@@ -1840,7 +1883,10 @@ function getEffectiveCode(userId, idx) {
   const swaps = getSwapOverrides();
   if (swaps[key]) return swaps[key];
   const m = TEAM.find(x => x.id === userId);
-  return m ? m.sch[idx] : 'V';
+  if (!m) return 'V';
+  // Use schMay se currentMonth === 1 (Maio) e existir
+  if (currentMonth === 1 && m.schMay) return m.schMay[idx];
+  return m.sch[idx] || 'V';
 }
 
 function getOvrType(userId, idx) {
@@ -2116,28 +2162,53 @@ function navMonth(dir) {
 }
 
 function renderMayCal() {
-  // May has no shift data — show a day-off request calendar
-  const saved = getDayOffRequests().filter(r => r.month === 1);
-  const reqDays = new Set(saved.map(r => r.day));
+  const now = new Date();
+  const todayMay = (now.getFullYear() === 2026 && now.getMonth() === 4) ? now.getDate() : null;
+
   let h = '';
   DOW.forEach(d => { h += `<div class="dow">${d}</div>`; });
   for (let i = 0; i < MAY1_DOW; i++) h += '<div></div>';
   for (let d = 1; d <= MAY_DAYS; d++) {
-    const hasReq = reqDays.has(d);
-    const dowLabel = DOW[(MAY1_DOW + d - 1) % 7];
-    h += `<div class="may-cal-day${hasReq ? ' req-marked' : ''}" onclick="mayDayClick(${d})" title="${hasReq ? 'Pedido enviado' : 'Clica para pedir folga'}">
-      <div class="d-num">${d}</div>
-      <div class="d-icon">${hasReq ? '🌙' : '+'}</div>
-      <div class="d-lbl">${hasReq ? 'pedido' : dowLabel}</div>
+    const c = getEffectiveCode(currentUser.id, d);
+    const off = isOff(c), vac = c === 'Fe';
+    const activeTeam = getActiveMembers(1); // month 1 = May
+    const cnt = activeTeam.filter(m => !isOff(getEffectiveCode(m.id, d))).length;
+    let bc = off ? (vac ? 'vac' : 'off') : '';
+
+    const isPast = todayMay !== null && d < todayMay;
+    const isToday = todayMay !== null && d === todayMay;
+
+    const dateStr = `2026-05-${String(d).padStart(2,'0')}`;
+    const tasks = clLoad(dateStr);
+    const taskBadge = tasks.length > 0
+      ? `<div class="task-dot">${tasks.filter(t=>!t.done).length > 0 ? '●' : '✓'}</div>` : '';
+
+    const myOvrType = getOvrType(currentUser.id, d);
+    const dayHasOvr = currentUser.isManager && activeTeam.some(m => getOvrType(m.id, d));
+    const ovrDot = myOvrType === 'swap'   ? `<div class="swap-dot"   title="Troca aprovada">⇄</div>`
+                 : myOvrType === 'manual' ? `<div class="manual-dot" title="Alterado manualmente">✏</div>`
+                 : dayHasOvr             ? `<div class="swap-dot"   title="Existem alterações neste dia">⇄</div>`
+                 : '';
+
+    const cellInner = currentUser.isManager
+      ? `<div class="d-count">${cnt}</div>
+         <div class="d-lbl">eq</div>
+         <span class="d-badge ${bc}">${c}</span>`
+      : `<div class="d-count" style="font-size:13px;margin-top:4px">${off ? '—' : c}</div>
+         <div class="d-lbl">${off ? (OFF_LABEL[c] || c).split(' ')[0] : 'turno'}</div>`;
+
+    const hasSwapDay   = currentUser.isManager && activeTeam.some(m => getOvrType(m.id, d) === 'swap');
+    const hasManualDay = currentUser.isManager && activeTeam.some(m => getOvrType(m.id, d) === 'manual');
+    const extraClass = isPast ? ' past' : isToday ? ' today-marker' : '';
+    const ovrClass = hasSwapDay ? ' has-swap' : hasManualDay ? ' has-manual' : '';
+
+    h += `<div class="cal-day${selectedDay===d?' selected':''}${extraClass}${ovrClass}" onclick="pick(${d})">
+      <div class="d-num">${d}${taskBadge}${ovrDot}</div>
+      ${cellInner}
     </div>`;
   }
   document.getElementById('cal').innerHTML = h;
-  document.getElementById('detail-label').textContent = 'Maio 2026 — Pedidos de folga';
-  document.getElementById('detail').innerHTML = `
-    <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">
-      Seleciona um dia de Maio para pedir folga.<br>
-      <span style="font-size:11px;color:var(--faint)">Dias com 🌙 já têm pedido enviado.</span>
-    </div>`;
+  if (selectedDay > 0 && selectedDay <= MAY_DAYS) pick(selectedDay);
 }
 
 function mayDayClick(d) {
@@ -2451,7 +2522,8 @@ function renderCal() {
   for (let d = 1; d <= 30; d++) {
     const c = getEffectiveCode(currentUser.id, d);  // use effective (swap/manual) code
     const off = isOff(c), vac = c === 'Fe';
-    const cnt = TEAM.filter(m => !isOff(getEffectiveCode(m.id, d))).length;
+    const activeTeam = getActiveMembers(0); // month 0 = April
+    const cnt = activeTeam.filter(m => !isOff(getEffectiveCode(m.id, d))).length;
     let bc = off ? (vac ? 'vac' : 'off') : '';
 
     // past / today markers
@@ -2472,7 +2544,7 @@ function renderCal() {
 
     // override dots
     const myOvrType = getOvrType(currentUser.id, d);
-    const dayHasOvr = currentUser.isManager && TEAM.some(m => getOvrType(m.id, d));
+    const dayHasOvr = currentUser.isManager && activeTeam.some(m => getOvrType(m.id, d));
     const ovrDot = myOvrType === 'swap'   ? `<div class="swap-dot"   title="Troca aprovada">⇄</div>`
                  : myOvrType === 'manual' ? `<div class="manual-dot" title="Alterado manualmente">✏</div>`
                  : dayHasOvr             ? `<div class="swap-dot"   title="Existem alterações neste dia">⇄</div>`
@@ -2485,8 +2557,8 @@ function renderCal() {
       : `<div class="d-count" style="font-size:13px;margin-top:4px">${off ? '—' : c}</div>
          <div class="d-lbl">${off ? (OFF_LABEL[c] || c).split(' ')[0] : 'turno'}</div>`;
 
-    const hasSwapDay   = currentUser.isManager && TEAM.some(m => getOvrType(m.id, d) === 'swap');
-    const hasManualDay = currentUser.isManager && TEAM.some(m => getOvrType(m.id, d) === 'manual');
+    const hasSwapDay   = currentUser.isManager && activeTeam.some(m => getOvrType(m.id, d) === 'swap');
+    const hasManualDay = currentUser.isManager && activeTeam.some(m => getOvrType(m.id, d) === 'manual');
     const extraClass = isPast ? ' past' : isToday ? ' today-marker' : '';
     const ovrClass = hasSwapDay ? ' has-swap' : hasManualDay ? ' has-manual' : '';
 
@@ -2515,7 +2587,9 @@ function pick(day) {
   renderCal();
 
   const p = getUserDayInfo(currentUser, day);
-  const dow = DOW[(APR1_DOW + day - 1) % 7];
+  const dow = currentMonth === 0 
+    ? DOW[(APR1_DOW + day - 1) % 7]
+    : DOW[(MAY1_DOW + day - 1) % 7];
   const cnt = countW(day);
   const firstName = currentUser.name.split(' ')[0];
 
@@ -2524,13 +2598,14 @@ function pick(day) {
   for (let h = 9; h <= 23; h++) HOURS.push(h);
   const cov = {};
   HOURS.forEach(h => { cov[h] = { t: 0, me: false, workers: [] }; });
-  TEAM.forEach(m => {
+  const activeTeam = getActiveMembers(currentMonth);
+  activeTeam.forEach(m => {
     const c = getEffectiveCode(m.id, day);  // use effective shift
     HOURS.forEach(h => {
       if (working(c, h, m.id, day)) {  // passa userId+day para incluir pausa manual
         cov[h].t++;
         if (m.id === currentUser.id) cov[h].me = true;
-        const dn = TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
+        const dn = activeTeam.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
           ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1][0] + '.'
           : m.name.split(' ')[0];
         cov[h].workers.push(dn);
@@ -2561,19 +2636,20 @@ function pick(day) {
       </div>`;
     }
 
-    document.getElementById('detail-label').textContent = `${dow}, ${day} de Abril 2026`;
+    const monthName = currentMonth === 0 ? 'Abril' : 'Maio';
+    document.getElementById('detail-label').textContent = `${dow}, ${day} de ${monthName} 2026`;
     document.getElementById('detail').innerHTML = `
       <div class="day-header">
         <div>
-          <h2>${dow}, ${day} de Abril</h2>
+          <h2>${dow}, ${day} de ${monthName}</h2>
           <div class="meta">O teu turno</div>
         </div>
       </div>
       <div class="panel-section">
         ${shiftHTML}
         ${!p.off ? `<div class="req-trigger-row">
-          <button class="req-trigger-btn" onclick="openModal('swap',${day},0)">🔄 Pedir troca de horário</button>
-          <button class="req-trigger-btn" onclick="openModal('dayoff',${day},0)">🌙 Pedir folga</button>
+          <button class="req-trigger-btn" onclick="openModal('swap',${day},${currentMonth})">🔄 Pedir troca de horário</button>
+          <button class="req-trigger-btn" onclick="openModal('dayoff',${day},${currentMonth})">🌙 Pedir folga</button>
         </div>` : ''}
       </div>`;
     return;
@@ -2582,7 +2658,7 @@ function pick(day) {
   // ════════════════════════════════════════════════════
   // MANAGER — vista completa
   // ════════════════════════════════════════════════════
-  const sorted = [...TEAM].sort((a, b) => {
+  const sorted = [...activeTeam].sort((a, b) => {
     if (a.id === currentUser.id) return -1; if (b.id === currentUser.id) return 1;
     const ao = isOff(getEffectiveCode(a.id, day)), bo = isOff(getEffectiveCode(b.id, day));
     return ao === bo ? 0 : ao ? 1 : -1;
@@ -2597,7 +2673,7 @@ function pick(day) {
     else if (ovrType === 'swap')   cl += ' swap-w';
     else if (ovrType === 'manual') cl += ' manual-w';
     const hasChange = CHANGES[m.id] && CHANGES[m.id].has(day);
-    const dn = TEAM.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
+    const dn = activeTeam.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
       ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1]
       : m.name.split(' ')[0];
     const ovrBadge = ovrType === 'swap'   ? `<span class="ovr-badge swap">⇄ troca</span>`
@@ -2620,7 +2696,8 @@ function pick(day) {
   const maxC = Math.max(...openHours.map(h => cov[h].t), 1);
   // Calcular hora atual UMA VEZ, fora do loop
   const _nowH = new Date();
-  const _isToday = _nowH.getFullYear() === 2026 && _nowH.getMonth() === 3 && _nowH.getDate() === day;
+  const _monthCheck = currentMonth === 0 ? 3 : 4; // Apr=3, May=4
+  const _isToday = _nowH.getFullYear() === 2026 && _nowH.getMonth() === _monthCheck && _nowH.getDate() === day;
   const _currentHour = _isToday ? _nowH.getHours() : -1;
 
   let chartRows = '';
@@ -2654,15 +2731,17 @@ function pick(day) {
     }
   });
 
-  const workingNow = TEAM.filter(m => !isOff(getEffectiveCode(m.id, day))).length;
-  const offNow = TEAM.length - workingNow;
-  const dateStr = `2026-04-${String(day).padStart(2,'0')}`;
+  const workingNow = activeTeam.filter(m => !isOff(getEffectiveCode(m.id, day))).length;
+  const offNow = activeTeam.length - workingNow;
+  const monthName = currentMonth === 0 ? 'Abril' : 'Maio';
+  const monthPad = currentMonth === 0 ? '04' : '05';
+  const dateStr = `2026-${monthPad}-${String(day).padStart(2,'0')}`;
 
-  document.getElementById('detail-label').textContent = `${dow}, ${day} de Abril 2026`;
+  document.getElementById('detail-label').textContent = `${dow}, ${day} de ${monthName} 2026`;
   document.getElementById('detail').innerHTML = `
     <div class="day-header">
       <div>
-        <h2>${dow}, ${day} de Abril</h2>
+        <h2>${dow}, ${day} de ${monthName}</h2>
         <div class="meta">${cnt} elemento${cnt !== 1 ? 's' : ''} da equipa de calçado a trabalhar</div>
       </div>
       <div class="day-num-badge">
