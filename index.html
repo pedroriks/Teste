@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f0f0f">
-<title>Calçado · Abril 2026</title>
+<title>Calçado · Maio 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -143,6 +143,70 @@ body {
   color: var(--muted); 
   font-size: 13px;
   line-height: 1.4;
+}
+
+.back-btn {
+  position: absolute;
+  left: 20px;
+  top: calc(24px + env(safe-area-inset-top));
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.back-btn:hover {
+  background: var(--surface3);
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+}
+@media (min-width: 600px) {
+  .section-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.section-btn {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.section-btn:hover {
+  background: var(--surface2);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.section-icon {
+  font-size: 40px;
+  line-height: 1;
+}
+.section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .profile-grid-container {
@@ -746,6 +810,23 @@ header {
   margin-top: 4px;
   line-height: 1.3;
 }
+.hour-names-compact {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 6px; padding: 6px 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; cursor: pointer;
+  transition: all .15s;
+}
+.hour-names-compact:hover {
+  background: var(--surface3); border-color: var(--border2);
+}
+.hour-count-label {
+  font-size: 10px; font-weight: 600; color: var(--text);
+}
+.hour-details-btn {
+  font-size: 9px; font-weight: 600; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
 
 /* Manager / Break advice */
 .manager-card {
@@ -1024,6 +1105,48 @@ header {
 }
 .month-nav-btn:disabled { opacity: .3; cursor: default; }
 .month-nav-title { font-size: 12px; font-weight: 700; color: var(--text); }
+
+/* ── TEAM FILTERS ADVANCED ──────────────────────────────── */
+.team-filters-advanced {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 12px; margin-bottom: 12px;
+}
+.filter-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.filter-title {
+  font-size: 11px; font-weight: 700; color: var(--text);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.filter-clear-btn {
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 5px; color: var(--muted); font-size: 10px;
+  font-weight: 600; padding: 3px 8px; cursor: pointer;
+  transition: all .15s; -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.filter-clear-btn:hover { background: var(--surface3); color: var(--text); }
+.filter-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+}
+.filter-checkbox {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 7px; cursor: pointer; transition: all .15s;
+  user-select: none; -webkit-user-select: none;
+}
+.filter-checkbox:hover { background: var(--surface3); }
+.filter-checkbox input[type="checkbox"] {
+  width: 16px; height: 16px; cursor: pointer; margin: 0;
+  accent-color: var(--accent);
+}
+.filter-checkbox span {
+  font-size: 11px; font-weight: 600; color: var(--text);
+  white-space: nowrap;
+}
+.filter-checkbox input:checked + span { color: var(--accent); }
 
 /* ── RIGHT-COL TABS (manager) ───────────────────────── */
 .rtab-bar {
@@ -1503,17 +1626,129 @@ header {
   grid-column: 1 / -1; background: var(--surface2);
   color: var(--amber); border: 1px solid var(--amber-border); margin-top: 4px;
 }
+/* ── HOUR DETAILS MODAL ─────────────────────────────────── */
+.hour-modal {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85); z-index: 10000;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 0; transition: opacity .2s;
+}
+@media (min-width: 768px) {
+  .hour-modal { align-items: center; padding: 20px; }
+}
+.hour-modal.hidden { display: none; }
+.hour-modal-content {
+  background: var(--surface); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  width: 100%; max-width: 100%; max-height: 85vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+  animation: slideUp .25s ease-out;
+}
+@media (min-width: 768px) {
+  .hour-modal-content {
+    border-radius: var(--r-lg); max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.hour-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.hour-modal-header h3 {
+  font-size: 16px; font-weight: 700; color: var(--text); margin: 0;
+}
+.hour-modal-close {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--muted); font-size: 16px;
+  width: 32px; height: 32px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  transition: all .15s; -webkit-appearance: none;
+}
+.hour-modal-close:hover { background: var(--surface3); color: var(--text); }
+.hour-modal-body {
+  padding: 16px 20px; overflow-y: auto; flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+.hour-worker-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 8px;
+  margin-bottom: 8px;
+}
+.hour-worker-item:last-child { margin-bottom: 0; }
+.hour-worker-av {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--surface3); color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.hour-worker-info { flex: 1; min-width: 0; }
+.hour-worker-name {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  margin-bottom: 2px;
+}
+.hour-worker-team {
+  font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace;
+}
+
 </style>
 </head>
 <body>
 
 <div id="profile-overlay">
-  <div class="profile-header">
-    <h2>Quem és?</h2>
-    <p>Seleciona o teu perfil para veres o teu horário</p>
+  <!-- STEP 1: Section Selection -->
+  <div id="section-selector" class="section-selector">
+    <div class="profile-header">
+      <h2>Gestão de Horários SPZ Leiria</h2>
+      <p>Seleciona a tua secção</p>
+    </div>
+    <div class="section-grid">
+      <button class="section-btn" onclick="selectSection('management')">
+        <div class="section-icon">👔</div>
+        <div class="section-label">Direção</div>
+      </button>
+      <button class="section-btn" onclick="selectSection('calcado')">
+        <div class="section-icon">👟</div>
+        <div class="section-label">Calçado</div>
+      </button>
+      <button class="section-btn" onclick="selectSection('caixa')">
+        <div class="section-icon">💳</div>
+        <div class="section-label">Caixa</div>
+      </button>
+      <button class="section-btn" onclick="selectSection('textil')">
+        <div class="section-icon">👕</div>
+        <div class="section-label">Têxtil</div>
+      </button>
+      <button class="section-btn" onclick="selectSection('tecnico')">
+        <div class="section-icon">⚽</div>
+        <div class="section-label">Técnico</div>
+      </button>
+      <button class="section-btn" onclick="selectSection('logistica')">
+        <div class="section-icon">📦</div>
+        <div class="section-label">Logística</div>
+      </button>
+      <button class="section-btn" onclick="selectSection('all')">
+        <div class="section-icon">🏪</div>
+        <div class="section-label">Toda a Loja</div>
+      </button>
+    </div>
   </div>
-  <div class="profile-grid-container">
-    <div class="profile-grid" id="profile-list"></div>
+  
+  <!-- STEP 2: Profile Selection (hidden initially) -->
+  <div id="profile-selector" class="profile-selector hidden">
+    <div class="profile-header">
+      <button class="back-btn" onclick="backToSections()">← Voltar</button>
+      <h2 id="section-title">Seleciona o teu perfil</h2>
+      <p id="section-subtitle"></p>
+    </div>
+    <div class="profile-grid-container">
+      <div class="profile-grid" id="profile-list"></div>
+    </div>
   </div>
 </div>
 
@@ -1536,7 +1771,7 @@ header {
       <div class="brand" onclick="logout()">
         <div class="brand-icon">👟</div>
         <div class="brand-text">
-          <h1>Calçado · Abril 2026</h1>
+          <h1>Gestão de Horários · Maio 2026</h1>
           <p>SPZ Leiria · SDSR Sports Division</p>
         </div>
       </div>
@@ -1555,9 +1790,45 @@ header {
       <div class="cal-section">
         <div class="section-label">
           <div class="month-nav" style="width:100%">
-            <button class="month-nav-btn" id="btn-prev-month" onclick="navMonth(-1)" disabled>‹</button>
-            <span class="month-nav-title" id="month-title">Abril 2026</span>
-            <button class="month-nav-btn" id="btn-next-month" onclick="navMonth(1)">›</button>
+            <button class="month-nav-btn" id="btn-prev-month" onclick="navMonth(-1)">‹</button>
+            <span class="month-nav-title" id="month-title">Maio 2026</span>
+            <button class="month-nav-btn" id="btn-next-month" onclick="navMonth(1)" disabled>›</button>
+          </div>
+        </div>
+        <div id="team-filters" class="team-filters-advanced hidden">
+          <div class="filter-header">
+            <span class="filter-title">Filtrar cobertura</span>
+            <button class="filter-clear-btn" onclick="clearAllFilters()">Limpar</button>
+          </div>
+          <div class="filter-grid">
+            <label class="filter-checkbox">
+              <input type="checkbox" value="calcado" onchange="updateTeamFilter()" checked>
+              <span>Calçado</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" value="management" onchange="updateTeamFilter()">
+              <span>Direção</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" value="supervisor" onchange="updateTeamFilter()">
+              <span>Supervisores</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" value="caixa" onchange="updateTeamFilter()">
+              <span>Caixa</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" value="textil" onchange="updateTeamFilter()">
+              <span>Têxtil</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" value="tecnico" onchange="updateTeamFilter()">
+              <span>Técnico</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" value="logistica" onchange="updateTeamFilter()">
+              <span>Logística</span>
+            </label>
           </div>
         </div>
         <div class="cal-grid" id="cal"></div>
@@ -1727,94 +1998,176 @@ function sortTasks(tasks) {
 }
 
 const TEAM = [
+  // ════════════════════════════════════════════════════════
+  // EQUIPA DIRETIVA
+  // ════════════════════════════════════════════════════════
+  // STORE MANAGER
+  {id:'309',name:'Hugo Franco', isManager:false, team:'management',
+   sch:['FC','FO','090PA','090PA','090PA','120SA','FC','090PA','090PA','090PA','090PA','090PA','FO','090PA','090PA','090PA','090PA','090PA','FC','FO','110RA','090PA','090PA','090PA','FO','090PA','120SA','090PA','FC','FO','090PA'],
+   schMay:['4s','090PA','FO','090PA','150VA','FC','090PA','090PA','090PA','090PA','090PA','FO','090PA','090PA','090PA','090PA','090PA','FC','FO','150VA','150VA','150VA','FC','FO','090PA','090PA','090PA','FC','FO','090PA','090PA','090PA','070MA']},
+  // ASSISTANT MANAGER
+  {id:'329',name:'Silvana Duarte', isManager:false, team:'management',
+   sch:['V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V'],
+   schMay:['150VA','120SA','120SA','120SA','FC','090PA','FC','FO','070MA','070MA','070MA','FC','FO','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','090PA','FC','FO','V']},
+  {id:'10',name:'Monica Pedrosa', isManager:false, team:'management',
+   sch:['074ND','090PA8h','090PA','090PA','FC','FO','150VA','150VA','150VA','FC','FO','070MA','120SA','FC','090PA','090PA8h','090PA8h','FO','070MA','070MA','FC','150VA','150VA','150VA','150VA','150VA','FO','150VA','150VA','150VA','150VA'],
+   schMay:['Fe','Fe','Fe','Fe','120SA','120SA','090PA','090PA','FC','FO','150VA','150VA','150VA','FC','FO','070MA','070MA','080NA','FC','FO','080NA','080NA','070MA','120SA','FC','090PA','090PA','090PA','090PA','090PA','FO','V']},
+  // SUPERVISORS
+  {id:'2623',name:'Wendy Matias', isManager:false, team:'supervisor',
+   sch:['180YA','150VA','FC','FO','070MA','070MA','090PA','FC','FO','150VA','150VA','150VA','150VA','FC','100QA','100QA','150VA','120SA','150VA','FO','150VA','150VA8h','150VA8h','150VA8h','150VA','FC','FO','120SA','090PA','090PA','FC'],
+   schMay:['FC','FO','070MA','070MA','090PA','FC','FC','150VA','120SA4h','090PA','FO','090PA8h','090PA8h','090PA8h','090PA8h','090PA8h','FC8h','FO','090PA8h','090PA8h','090PA8h','090PA8h','090PA8h','FC','FO','FC','150VA','150VA','FO','120SA4h','150VA','150VA']},
+  {id:'3678',name:'Marco Lopes', isManager:false, team:'supervisor',
+   sch:['FC','FO','150VA','150VA','150VA','150VA','FC','090PA','090PA','090PA','090PA','120SA','FO','150VA','150VA','150VA','120SA','FC','120SA','FO','120SA','120SA','120SA','FC','FO','150VA','150VA','Fe','Fe','Fe','Fe'],
+   schMay:['Fe','Fe','Fe','Fe','FC','150VA','150VA','150VA','150VA','150VA','FO','120SA','150VA','150VA','150VA','150VA','FC','FO','120SA','120SA','120SA','FC','FO','120SA','150VA','150VA','FC','FO','120SA','090PA','070MA','120SA']},
+  {id:'10941',name:'Beatriz Areia', isManager:false, team:'supervisor',
+   sch:['120SA','120SA','150VA','150VA','120SA','FO','090PA','080NA','080NA','080NA','080NA','FO','070MA','080NA','080NA','070MA','080NA','FC','FO','120SA','090PA','080NA','080NA','080NA','FC','080NA','FO','FC','080NA','080NA','080NA'],
+   schMay:['080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FO','070MA','080NA','080NA','080NA','FC','080NA','FC','FO']},
+  // STOCK ROOM SUPERVISOR
+  {id:'5',name:'Teresa Palma', isManager:false, team:'supervisor',
+   sch:['070NA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA'],
+   schMay:['070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO']},
+
+  // ════════════════════════════════════════════════════════
+  // EQUIPA CALÇADO
+  // ════════════════════════════════════════════════════════
   // idx: 0=Mar31  1=1Abr  2=2  3=3  4=4  5=5  6=6  7=7  8=8  9=9  10=10 11=11 12=12 13=13 14=14 15=15 16=16 17=17 18=18 19=19 20=20 21=21 22=22 23=23 24=24 25=25 26=26 27=27 28=28 29=29 30=30
   // PDF: 2595 JOAO CABETE
-  {id:'2595', name:'João Cabete', isManager:false,
+  {id:'2595', name:'João Cabete', isManager:false, team:'calcado',
    sch:['100','V','V','150','FO','100QA','150','150','V','140','FC','FO','120SA','150','150','V','150','FC','FO','110RA','150','150','V','150','FC','FO','100QA','150','150','V','150'],
    schMay:['150','FC','FO','100QA','150','150','V','150','FC','FO','100QA','150','150','V','150','FC','FO','100QA','150','150','V','150','FC','FO','100QA','150','150','V','150','FC','FO','100QA']},
   // PDF: 9457 CATARINA CARREIRA
-  {id:'9457', name:'Catarina Carreira', isManager:false,
+  {id:'9457', name:'Catarina Carreira', isManager:false, team:'calcado',
    sch:['080PA','090','FO','110RA','090PA','120SA','130TA','FC','FO','090PA','090PA','080NA','090PA','FC','090PA','090PA','090PA','070MA','090PA','FO','Fe','Fe','Fe','Fe','Fe','FC','FO','090','110','090','FC'],
    schMay:['FO','110RA','100QA','090PA','V','V','200','FC','FC','FO','090PA','V','200','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe']},
   // PDF: 9704 FRANCISCO BARRELA
-  {id:'9704', name:'Francisco Barrela', isManager:false,
+  {id:'9704', name:'Francisco Barrela', isManager:false, team:'calcado',
    sch:['V','200','FC','FO','150VA','120SA','V','V','130','FC','FO','150VA','130TA','V','130','V','FC','FO','150VA','120SA','V','130','V','FC','FO','150VA','120SA','V','V','130','FC'],
    schMay:['FC','FO','150VA','120SA','100','V','V','FC','FO','100QA','Fe','Fe','Fe','Fe','Fe','Fe','Fe','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
   // PDF: 11449 MARIA MORAIS
-  {id:'11449',name:'Maria Morais', isManager:false,
+  {id:'11449',name:'Maria Morais', isManager:false, team:'calcado',
    sch:['FC','FO','090','090','200','200','FC','090','090','180','130','200','FO','130','160','180','160','140','FC','FO','090','090','090','FC','FO','200','170','190','FC','FO','090'],
    schMay:['090','100','100','110','FC','100','090','090','100','100','FO','090','100','100','200','180','FC','FO','100','090','090','160','FC','FO','160','090','FC','FO','Fe','Fe','Fe','130']},
   // PDF: 11550 MARIA LOPES
-  {id:'11550',name:'Maria Lopes', isManager:false,
+  {id:'11550',name:'Maria Lopes', isManager:false, team:'calcado',
    sch:['FC','FO','200','200','170','160','FC','200','150','140','170','200','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','200','190','200','FC','FO','160','190','200','FC','FO','200'],
    schMay:['200','200','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe']},
   // PDF: 11821 LEANDRO GUEDES
-  {id:'11821',name:'Leandro Guedes', isManager:false,
+  {id:'11821',name:'Leandro Guedes', isManager:false, team:'calcado',
    sch:['FC','100','100','160','100','FO','200','190','200','200','200','FC','FO','200','200','200','FC','FO','200','140','200','FC','FO','180','170','200','130','FC','180','200','200'],
    schMay:['200','150','200','FO','200','200','180','200','180','FC','FO','200','200','200','FC','FO','200','200','180','180','FO','110','160','200','200','FC','180','180','180','160','200','FO']},
   // PDF: 12238 DIOGO REBELO
-  {id:'12238',name:'Diogo Rebelo', isManager:false,
+  {id:'12238',name:'Diogo Rebelo', isManager:false, team:'calcado',
    sch:['110RA','160','170','200','130','FO','110RA','130TA','100QA','110RA','100QA','FC','FO','090PA','100QA','100QA','FC','FO','130TA','150VA','120SA','FC','FO','090PA','090PA','090PA','090PA','FC','090PA','110RA','110RA'],
    schMay:['110RA','090PA','090PA','FO','110RA','090PA','110RA','110RA','110RA','FC','FO','110RA','090PA','090PA','140UA','FC','FO','090PA','090PA','FC','110RA','FO','090PA','090PA','090PA','FC','090PA','090PA','090PA','090PA','090PA','FO']},
   // PDF: 12339 PEDRO SILVA (manager)
-  {id:'12339',name:'Pedro Silva', isManager:true, passwordHash:'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
+  {id:'12339',name:'Pedro Silva', isManager:true, team:'supervisor', baseSection:'calcado', passwordHash:'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
    sch:['150VA','150VA','150VA','150VA','FC','FO','070MA','100QA','120SA','FC','FO','110RA','110RA','100QA','FC','120SA','FO','120SA','150VA','150VA','FC','100QA','100QA','100QA','100QA','100QA','FO','100QA','100QA','120SA','120SA'],
    schMay:['120SA','120SA','FC','FO','070MA','070MA','070MA','FC','FO','150VA','150VA','120SA','090PA','FC','FC','070MA','FO','120SA','FC','150VA','150VA','150VA','150VA','150VA','FO','120SA','120SA','120SA','150VA','150VA','FC','FO']},
   // PDF: 13777 JOSE PEREIRA
-  {id:'13777',name:'José Pereira', isManager:false,
+  {id:'13777',name:'José Pereira', isManager:false, team:'calcado',
    sch:['V','FC','FO','170','150VA','150VA','V','V','FC','FO','200','130TA','150VA','V','V','180','FC','FO','100QA','100QA','FC','V','200','200','FO','V','150VA','V','V','FC','FO'],
    schMay:['FO','200','150VA','150VA','V','V','FC','FO','200','120SA','120SA','V','V','FC','FO','200','150VA','150VA','200','200','FC','FO','200','150VA','150VA','V','V','FC','FO','200','150VA','150VA']},
   // PDF: 13778 TIAGO BENTO
-  {id:'13778',name:'Tiago Bento', isManager:false,
+  {id:'13778',name:'Tiago Bento', isManager:false, team:'calcado',
    sch:['200','FO','130','100','130','110','FC','100','200','160','160','160','FO','100','110','100QA','100','100','FC','FO','160','170','190','FC','200','160','FO','130','FC','FO','130'],
    schMay:['130','100','120','120','FC','180','140','180','150','200','FO','140','110','110','100','100','FC','FO','200','130','200','FC','110','180','FO','110','140','FC','FO','110','160','170']},
   // PDF: 13779 TOMAS PACIFICO
-  {id:'13779',name:'Tomás Pacífico', isManager:false,
+  {id:'13779',name:'Tomás Pacífico', isManager:false, team:'calcado',
    sch:['180','130','100','100','FC','FO','100','170','170','FC','FO','100','100','180','FC','FO','100','100','100','100','FC','200','160','190','170','190','FO','190','200','190','170'],
    schMay:['170','120','FC','FO','100','110','100','FC','FO','160','200','200','FC','FO','110','110','160','160','FC','100','160','100','160','150','FO','100','110','110','100','100','FC','FO']},
   // PDF: 13782 BERNARDO ROCHA
-  {id:'13782',name:'Bernardo Rocha', isManager:false, inactiveFrom:1,
+  {id:'13782',name:'Bernardo Rocha', isManager:false, team:'calcado', inactiveFrom:1,
    sch:['120','110','FC','FO','110','100','180','FC','FO','100','100','140','140','FC','170','200','140','180','140','FO','100','130','100','100','100','FC','FO','150','200','200','FC'],
    schMay:['V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V']},
   // PDF: 13783 CLAUDIA MORCELA
-  {id:'13783',name:'Cláudia Morcela', isManager:false,
+  {id:'13783',name:'Cláudia Morcela', isManager:false, team:'calcado',
    sch:['140','150','140','130','FC','FO','160','140','100','FC','FO','100','100','150VA','FC','130TA','150VA','150VA','FO','150VA','FC','100','140','140','130','100','FO','100','120','100','100'],
    schMay:['100','160','FC','FO','160','160','160','200','FC','FO','160','160','FC','180','100','FO','110','110','FC','100','100','100','100','110','FO','170','180','200','200','160','FC','FO']},
   // PDF: 13784 MICAEL DOMINGUES
-  {id:'13784',name:'Micael Domingues', isManager:false,
+  {id:'13784',name:'Micael Domingues', isManager:false, team:'calcado',
    sch:['FO','V','200','V','100QA','090PA','FC','FO','200','V','V','150VA','150VA','V','FC','120SA','190','FO','120SA','100QA','FC','FO','V','V','200','120SA','150VA','FC','FO','V','140'],
    schMay:['140','V','123SC','150VA','FC','FO','V','140','V','V','100QA','FC','FO','V','160','V','090PA','100QA','FC','FO','V','200','V','100QA','100QA','160','FC','100','V','V','FO','100QA']},
   // PDF: 13808 DIOGO COSTA
-  {id:'13808',name:'Diogo Costa', isManager:false,
+  {id:'13808',name:'Diogo Costa', isManager:false, team:'calcado',
    sch:['160','V','FC','FO','150VA','150VA','V','FC','V','FO','200','150VA','150VA','V','FC','V','FO','200','150VA','150VA','130','V','V','FC','FO','100QA','100QA','V','160','V','FC'],
    schMay:['FC','FO','150VA','150VA','V','FC','V','200','FO','150VA','150VA','V','V','FC','FO','100','150VA','150VA','V','170','V','FC','FO','100QA','110RA','V','100','V','FC','FO','100QA','110RA']},
   // PDF: 13818 FRANCISCO SANTOS
-  {id:'13818',name:'Francisco Santos', isManager:false,
+  {id:'13818',name:'Francisco Santos', isManager:false, team:'calcado',
    sch:['180','190','FC','200','170','FO','200','200','FC','200','FO','170','180','200','200','FC','200','FO','140','110','200','200','FC','200','FO','200','200','200','200','FC','200'],
    schMay:['200','200','FC','FO','200','200','200','FC','FO','180','200','FC','FO','200','200','150','200','200','FC','200','200','200','200','200','FO','200','200','200','200','200','FC','FO']},
   // PDF V7: 14058 FILIPA MENDES (nova)
-  {id:'14058',name:'Filipa Mendes', isManager:false,
+  {id:'14058',name:'Filipa Mendes', isManager:false, team:'calcado',
    sch:['200','160','100','FO','110','160','160','160','140','FC','FO','150','200','200','FC','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V'],
    schMay:['FC','FO','160','160','140','FC','FO','100','100','140','160','FC','160','150','160','150','110','FO','110','140','140','140','FC','FO','160','140','FC','150','110','FO','120','200']},
   // PDF V7: 900017031 BIANCA XAVIER (nova)
-  {id:'900017031',name:'Bianca Xavier', isManager:false,
+  {id:'900017031',name:'Bianca Xavier', isManager:false, team:'calcado',
    sch:['200','FO','180','180','160','FC','FO','200','160','140','140','FC','160','170','100','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V'],
    schMay:['100','160','160','FO','180','140','130','130','140','FC','FO','100','160','160','FC','FO','160','160','160','FC','FO','180','150','160','190','FC','160','160','160','140','180','FO']},
   // PDF V7: 14045 MARIA BUGALHO (nova)
-  {id:'14045',name:'Maria Bugalho', isManager:false,
+  {id:'14045',name:'Maria Bugalho', isManager:false, team:'calcado',
    sch:['200','FO','120SA','120SA','V','V','FC','FO','200','120SA','120SA','V','V','FC','FO','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V'],
    schMay:['FO','200','150VA','150VA','V','V','FC','FO','200','150VA','150VA','V','V','FC','FO','200','150VA','150VA','V','V','FC','FO','200','120SA','130TA','V','V','FC','FO','200','150VA','150VA']},
   // PDF Maio V2: 900017102 CRISTIANO (novo, só existe em Maio)
-  {id:'900017102',name:'Cristiano', isManager:false, activeFrom:1,
+  {id:'900017102',name:'Cristiano', isManager:false, team:'calcado', activeFrom:1,
    sch:['V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V','V'],
    schMay:['160','100QA','100QA','V','V','FC','FO','190','110RA','110RA','V','V','FC','FO','170','100QA','100QA','V','V','FC','FO','160','150VA','150VA','200','V','FC','FO','V','100QA','120SA','V']},
+
+  // ════════════════════════════════════════════════════════
+  // EQUIPA CAIXA
+  // ════════════════════════════════════════════════════════
+  {id:'112',name:'Lídia Clérigo', isManager:false, team:'caixa',
+   sch:['100QB','100PA','100PA','100PA','100PA','FO','100PA','100PA','100PA','100PA','100PA','FC','FO','100PA','100PA','080MA','FC','FO','080MA','100PA','100PA','FC','FO','100PA','100PA','100PA','100PA','FC','100PA','100PA','100PA'],
+   schMay:['100PA','100RA','100QA','FO','100QA','100QA','100QA','100QA','100QA','FC','FO','100QA','100QA','100QA','FC','FO','100QA','100QA','100QA','FC','FO','100QA','100QA','100QA','100QA','FC','100QA','100QA','113RC','100QA','100QA','FO']},
+  {id:'315',name:'Paula Santos', isManager:false, team:'caixa',
+   sch:['110RA','110RA','V','V','V','FC','FO','110RA','110RA','V','V','V','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','Fe','FC','V','V','V','V'],
+   schMay:['FC','FO','110RA','100QA','V','V','V','FC','FO','100QA','100QA','V','V','V','FC','FO','120SA','110RA','V','V','V','FC','FO','120SA','110RA','V','V','V','FC','FO','110RA','100QA']},
+  {id:'12032',name:'Vera Gomes', isManager:false, team:'caixa',
+   sch:['130TA','FC','FO','150VA','150VA','120SA','150VA','FC','FO','150VA','150VA','120SA','120SA','FC','150VA','140UA','130TA','130TA','150VA','FO','150VA','120SA','120SA','150VA','150VA','FC','FO','100PA','140UA','150VA','FC'],
+   schMay:['FC','160','FO','110','200','FC','FO','200','140','150','170','FC','110','110','110','100','100','FO','170','133','123','190','140','FC','FO','133','163','170','FC','FO','200','160']},
+
+  // ════════════════════════════════════════════════════════
+  // EQUIPA TÊXTIL
+  // ════════════════════════════════════════════════════════
+  {id:'8575',name:'Maria Rodrigues', isManager:false, team:'textil',
+   sch:['V','FC','FO','100QA','100QA','150VA','V','V','150VA','150VA','V','FC','FO','V','160','150VA','FC','200','FO','150VA','V','V','200','FC','FO','150VA','150VA','V','V','FC','FO'],
+   schMay:['FO','160','150VA','150WA','V','V','FC','FO','200','150VA','150VA','V','V','FC','FO','200','150WA','150VA','V','V','FC','FO','200','150WA','150WA','V','V','FC','FO','200','150WA','150VA']},
+  {id:'10930',name:'Catarina Costa', isManager:false, team:'textil',
+   sch:['100QB','200','FC','FO','200','120','200','FC','FO','100','190','200','200','FC','100QA','090PA','110RA','150VA','150VA','FO','200','140','100','100','100','FC','FO','173','140','140','FC'],
+   schMay:['FO','100PA','120RA','110RA','100PA','FC','FO','100PA','100PA','120SA','120RA','FC','110QA','120SA','100PA','100PA','110QA','FO','110QA','100PA','100QA','110RA','110QA','FC','FO','100PA','100QA','100QA','FC','FO','110RA','140UA']},
+  {id:'13806',name:'Emily Ribeiro', isManager:false, team:'textil',
+   sch:['160','120','160','200','FC','FO','140','140','140','FC','FO','200','200','200','200','120SA','FC','FO','200','200','FC','200','200','200','200','200','FO','140','200','200','160'],
+   schMay:['160','200','FC','FO','200','200','200','FC','FO','200','200','200','FC','FO','200','200','200','200','FC','200','200','200','200','200','FO','200','200','200','200','200','FC','FO']},
+
+  // ════════════════════════════════════════════════════════
+  // EQUIPA TÉCNICO
+  // ════════════════════════════════════════════════════════
+  {id:'12365',name:'Jan Bata', isManager:false, team:'tecnico',
+   sch:['120SA','150','150VA','150VA','150VA','FO','120SA','120SA','120SA','120SA','120SA','FC','FO','090PA','090PA','070MA','FC','FO','090','090','090','FC','FO','150','150','200','200','FC','150','150','200'],
+   schMay:['150VA','120SA','120SA','FO','200','200','200','200','200','FC','FO','200','200','200','FC','FO','090','090','200','FC','FO','200','200','200','200','FC','200','200','200','200','200','FO']},
+  {id:'13803',name:'Tiago Fernandes', isManager:false, team:'tecnico',
+   sch:['080','090','090','090','FC','FO','090','090','090','FC','FO','200','200','150VA','FO','120SA','090','090','150','200','FC','090','090','090','090','090','FO','090','090','090','090'],
+   schMay:['090','200','FC','FO','090','090','090','FC','FO','200','200','120','FC','FO','090','090','200','200','FC','090','090','090','090','090','FO','090','090','090','090','090','FC','FO']},
+
+  // ════════════════════════════════════════════════════════
+  // EQUIPA LOGÍSTICA
+  // ════════════════════════════════════════════════════════
+  {id:'4927',name:'Nuno Vieira', isManager:false, team:'logistica',
+   sch:['080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA','080NA','FC','FO','080NA','080NA','080NA','080NA'],
+   schMay:['080NA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO','070MA','070MA','070MA','070MA','070MA','FC','FO']},
+  {id:'7109',name:'Rodrigo Francisco', isManager:true, team:'supervisor', baseSection:'logistica', passwordHash:'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3',
+   sch:['090PA','080NA','080NA','080NA','FC','FO','150VA','150VA','150VA','150VA','150VA','FC','FO','150VA','150VA','150VA','FC','150VA','FO','150VA','150VA','FC','FO','120SA','090PA','070MA','070MA','FC','150VA','150VA','120SA'],
+   schMay:['120SA','120SA','150VA','FO','150VA','FC','FO','110RA','150VA','BH-','120SA','FC','090PA8h','120SA','100QA','100QA','120SA','FO','150VA','120SA','120SA','120SA','120SA','FC','FO','120SA','120SA8h','120SA8h','FC','FC','120SA','FO']},
+  {id:'9102',name:'Andreia Vieira', isManager:false, team:'logistica',
+   sch:['110RA','110RA','110RA','110RA','FC','FO','110RA','110RA','FO','110RA','100QA','070MA','070MA','110RA','FC','100PC','110RA','110RA','FC','FO','150','150','150','150','150','FC','FO','150','150','150','150'],
+   schMay:['110RA','150','FC','FO','150','150','150','150','150','FC','FO','150','150','150','150','150','FC','FO','150','150','150','150','150','FC','FO','150','150','150','150','150','FC','FO']},
 ];
 
 let currentUser = null;
 let selectedDay = 1;
 let pendingUser = null;
 let initialized = false;
-let currentMonth = 0;
+let currentMonth = 1; // 0=Abril, 1=Maio (DEFAULT: Maio)
+let currentTeamFilter = ['calcado']; // Array of selected teams
 let modalType = null;
 let modalDay = null;
 let modalMonth = 0;
@@ -1856,6 +2209,76 @@ function getActiveMembers(month) {
     if (m.inactiveFrom !== undefined && month >= m.inactiveFrom) return false;
     return true;
   });
+}
+
+// ── Filtragem por equipa ──
+function getFilteredTeam(month) {
+  const active = getActiveMembers(month);
+  if (currentTeamFilter.length === 0) return active; // If nothing selected, show all
+  return active.filter(m => {
+    if (!m.team) return false; // Skip members without team
+    return currentTeamFilter.includes(m.team);
+  });
+}
+
+function updateTeamFilter() {
+  // Get all checked checkboxes
+  const checkboxes = document.querySelectorAll('.filter-checkbox input[type="checkbox"]:checked');
+  currentTeamFilter = Array.from(checkboxes).map(cb => cb.value);
+  // Re-render
+  if (currentMonth === 0) renderCal(); else renderMayCal();
+  if (selectedDay > 0) pick(selectedDay);
+}
+
+function clearAllFilters() {
+  // Uncheck all
+  document.querySelectorAll('.filter-checkbox input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+  });
+  currentTeamFilter = [];
+  // Re-render
+  if (currentMonth === 0) renderCal(); else renderMayCal();
+  if (selectedDay > 0) pick(selectedDay);
+}
+
+// ── Hour Details Modal ──
+function showHourDetails(hour, day, workers) {
+  const modal = document.getElementById('hour-details-modal');
+  const title = document.getElementById('hour-modal-title');
+  const body = document.getElementById('hour-modal-body');
+  
+  // Set title
+  const nextHour = hour === 23 ? '00:00' : `${hour + 1}h`;
+  title.textContent = `${hour}h - ${nextHour}`;
+  
+  // Build worker list
+  let html = '';
+  workers.forEach(m => {
+    const teamLabel = m.team ? m.team.charAt(0).toUpperCase() + m.team.slice(1) : 'N/A';
+    html += `
+      <div class="hour-worker-item">
+        <div class="hour-worker-av">${ini(m.name)}</div>
+        <div class="hour-worker-info">
+          <div class="hour-worker-name">${m.name}</div>
+          <div class="hour-worker-team">${teamLabel}</div>
+        </div>
+      </div>`;
+  });
+  body.innerHTML = html;
+  
+  // Show modal
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden'; // Prevent background scroll
+}
+
+function closeHourDetails(event) {
+  // Only close if clicking backdrop or close button
+  if (event && event.target.closest('.hour-modal-content') && !event.target.classList.contains('hour-modal-close')) {
+    return;
+  }
+  const modal = document.getElementById('hour-details-modal');
+  modal.classList.add('hidden');
+  document.body.style.overflow = ''; // Restore scroll
 }
 
 function getUserDayInfo(user, idx) {
@@ -1926,7 +2349,7 @@ function saveManualEdit() {
   ovr[ovrKey(editUserId, day)] = sel.value;
   saveManualOverrides(ovr);
   closeEditModal();
-  renderCal();
+  if (currentMonth === 0) renderCal(); else renderMayCal();
   pick(day);
 }
 
@@ -1938,7 +2361,7 @@ function clearManualEdit() {
   delete ovr[key];
   saveManualOverrides(ovr);
   closeEditModal();
-  renderCal();
+  if (currentMonth === 0) renderCal(); else renderMayCal();
   pick(day);
 }
 
@@ -2018,7 +2441,7 @@ function saveLunchModal() {
   setLunch(lunchUserId, lunchDayIdx, val === '' ? null : parseFloat(val));
   const savedDay = lunchDayIdx;
   closeLunchModal();
-  renderCal();
+  if (currentMonth === 0) renderCal(); else renderMayCal();
   pick(savedDay);
 }
 
@@ -2027,28 +2450,57 @@ function clearLunchModal() {
   setLunch(lunchUserId, lunchDayIdx, null);
   const savedDay = lunchDayIdx;
   closeLunchModal();
-  renderCal();
+  if (currentMonth === 0) renderCal(); else renderMayCal();
   pick(savedDay);
 }
 
-async function init() {
-  if (initialized) return;
-  initialized = true;
+// ══════════════════════════════════════════════════════════
+// SECTION SELECTION
+// ══════════════════════════════════════════════════════════
+let currentSection = null;
 
-  // ── Mostrar overlay de carregamento ──
-  const loadOv = document.getElementById('loading-overlay');
-  if (loadOv) loadOv.classList.remove('hidden');
+function selectSection(section) {
+  currentSection = section;
+  document.getElementById('section-selector').classList.add('hidden');
+  document.getElementById('profile-selector').classList.remove('hidden');
+  
+  const sectionNames = {
+    'management': 'Direção',
+    'calcado': 'Calçado',
+    'caixa': 'Caixa',
+    'textil': 'Têxtil',
+    'tecnico': 'Técnico',
+    'logistica': 'Logística',
+    'all': 'Toda a Loja'
+  };
+  
+  document.getElementById('section-title').textContent = sectionNames[section] || 'Seleciona o teu perfil';
+  document.getElementById('section-subtitle').textContent = section === 'all' ? 'Todos os colaboradores' : `Equipa de ${sectionNames[section]}`;
+  
+  showProfilesForSection(section);
+}
 
-  await _supaLoad();
+function backToSections() {
+  currentSection = null;
+  document.getElementById('section-selector').classList.remove('hidden');
+  document.getElementById('profile-selector').classList.add('hidden');
+}
 
-  if (loadOv) loadOv.classList.add('hidden');
-
+function showProfilesForSection(section) {
   const list = document.getElementById('profile-list');
   if (!list) return;
   
   list.innerHTML = '';
   
-  TEAM.slice().sort((a, b) => {
+  let filteredTeam = TEAM;
+  if (section !== 'all') {
+    filteredTeam = TEAM.filter(m => {
+      if (section === 'management') return m.team === 'management' || m.team === 'supervisor';
+      return m.team === section;
+    });
+  }
+  
+  filteredTeam.slice().sort((a, b) => {
     if (a.isManager && !b.isManager) return -1;
     if (!a.isManager && b.isManager) return 1;
     return a.name.localeCompare(b.name);
@@ -2062,6 +2514,21 @@ async function init() {
     btn.onclick = () => selectProfile(u);
     list.appendChild(btn);
   });
+}
+
+async function init() {
+  if (initialized) return;
+  initialized = true;
+
+  // ── Mostrar overlay de carregamento ──
+  const loadOv = document.getElementById('loading-overlay');
+  if (loadOv) loadOv.classList.remove('hidden');
+
+  await _supaLoad();
+
+  if (loadOv) loadOv.classList.add('hidden');
+  
+  // Profiles will be populated when user selects a section
 }
 
 function selectProfile(user) {
@@ -2103,7 +2570,7 @@ function cancelPassword() {
 
 function authenticateUser(user) {
   currentUser = user;
-  currentMonth = 0;
+  currentMonth = 1; // START IN MAY
   document.getElementById('profile-overlay').classList.add('hidden');
   document.getElementById('main-app').classList.remove('hidden');
   const displayName = TEAM.filter(x => x.name.split(' ')[0] === user.name.split(' ')[0]).length > 1 
@@ -2116,18 +2583,23 @@ function authenticateUser(user) {
   // show/hide tab bar for manager
   const tabBar = document.getElementById('mgr-tab-bar');
   if (tabBar) tabBar.classList.toggle('hidden', !user.isManager);
+  
+  // show/hide team filters for manager
+  const teamFilters = document.getElementById('team-filters');
+  if (teamFilters) teamFilters.classList.toggle('hidden', !user.isManager);
+  
   activeTab = 'day';
   showTab('day');
 
-  // reset month nav
-  document.getElementById('month-title').textContent = MONTH_LABELS[0];
-  document.getElementById('btn-prev-month').disabled = true;
-  document.getElementById('btn-next-month').disabled = false;
+  // reset month nav - start in May
+  document.getElementById('month-title').textContent = MONTH_LABELS[1];
+  document.getElementById('btn-prev-month').disabled = false;
+  document.getElementById('btn-next-month').disabled = true;
 
-  renderCal();
+  renderMayCal();
   const now = new Date();
-  const todayDay = (now.getFullYear() === 2026 && now.getMonth() === 3) ? now.getDate() : 1;
-  pick(Math.min(Math.max(todayDay, 1), 30));
+  const todayDay = (now.getFullYear() === 2026 && now.getMonth() === 4) ? now.getDate() : 1;
+  pick(Math.min(Math.max(todayDay, 1), 31));
 }
 
 function logout() {
@@ -2171,7 +2643,7 @@ function renderMayCal() {
   for (let d = 1; d <= MAY_DAYS; d++) {
     const c = getEffectiveCode(currentUser.id, d);
     const off = isOff(c), vac = c === 'Fe';
-    const activeTeam = getActiveMembers(1); // month 1 = May
+    const activeTeam = getFilteredTeam(1); // month 1 = May
     const cnt = activeTeam.filter(m => !isOff(getEffectiveCode(m.id, d))).length;
     let bc = off ? (vac ? 'vac' : 'off') : '';
 
@@ -2440,8 +2912,12 @@ function updateSwapStatus(id, status) {
     swaps[ovrKey(r.fromId, idx)] = codeTo;
     swaps[ovrKey(r.toId,   idx)] = codeFrom;
     saveSwapOverrides(swaps);
-    // Refresh current view
-    if (currentUser?.isManager) { renderCal(); if (selectedDay === idx) pick(idx); }
+    // Refresh current view - check which month is active
+    if (currentUser?.isManager) { 
+      if (currentMonth === 0) renderCal(); 
+      else renderMayCal();
+      if (selectedDay === idx) pick(idx); 
+    }
   }
   renderSwapsPanel();
 }
@@ -2522,7 +2998,7 @@ function renderCal() {
   for (let d = 1; d <= 30; d++) {
     const c = getEffectiveCode(currentUser.id, d);  // use effective (swap/manual) code
     const off = isOff(c), vac = c === 'Fe';
-    const activeTeam = getActiveMembers(0); // month 0 = April
+    const activeTeam = getFilteredTeam(0); // month 0 = April
     const cnt = activeTeam.filter(m => !isOff(getEffectiveCode(m.id, d))).length;
     let bc = off ? (vac ? 'vac' : 'off') : '';
 
@@ -2584,7 +3060,7 @@ function renderCal() {
 
 function pick(day) {
   selectedDay = day;
-  renderCal();
+  if (currentMonth === 0) renderCal(); else renderMayCal();
 
   const p = getUserDayInfo(currentUser, day);
   const dow = currentMonth === 0 
@@ -2597,8 +3073,8 @@ function pick(day) {
   const HOURS = [];
   for (let h = 9; h <= 23; h++) HOURS.push(h);
   const cov = {};
-  HOURS.forEach(h => { cov[h] = { t: 0, me: false, workers: [] }; });
-  const activeTeam = getActiveMembers(currentMonth);
+  HOURS.forEach(h => { cov[h] = { t: 0, me: false, workers: [], members: [] }; });
+  const activeTeam = getFilteredTeam(currentMonth);
   activeTeam.forEach(m => {
     const c = getEffectiveCode(m.id, day);  // use effective shift
     HOURS.forEach(h => {
@@ -2609,6 +3085,7 @@ function pick(day) {
           ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1][0] + '.'
           : m.name.split(' ')[0];
         cov[h].workers.push(dn);
+        cov[h].members.push(m); // Store full member object for modal
       }
     });
   });
@@ -2713,8 +3190,22 @@ function pick(day) {
       if (v.me) { col = '#3b82f6'; tag = `<span class="bar-tag" style="color:#3b82f6">TU</span>`; }
       else { col = '#10b981'; }
     }
-    const namesHtml = v.workers.length > 0
-      ? `<div class="hour-names">${v.workers.join(', ')}</div>` : '';
+    
+    // Show worker names or "See details" button
+    let namesHtml = '';
+    if (v.workers.length > 0) {
+      if (v.workers.length > 5) {
+        // Too many workers - show button to open modal
+        namesHtml = `<div class="hour-names hour-names-compact" onclick="showHourDetails(${h}, ${day}, cov[${h}].members)">
+          <span class="hour-count-label">${v.workers.length} colaboradores</span>
+          <span class="hour-details-btn">Ver detalhes</span>
+        </div>`;
+      } else {
+        // Few workers - show names directly
+        namesHtml = `<div class="hour-names">${v.workers.join(', ')}</div>`;
+      }
+    }
+    
     const isPastH = _isToday && h < _currentHour;
     const isCurrentH = _isToday && h === _currentHour;
     chartRows += `<div class="h-row${isPastH ? ' past-hour' : isCurrentH ? ' current-hour' : ''}">
@@ -2848,7 +3339,7 @@ function clAdd(dateStr) {
   clSave(dateStr, tasks);
   textEl.value = '';
   renderChecklist(dateStr);
-  renderCal(); // refresh task badge in calendar
+  if (currentMonth === 0) renderCal(); else renderMayCal(); // refresh task badge in calendar
 }
 
 function clToggle(dateStr, rawIdx) {
@@ -2861,7 +3352,7 @@ function clToggle(dateStr, rawIdx) {
   if (match) match.done = !match.done;
   clSave(dateStr, all);
   renderChecklist(dateStr);
-  renderCal();
+  if (currentMonth === 0) renderCal(); else renderMayCal();
 }
 
 function clDelete(dateStr, rawIdx) {
@@ -2873,7 +3364,7 @@ function clDelete(dateStr, rawIdx) {
   if (idx !== -1) all.splice(idx, 1);
   clSave(dateStr, all);
   renderChecklist(dateStr);
-  renderCal();
+  if (currentMonth === 0) renderCal(); else renderMayCal();
 }
 
 // enter key in checklist input
@@ -3796,5 +4287,18 @@ if (document.readyState === 'loading') {
   }
 }
 </script>
+  <!-- MODAL: Hour Details -->
+  <div id="hour-details-modal" class="hour-modal hidden" onclick="closeHourDetails(event)">
+    <div class="hour-modal-content" onclick="event.stopPropagation()">
+      <div class="hour-modal-header">
+        <h3 id="hour-modal-title">14h - 15h</h3>
+        <button class="hour-modal-close" onclick="closeHourDetails()">✕</button>
+      </div>
+      <div class="hour-modal-body" id="hour-modal-body">
+        <!-- Worker list will be populated here -->
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
