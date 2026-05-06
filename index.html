@@ -2437,31 +2437,62 @@ function clearAllFilters() {
 }
 
 // ── Hour Details Modal ──
-function showHourDetails(hour, day, workers) {
+// Mapa de nomes amigáveis para cada team
+const TEAM_LABELS = {
+  management: 'Direção',
+  supervisor: 'Direção',
+  calcado: 'Calçado',
+  caixa: 'Caixa',
+  textil: 'Têxtil',
+  tecnico: 'Técnico',
+  logistica: 'Logística'
+};
+
+function showHourDetails(hour, day) {
   const modal = document.getElementById('hour-details-modal');
   const title = document.getElementById('hour-modal-title');
   const body = document.getElementById('hour-modal-body');
   
-  // Set title
+  // Buscar membros do estado global (preenchido por pick())
+  const cov = window._lastCoverage;
+  if (!cov || !cov[hour]) {
+    body.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted)">Sem dados disponíveis</div>';
+    modal.classList.remove('hidden');
+    return;
+  }
+  const workers = cov[hour].members || [];
+  
+  // Definir título com a hora
   const nextHour = hour === 23 ? '00:00' : `${hour + 1}h`;
-  title.textContent = `${hour}h - ${nextHour}`;
+  title.textContent = `${hour}h - ${nextHour} · ${workers.length} ${workers.length === 1 ? 'colaborador' : 'colaboradores'}`;
   
-  // Build worker list
-  let html = '';
-  workers.forEach(m => {
-    const teamLabel = m.team ? m.team.charAt(0).toUpperCase() + m.team.slice(1) : 'N/A';
-    html += `
-      <div class="hour-worker-item">
-        <div class="hour-worker-av">${ini(m.name)}</div>
-        <div class="hour-worker-info">
-          <div class="hour-worker-name">${m.name}</div>
-          <div class="hour-worker-team">${teamLabel}</div>
-        </div>
-      </div>`;
-  });
-  body.innerHTML = html;
+  // Construir lista (ordenada por secção, depois por nome)
+  if (workers.length === 0) {
+    body.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted)">Ninguém a trabalhar nesta hora</div>';
+  } else {
+    const sortedWorkers = [...workers].sort((a, b) => {
+      const ta = TEAM_LABELS[a.team] || 'Z';
+      const tb = TEAM_LABELS[b.team] || 'Z';
+      if (ta !== tb) return ta.localeCompare(tb);
+      return a.name.localeCompare(b.name);
+    });
+    
+    let html = '';
+    sortedWorkers.forEach(m => {
+      const teamLabel = TEAM_LABELS[m.team] || 'N/A';
+      html += `
+        <div class="hour-worker-item">
+          <div class="hour-worker-av">${ini(m.name)}</div>
+          <div class="hour-worker-info">
+            <div class="hour-worker-name">${m.name}</div>
+            <div class="hour-worker-team">${teamLabel}</div>
+          </div>
+        </div>`;
+    });
+    body.innerHTML = html;
+  }
   
-  // Show modal
+  // Mostrar modal
   modal.classList.remove('hidden');
   document.body.style.overflow = 'hidden'; // Prevent background scroll
 }
@@ -3375,6 +3406,11 @@ function pick(day) {
       }
     });
   });
+  
+  // Expor cov globalmente para o modal "Ver detalhes" — os atributos onclick
+  // são avaliados no escopo global e não conseguem aceder a variáveis locais.
+  window._lastCoverage = cov;
+  window._lastCoverageDay = day;
 
   // ════════════════════════════════════════════════════
   // COLABORADOR — vista simplificada (só o próprio turno)
@@ -3481,8 +3517,11 @@ function pick(day) {
     let namesHtml = '';
     if (v.workers.length > 0) {
       if (v.workers.length > 5) {
-        // Too many workers - show button to open modal
-        namesHtml = `<div class="hour-names hour-names-compact" onclick="showHourDetails(${h}, ${day}, cov[${h}].members)">
+        // Demasiados colaboradores — botão para abrir modal.
+        // NOTA: usamos showHourDetails(h, day) sem passar cov diretamente,
+        // porque o atributo onclick é avaliado no escopo global onde `cov`
+        // não existe. A função busca os dados via window._lastCoverage.
+        namesHtml = `<div class="hour-names hour-names-compact" onclick="showHourDetails(${h}, ${day})">
           <span class="hour-count-label">${v.workers.length} colaboradores</span>
           <span class="hour-details-btn">Ver detalhes</span>
         </div>`;
@@ -3619,10 +3658,8 @@ function pick(day) {
 
   renderChecklist(dateStr);
 
-  // No mobile, ao tocar num dia, alternar automaticamente para a vista de Gestão
-  if (window.innerWidth < 700) {
-    switchMobileView('mgmt');
-  }
+  // NÃO redirecionar automaticamente para a Gestão — o utilizador permanece
+  // onde estiver. Só recalcula os dados.
 }
 
 // ── CHECKLIST FUNCTIONS ───────────────────────────────
@@ -3797,14 +3834,26 @@ async function _supaLoad() {
   }
 }
 
-// ── nomes COMPLETOS da equipa (excluindo gestor) ──
+// ── nomes COMPLETOS da equipa (sem gestores). Usado em selecionadores
+// gerais como Trocas, onde queremos todos os colaboradores.
 function memberNames() {
   return TEAM.filter(m => !m.isManager).map(m => ({ id: m.id, name: m.name }));
 }
 
-// ── membros a trabalhar num dia específico ──
+// ── membros a trabalhar num dia específico (todos, sem gestores) ──
 function workingMembersOnDay(day) {
   return TEAM.filter(m => !m.isManager && !isOff(getEffectiveCode(m.id, day)));
+}
+
+// ── HELPERS DEDICADOS À EQUIPA DE CALÇADO ──
+// Usados pela Energia da Equipa, Destaques, alertas, médias e resumos
+// semanais — o utilizador apenas avalia a sua equipa direta.
+function calcadoMembers() {
+  return TEAM.filter(m => !m.isManager && m.team === 'calcado').map(m => ({ id: m.id, name: m.name }));
+}
+
+function calcadoWorkingOnDay(day) {
+  return TEAM.filter(m => !m.isManager && m.team === 'calcado' && !isOff(getEffectiveCode(m.id, day)));
 }
 
 // ── RENDER PAINEL ──
@@ -3864,7 +3913,7 @@ function renderPainel() {
       <div id="hl-form-panel">
         <select class="pg-select" id="hl-member">
           <option value="">— Seleciona colaborador —</option>
-          ${memberNames().map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
+          ${calcadoMembers().map(m=>`<option value="${m.id}">${m.name}</option>`).join('')}
         </select>
         <input class="hl-input" id="hl-text" placeholder="Destaque positivo do dia…" style="width:100%;margin-bottom:8px">
         <button onclick="saveHl()" class="pg-save-btn">⭐ Guardar destaque</button>
@@ -3875,9 +3924,9 @@ function renderPainel() {
       </div>
     </div>
 
-    <!-- 4. Energia da Equipa -->
+    <!-- 4. Energia da Equipa (apenas Calçado) -->
     <div class="pg-section" id="pg-energy">
-      <div class="pg-section-title"><span>⚡</span> Energia da Equipa
+      <div class="pg-section-title"><span>⚡</span> Energia da Equipa de Calçado
         <span style="margin-left:6px;font-size:10px;font-weight:400;color:var(--muted)">
           (${DOW[((currentMonth === 0 ? APR1_DOW : MAY1_DOW) + selectedDay - 1) % 7]}, ${selectedDay} ${currentMonth === 0 ? 'Abr' : 'Mai'})
         </span>
@@ -4227,8 +4276,8 @@ function setStars(userId, val) {
 function saveEnergy() {
   const dateStr = todayKey();
   const obj = loadEnergy(dateStr);
-  // only save rows that exist in the DOM (working members today)
-  workingMembersOnDay(selectedDay).forEach(m => {
+  // Apenas guarda as linhas existentes no DOM (membros do Calçado a trabalhar hoje)
+  calcadoWorkingOnDay(selectedDay).forEach(m => {
     const row = document.getElementById('energy-row-' + m.id);
     if (row && row.dataset.pending) obj[m.id] = parseInt(row.dataset.pending);
   });
@@ -4246,8 +4295,8 @@ function renderEnergyRows() {
   const dateStr = todayKey();
   const saved = loadEnergy(dateStr);
 
-  // only show members working on selectedDay
-  const working = workingMembersOnDay(selectedDay);
+  // Apenas membros do CALÇADO a trabalhar no dia selecionado
+  const working = calcadoWorkingOnDay(selectedDay);
   if (countEl) countEl.textContent = working.length;
 
   if (working.length === 0) {
@@ -4294,9 +4343,9 @@ function renderEnergyAvg(dateStr) {
 }
 
 function getEnergyAlertIds() {
-  // Alert: colaborador com 2+ avaliações ≤2 nos últimos 7 dias
+  // Alerta: colaborador (do Calçado) com 2+ avaliações ≤2 nos últimos 7 dias
   const alertSet = new Set();
-  memberNames().forEach(m => {
+  calcadoMembers().forEach(m => {
     let lowCount = 0;
     for (let i = 0; i < 7; i++) {
       const d = new Date(); d.setDate(d.getDate() - i);
@@ -4313,13 +4362,14 @@ function checkEnergyAlerts() {
   const box = document.getElementById('energy-alerts');
   if (!box) return;
   const alertIds = getEnergyAlertIds();
-  const alertNames = memberNames().filter(m => alertIds.has(m.id)).map(m => m.name.split(' ')[0]);
+  // Apenas mostra alertas para colaboradores do Calçado
+  const alertNames = calcadoMembers().filter(m => alertIds.has(m.id)).map(m => m.name.split(' ')[0]);
   box.innerHTML = alertNames.length
     ? `<div class="energy-alert">⚠ Atenção: ${alertNames.join(', ')} com energia baixa (2+ dias com ≤ 2/5)</div>`
     : '';
 }
 
-// ── Vista de média semanal por colaborador ──
+// ── Vista de média semanal por colaborador (apenas Calçado) ──
 function renderEnergyWeekTable() {
   const panel = document.getElementById('energy-week-table');
   if (!panel) return;
@@ -4333,7 +4383,7 @@ function renderEnergyWeekTable() {
   }
 
   const alertIds = getEnergyAlertIds();
-  const members = memberNames();
+  const members = calcadoMembers(); // Apenas Calçado
   const rows = members.map(m => {
     const scores = days.map(d => {
       const obj = loadEnergy(d.k);
