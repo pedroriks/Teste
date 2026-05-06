@@ -97,7 +97,82 @@ body {
 
 /* mobile: right-col não tem altura fixa — scroll natural da página */
 @media (max-width: 699px) {
-  .right-col { padding-bottom: 32px; }
+  .right-col { padding-bottom: 100px; }
+  
+  /* ── MOBILE TOP TAB BAR ─────────────────────── */
+  /* Barra de navegação no topo: alterna entre Calendário e Gestão */
+  .mobile-top-nav {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 6px;
+    gap: 4px;
+  }
+  .mobile-top-nav button {
+    flex: 1;
+    padding: 10px 8px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    -webkit-appearance: none;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .mobile-top-nav button.active {
+    background: var(--surface);
+    color: var(--accent);
+  }
+  .mobile-top-nav button .nav-icon {
+    font-size: 16px;
+  }
+  
+  /* Por defeito, só o calendário visível no mobile */
+  .left-col {
+    padding: 16px 16px 8px !important;
+  }
+  
+  /* Quando estamos na vista "gestão" no mobile, esconder calendário */
+  body.mobile-view-mgmt .left-col {
+    display: none;
+  }
+  body.mobile-view-cal .right-col {
+    display: none;
+  }
+  
+  /* Sticky tab bar de gestor dentro da right-col em mobile */
+  .right-col .rtab-bar {
+    position: sticky;
+    top: 56px; /* abaixo da mobile-top-nav */
+    z-index: 50;
+    background: var(--bg);
+    margin-top: 0;
+    padding: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  
+  /* Divisor visual claro entre secções */
+  .left-col {
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 0;
+  }
+}
+
+/* desktop: esconder a navegação mobile */
+@media (min-width: 700px) {
+  .mobile-top-nav {
+    display: none !important;
+  }
 }
 
 /* tab panels não devem ter altura mínima que cause espaço vazio */
@@ -203,7 +278,7 @@ body {
   font-size: 40px;
   line-height: 1;
 }
-.section-label {
+.section-btn-label {
   font-size: 14px;
   font-weight: 600;
   color: var(--text);
@@ -687,6 +762,88 @@ header {
   font-weight: 600;
   color: var(--green);
   margin-bottom: 12px;
+}
+
+/* ── COVERAGE FILTER (botões horizontais scrolláveis, mobile-first) ── */
+.cov-filter-wrap {
+  margin-bottom: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 8px 8px;
+}
+.cov-filter-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+.cov-filter-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 2px 4px 6px;
+  scrollbar-width: thin;
+  /* Esconder scrollbar mas manter funcional */
+  scrollbar-color: var(--border) transparent;
+}
+.cov-filter-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.cov-filter-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cov-filter-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.cov-filter-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  -webkit-appearance: none;
+  font-family: 'DM Sans', sans-serif;
+  /* Tamanho mínimo de toque para mobile */
+  min-height: 36px;
+}
+.cov-filter-btn:active {
+  transform: scale(.96);
+}
+.cov-filter-btn.active {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.cov-filter-btn .cov-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+.cov-filter-summary {
+  margin-top: 4px;
+  padding: 6px 8px 0;
+  font-size: 11px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+.cov-filter-summary strong {
+  color: var(--text);
+  font-weight: 600;
 }
 
 .chart-legend { 
@@ -1710,31 +1867,31 @@ header {
     <div class="section-grid">
       <button class="section-btn" onclick="selectSection('management')">
         <div class="section-icon">👔</div>
-        <div class="section-label">Direção</div>
+        <div class="section-btn-label">Direção</div>
       </button>
       <button class="section-btn" onclick="selectSection('calcado')">
         <div class="section-icon">👟</div>
-        <div class="section-label">Calçado</div>
+        <div class="section-btn-label">Calçado</div>
       </button>
       <button class="section-btn" onclick="selectSection('caixa')">
         <div class="section-icon">💳</div>
-        <div class="section-label">Caixa</div>
+        <div class="section-btn-label">Caixa</div>
       </button>
       <button class="section-btn" onclick="selectSection('textil')">
         <div class="section-icon">👕</div>
-        <div class="section-label">Têxtil</div>
+        <div class="section-btn-label">Têxtil</div>
       </button>
       <button class="section-btn" onclick="selectSection('tecnico')">
         <div class="section-icon">⚽</div>
-        <div class="section-label">Técnico</div>
+        <div class="section-btn-label">Técnico</div>
       </button>
       <button class="section-btn" onclick="selectSection('logistica')">
         <div class="section-icon">📦</div>
-        <div class="section-label">Logística</div>
+        <div class="section-btn-label">Logística</div>
       </button>
       <button class="section-btn" onclick="selectSection('all')">
         <div class="section-icon">🏪</div>
-        <div class="section-label">Toda a Loja</div>
+        <div class="section-btn-label">Toda a Loja</div>
       </button>
     </div>
   </div>
@@ -1784,6 +1941,19 @@ header {
       </div>
     </div>
   </header>
+
+  <!-- ════════════════════════════════════════════════
+       MOBILE NAVIGATION (visible only < 700px)
+       Alterna entre Calendário e Gestão
+       ════════════════════════════════════════════════ -->
+  <nav class="mobile-top-nav" id="mobile-nav">
+    <button id="mobile-nav-cal" class="active" onclick="switchMobileView('cal')">
+      <span class="nav-icon">📅</span><span>Calendário</span>
+    </button>
+    <button id="mobile-nav-mgmt" onclick="switchMobileView('mgmt')">
+      <span class="nav-icon">⚙️</span><span>Gestão</span>
+    </button>
+  </nav>
 
   <div class="content">
     <div class="left-col">
@@ -2168,6 +2338,9 @@ let pendingUser = null;
 let initialized = false;
 let currentMonth = 1; // 0=Abril, 1=Maio (DEFAULT: Maio)
 let currentTeamFilter = ['calcado']; // Array of selected teams
+// Filtro DEDICADO da cobertura por hora — independente do filtro global.
+// Valores possíveis: 'all', 'management', 'calcado', 'caixa', 'textil', 'tecnico', 'logistica'
+let coverageFilter = 'all';
 let modalType = null;
 let modalDay = null;
 let modalMonth = 0;
@@ -2177,7 +2350,11 @@ let editDayIdx = null;
 const isOff = c => OFF.includes(c);
 const getS = c => SH[c] || null;
 const ini = n => n.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-const countW = idx => TEAM.filter(m => !isOff(m.sch[idx])).length;
+// countW respeita o mês ativo via getEffectiveCode (que usa currentMonth + overrides)
+const countW = idx => {
+  const active = getActiveMembers(currentMonth);
+  return active.filter(m => !isOff(getEffectiveCode(m.id, idx))).length;
+};
 
 // working(c, h, userId, day) — inclui pausa manual de almoço se existir
 // userId e day são opcionais; sem eles comporta-se como antes
@@ -2219,6 +2396,24 @@ function getFilteredTeam(month) {
     if (!m.team) return false; // Skip members without team
     return currentTeamFilter.includes(m.team);
   });
+}
+
+// ── Filtragem dedicada da COBERTURA POR HORA ──
+// Independente do filtro global. Valor 'all' = todos os colaboradores ativos.
+// 'management' = direção (management + supervisor), restantes valores = team direto.
+function getCoverageTeam(month) {
+  const active = getActiveMembers(month);
+  if (coverageFilter === 'all') return active;
+  if (coverageFilter === 'management') {
+    return active.filter(m => m.team === 'management' || m.team === 'supervisor');
+  }
+  return active.filter(m => m.team === coverageFilter);
+}
+
+function setCoverageFilter(section) {
+  coverageFilter = section;
+  // Re-render apenas o detalhe do dia (cobertura é parte de pick)
+  if (selectedDay > 0) pick(selectedDay);
 }
 
 function updateTeamFilter() {
@@ -2297,23 +2492,33 @@ function getManualOverrides() { return pgGet('shiftManualOvr') || {}; }
 function saveSwapOverrides(o)   { pgSet('shiftSwapOvr',   o); }
 function saveManualOverrides(o) { pgSet('shiftManualOvr', o); }
 
-function ovrKey(userId, idx) { return `${userId}_${idx}`; }
+// ovrKey inclui o mês para isolar Abril e Maio.
+// Sem isto, o dia 5 de Abril e o dia 5 de Maio partilhariam a mesma chave.
+function ovrKey(userId, idx, month) {
+  // Compatibilidade: se month não for passado, usa o currentMonth.
+  const m = (month === undefined) ? currentMonth : month;
+  return `${userId}_M${m}_D${idx}`;
+}
 
-function getEffectiveCode(userId, idx) {
-  const key = ovrKey(userId, idx);
+// getEffectiveCode aceita opcionalmente um mês explícito.
+// Se month não for passado, usa currentMonth (compatibilidade com chamadas existentes).
+function getEffectiveCode(userId, idx, month) {
+  const m = (month === undefined) ? currentMonth : month;
+  const key = ovrKey(userId, idx, m);
   const manual = getManualOverrides();
   if (manual[key]) return manual[key];
   const swaps = getSwapOverrides();
   if (swaps[key]) return swaps[key];
-  const m = TEAM.find(x => x.id === userId);
-  if (!m) return 'V';
-  // Use schMay se currentMonth === 1 (Maio) e existir
-  if (currentMonth === 1 && m.schMay) return m.schMay[idx];
-  return m.sch[idx] || 'V';
+  const member = TEAM.find(x => x.id === userId);
+  if (!member) return 'V';
+  // Maio usa schMay; Abril usa sch
+  if (m === 1 && member.schMay) return member.schMay[idx];
+  return member.sch[idx] || 'V';
 }
 
-function getOvrType(userId, idx) {
-  const key = ovrKey(userId, idx);
+function getOvrType(userId, idx, month) {
+  const m = (month === undefined) ? currentMonth : month;
+  const key = ovrKey(userId, idx, m);
   if (getManualOverrides()[key]) return 'manual';
   if (getSwapOverrides()[key])   return 'swap';
   return null;
@@ -2326,9 +2531,12 @@ function openEditModal(userId, dayIdx) {
   editUserId = userId;
   editDayIdx = dayIdx;
   const member = TEAM.find(m => m.id === userId);
-  const dow = DOW[(APR1_DOW + dayIdx - 1) % 7];
+  // Usar o mês ativo para calcular dia da semana e legenda
+  const dowOffset = currentMonth === 0 ? APR1_DOW : MAY1_DOW;
+  const monthName = currentMonth === 0 ? 'Abril' : 'Maio';
+  const dow = DOW[(dowOffset + dayIdx - 1) % 7];
   document.getElementById('edit-modal-title').textContent = `✏️ ${member?.name.split(' ')[0] || userId}`;
-  document.getElementById('edit-modal-sub').textContent = `${dow}, ${dayIdx} de Abril 2026`;
+  document.getElementById('edit-modal-sub').textContent = `${dow}, ${dayIdx} de ${monthName} 2026`;
   const current = getEffectiveCode(userId, dayIdx);
   const allCodes = Object.keys(SH).concat(Object.keys(OFF_LABEL));
   const sel = document.getElementById('edit-shift-select');
@@ -2368,15 +2576,21 @@ function clearManualEdit() {
 
 // ════════════════════════════════════════════════════════
 // PAUSA DE ALMOÇO — Supabase (via cache)
+// Chave inclui mês para isolar Abril e Maio
 // ════════════════════════════════════════════════════════
+function lunchKey(userId, day, month) {
+  const m = (month === undefined) ? currentMonth : month;
+  return `${userId}_M${m}_D${day}`;
+}
+
 function getLunch(userId, day) {
   const obj = pgGet('lunch') || {};
-  const v = obj[`${userId}_${day}`];
+  const v = obj[lunchKey(userId, day, currentMonth)];
   return v !== undefined ? v : null;
 }
 function setLunch(userId, day, val) {
   const obj = pgGet('lunch') || {};
-  const k = `${userId}_${day}`;
+  const k = lunchKey(userId, day, currentMonth);
   if (val === null || val === '') delete obj[k];
   else obj[k] = val;
   pgSet('lunch', obj);
@@ -2414,11 +2628,14 @@ function openLunchModal(userId, day, shiftCode) {
   lunchShiftCode = shiftCode;
   const s = getS(shiftCode);
   const member = TEAM.find(m => m.id === userId);
-  const dow = DOW[(APR1_DOW + day - 1) % 7];
+  // Usar o mês ativo para calcular dia da semana e legenda
+  const dowOffset = currentMonth === 0 ? APR1_DOW : MAY1_DOW;
+  const monthName = currentMonth === 0 ? 'Abril' : 'Maio';
+  const dow = DOW[(dowOffset + day - 1) % 7];
   document.getElementById('lunch-modal-title').textContent =
     `🍽 Pausa — ${member?.name.split(' ')[0] || userId}`;
   document.getElementById('lunch-modal-sub').textContent =
-    `${dow}, ${day} de Abril 2026 · Turno ${shiftCode}`;
+    `${dow}, ${day} de ${monthName} 2026 · Turno ${shiftCode}`;
   const saved = getLunch(userId, day);
   // Gerar opções: slots de 30min dentro do turno, excluindo 1ª e última hora
   const opts = ['<option value="">— Sem pausa registada —</option>'];
@@ -2596,10 +2813,47 @@ function authenticateUser(user) {
   document.getElementById('btn-prev-month').disabled = false;
   document.getElementById('btn-next-month').disabled = true;
 
-  renderMayCal();
+  // pick(day) chama renderMayCal/renderCal internamente.
+  // Não é necessário (e na verdade causa duplicação) chamar render antes.
   const now = new Date();
   const todayDay = (now.getFullYear() === 2026 && now.getMonth() === 4) ? now.getDate() : 1;
   pick(Math.min(Math.max(todayDay, 1), 31));
+  
+  // Initialize mobile view to calendar
+  initMobileView();
+}
+
+// ══════════════════════════════════════════════════════════
+// MOBILE VIEW SWITCHING
+// ══════════════════════════════════════════════════════════
+function switchMobileView(view) {
+  const body = document.body;
+  const btnCal = document.getElementById('mobile-nav-cal');
+  const btnMgmt = document.getElementById('mobile-nav-mgmt');
+  
+  if (view === 'cal') {
+    body.classList.remove('mobile-view-mgmt');
+    body.classList.add('mobile-view-cal');
+    btnCal.classList.add('active');
+    btnMgmt.classList.remove('active');
+  } else {
+    body.classList.remove('mobile-view-cal');
+    body.classList.add('mobile-view-mgmt');
+    btnMgmt.classList.add('active');
+    btnCal.classList.remove('active');
+  }
+  // Scroll to top when switching
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function initMobileView() {
+  // Default: show calendar on mobile
+  document.body.classList.add('mobile-view-cal');
+  document.body.classList.remove('mobile-view-mgmt');
+  const btnCal = document.getElementById('mobile-nav-cal');
+  const btnMgmt = document.getElementById('mobile-nav-mgmt');
+  if (btnCal) btnCal.classList.add('active');
+  if (btnMgmt) btnMgmt.classList.remove('active');
 }
 
 function logout() {
@@ -2607,10 +2861,19 @@ function logout() {
   pendingUser = null;
   selectedDay = 1;
   currentMonth = 0;
+  coverageFilter = 'all'; // Reset filtro de cobertura
   document.getElementById('user-av').classList.remove('av-me');
   document.getElementById('profile-overlay').classList.remove('hidden');
   document.getElementById('main-app').classList.add('hidden');
   document.getElementById('password-overlay').classList.add('hidden');
+  // Limpar classes mobile view
+  document.body.classList.remove('mobile-view-cal', 'mobile-view-mgmt');
+  // Voltar ao menu de secções
+  const secSel = document.getElementById('section-selector');
+  const profSel = document.getElementById('profile-selector');
+  if (secSel) secSel.classList.remove('hidden');
+  if (profSel) profSel.classList.add('hidden');
+  currentSection = null;
 }
 
 // ════════════════════════════════════════════════════════
@@ -2625,12 +2888,17 @@ function navMonth(dir) {
   document.getElementById('month-title').textContent = MONTH_LABELS[currentMonth];
   document.getElementById('btn-prev-month').disabled = currentMonth === 0;
   document.getElementById('btn-next-month').disabled = currentMonth === 1;
+  // Renderizar calendário do mês ativo
   if (currentMonth === 0) {
     renderCal();
-    pick(selectedDay);
   } else {
     renderMayCal();
   }
+  // Garantir que o dia selecionado é válido para este mês
+  const maxDay = currentMonth === 0 ? 30 : 31;
+  if (selectedDay > maxDay) selectedDay = maxDay;
+  // Recalcular o detalhe do dia com a nova lógica de mês
+  pick(selectedDay);
 }
 
 function renderMayCal() {
@@ -2680,7 +2948,24 @@ function renderMayCal() {
     </div>`;
   }
   document.getElementById('cal').innerHTML = h;
-  if (selectedDay > 0 && selectedDay <= MAY_DAYS) pick(selectedDay);
+  // NOTA: NÃO chamar pick(selectedDay) aqui — provoca recursão infinita
+  // pick() já chama renderMayCal() no início, e queremos evitar o loop:
+  // pick → renderMayCal → pick → renderMayCal → stack overflow
+  
+  // Atualizar stats row para Maio (31 dias)
+  const statsRow = document.getElementById('stats');
+  if (statsRow) {
+    if (currentUser.isManager) {
+      statsRow.classList.add('hidden');
+    } else {
+      statsRow.classList.remove('hidden');
+      let wd = 0;
+      for (let d = 1; d <= MAY_DAYS; d++) { if (!getUserDayInfo(currentUser, d).off) wd++; }
+      statsRow.innerHTML = `
+        <div class="stat"><div class="sv">${wd}</div><div class="sl">Dias de trabalho</div></div>
+        <div class="stat"><div class="sv">${wd * 8}h</div><div class="sl">Total de horas</div></div>`;
+    }
+  }
 }
 
 function mayDayClick(d) {
@@ -2756,25 +3041,20 @@ function saveDayOffRequests(arr) {
 // 12H REST VALIDATION
 // ════════════════════════════════════════════════════════
 function validate12hRest(userId, day, month) {
-  // Check end time of previous day shift against start time of this day's shift
-  if (month === 1) {
-    // May — no schedule data, skip validation
-    return { ok: true };
-  }
-  // For April swap: check the day before (using current schedule of the target user)
+  // Verifica intervalo de descanso entre o turno do dia anterior e o do próprio dia
+  // Funciona tanto para Abril como para Maio.
   const user = TEAM.find(m => m.id === userId);
   if (!user) return { ok: true };
-  const prevIdx = day - 1; // idx 0 = Mar31, idx 1 = Apr1...
-  if (prevIdx < 0) return { ok: true };
-  const prevCode = user.sch[prevIdx];
+  const prevIdx = day - 1;
+  if (prevIdx < 1) return { ok: true }; // Sem dia anterior dentro do mês
+  const prevCode = getEffectiveCode(userId, prevIdx, month);
   const prevShift = getS(prevCode);
   if (!prevShift) return { ok: true };
-  const prevEnd = prevShift.e; // e.g. 24 = midnight
-  const targetCode = user.sch[day];
+  const prevEnd = prevShift.e; // ex: 24 = meia-noite
+  const targetCode = getEffectiveCode(userId, day, month);
   const targetShift = getS(targetCode);
   if (!targetShift) return { ok: true };
   const targetStart = targetShift.s;
-  // Hours between prevEnd of previous day and targetStart of this day
   const gap = (24 - prevEnd) + targetStart;
   if (gap < 12) {
     return {
@@ -2802,10 +3082,11 @@ function openModal(type, day, month) {
   if (type === 'swap') {
     document.getElementById('modal-title').textContent = '🔄 Pedir troca de horário';
     document.getElementById('modal-sub').textContent = `${dow}, ${day} de ${monthLabel} 2026`;
-    const colleagues = TEAM.filter(m => m.id !== currentUser.id && !m.isManager && !isOff(m.sch[day]));
+    // Usar getEffectiveCode (respeita currentMonth + overrides) em vez de m.sch[day]
+    const colleagues = TEAM.filter(m => m.id !== currentUser.id && !m.isManager && !isOff(getEffectiveCode(m.id, day)));
     const opts = colleagues.length === 0
       ? '<option value="">Nenhum colega disponível</option>'
-      : colleagues.map(m => `<option value="${m.id}">${m.name.split(' ')[0]} (${m.sch[day]})</option>`).join('');
+      : colleagues.map(m => `<option value="${m.id}">${m.name.split(' ')[0]} (${getEffectiveCode(m.id, day)})</option>`).join('');
     document.getElementById('modal-body').innerHTML = `
       <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Trocar com:</label>
       <select id="modal-select">${opts}</select>`;
@@ -2903,17 +3184,19 @@ function updateSwapStatus(id, status) {
   r.status = status;
   saveSwapRequests(reqs);
 
-  // When approved: swap the effective shifts of both parties for that day
-  if (status === 'approved' && r.month === 0) {
-    const idx = r.day; // April idx 1–30
-    const codeFrom = getEffectiveCode(r.fromId, idx);
-    const codeTo   = getEffectiveCode(r.toId,   idx);
+  // Quando aprovado: trocar os códigos efetivos de ambas as partes naquele dia
+  // Funciona para Abril E Maio (usa r.month explicitamente)
+  if (status === 'approved') {
+    const idx = r.day;
+    const reqMonth = r.month; // 0 = Abril, 1 = Maio
+    const codeFrom = getEffectiveCode(r.fromId, idx, reqMonth);
+    const codeTo   = getEffectiveCode(r.toId,   idx, reqMonth);
     const swaps = getSwapOverrides();
-    swaps[ovrKey(r.fromId, idx)] = codeTo;
-    swaps[ovrKey(r.toId,   idx)] = codeFrom;
+    swaps[ovrKey(r.fromId, idx, reqMonth)] = codeTo;
+    swaps[ovrKey(r.toId,   idx, reqMonth)] = codeFrom;
     saveSwapOverrides(swaps);
-    // Refresh current view - check which month is active
-    if (currentUser?.isManager) { 
+    // Refresh apenas se o mês ativo for o mesmo do pedido
+    if (currentUser?.isManager && currentMonth === reqMonth) { 
       if (currentMonth === 0) renderCal(); 
       else renderMayCal();
       if (selectedDay === idx) pick(idx); 
@@ -3069,19 +3352,22 @@ function pick(day) {
   const cnt = countW(day);
   const firstName = currentUser.name.split(' ')[0];
 
-  // ── cobertura (sempre calculada, usada pelo manager e pela lógica de pausa) ──
+  // ── cobertura por hora (usa filtro DEDICADO `coverageFilter`, independente) ──
+  // Importante: este filtro afeta APENAS o gráfico de cobertura.
+  // A lista de colaboradores (workers grid) continua a usar getFilteredTeam.
   const HOURS = [];
   for (let h = 9; h <= 23; h++) HOURS.push(h);
   const cov = {};
   HOURS.forEach(h => { cov[h] = { t: 0, me: false, workers: [], members: [] }; });
-  const activeTeam = getFilteredTeam(currentMonth);
-  activeTeam.forEach(m => {
+  const coverageTeam = getCoverageTeam(currentMonth); // ← filtro próprio da cobertura
+  const activeTeam = getFilteredTeam(currentMonth);   // ← filtro global (workers grid, etc.)
+  coverageTeam.forEach(m => {
     const c = getEffectiveCode(m.id, day);  // use effective shift
     HOURS.forEach(h => {
       if (working(c, h, m.id, day)) {  // passa userId+day para incluir pausa manual
         cov[h].t++;
         if (m.id === currentUser.id) cov[h].me = true;
-        const dn = activeTeam.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
+        const dn = coverageTeam.filter(x => x.name.split(' ')[0] === m.name.split(' ')[0]).length > 1
           ? m.name.split(' ')[0] + ' ' + m.name.split(' ')[1][0] + '.'
           : m.name.split(' ')[0];
         cov[h].workers.push(dn);
@@ -3263,6 +3549,45 @@ function pick(day) {
     <div class="panel-section">
       <div class="sec-title">Cobertura por hora</div>
       <div class="store-banner">Loja aberta das 10h às 23h</div>
+      
+      <!-- ════════════════════════════════════════════
+           FILTRO DEDICADO DA COBERTURA POR HORA
+           Independente do filtro global. Mobile-first.
+           ════════════════════════════════════════════ -->
+      <div class="cov-filter-wrap">
+        <div class="cov-filter-label">Mostrar cobertura de:</div>
+        <div class="cov-filter-scroll">
+          <button class="cov-filter-btn ${coverageFilter==='all'?'active':''}" onclick="setCoverageFilter('all')">
+            <span class="cov-icon">🏪</span><span>Todos</span>
+          </button>
+          <button class="cov-filter-btn ${coverageFilter==='management'?'active':''}" onclick="setCoverageFilter('management')">
+            <span class="cov-icon">👔</span><span>Direção</span>
+          </button>
+          <button class="cov-filter-btn ${coverageFilter==='calcado'?'active':''}" onclick="setCoverageFilter('calcado')">
+            <span class="cov-icon">👟</span><span>Calçado</span>
+          </button>
+          <button class="cov-filter-btn ${coverageFilter==='caixa'?'active':''}" onclick="setCoverageFilter('caixa')">
+            <span class="cov-icon">💳</span><span>Caixa</span>
+          </button>
+          <button class="cov-filter-btn ${coverageFilter==='textil'?'active':''}" onclick="setCoverageFilter('textil')">
+            <span class="cov-icon">👕</span><span>Têxtil</span>
+          </button>
+          <button class="cov-filter-btn ${coverageFilter==='tecnico'?'active':''}" onclick="setCoverageFilter('tecnico')">
+            <span class="cov-icon">⚽</span><span>Técnico</span>
+          </button>
+          <button class="cov-filter-btn ${coverageFilter==='logistica'?'active':''}" onclick="setCoverageFilter('logistica')">
+            <span class="cov-icon">📦</span><span>Logística</span>
+          </button>
+        </div>
+        <div class="cov-filter-summary">
+          ${(() => {
+            const labels = {all:'Toda a loja', management:'Direção', calcado:'Calçado', caixa:'Caixa', textil:'Têxtil', tecnico:'Técnico', logistica:'Logística'};
+            const total = coverageTeam.length;
+            return `<strong>${labels[coverageFilter]}</strong> · ${total} ${total === 1 ? 'colaborador' : 'colaboradores'} no total`;
+          })()}
+        </div>
+      </div>
+      
       <div class="chart-legend">
         <div class="leg"><div class="leg-dot" style="background:#3b82f6"></div>Tu</div>
         <div class="leg"><div class="leg-dot" style="background:#10b981"></div>Equipa (loja aberta)</div>
@@ -3294,8 +3619,9 @@ function pick(day) {
 
   renderChecklist(dateStr);
 
+  // No mobile, ao tocar num dia, alternar automaticamente para a vista de Gestão
   if (window.innerWidth < 700) {
-    document.getElementById('detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    switchMobileView('mgmt');
   }
 }
 
@@ -3553,7 +3879,7 @@ function renderPainel() {
     <div class="pg-section" id="pg-energy">
       <div class="pg-section-title"><span>⚡</span> Energia da Equipa
         <span style="margin-left:6px;font-size:10px;font-weight:400;color:var(--muted)">
-          (${DOW[(APR1_DOW + selectedDay - 1) % 7]}, ${selectedDay} Abr)
+          (${DOW[((currentMonth === 0 ? APR1_DOW : MAY1_DOW) + selectedDay - 1) % 7]}, ${selectedDay} ${currentMonth === 0 ? 'Abr' : 'Mai'})
         </span>
       </div>
       <div class="pg-sub-tabs">
